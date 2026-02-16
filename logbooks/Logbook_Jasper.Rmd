@@ -1,0 +1,53 @@
+---
+title: "Logbook_Jasper"
+output: html_document
+---
+In this Logbook you can find the flow of the minor me and Ramon are doing. 
+
+We are doing an research about the affect of different drugs with in the ROS1-positive NSCLC
+
+""" 
+info over ros1 
+"""
+
+The lab asked us to look at some interesting genes and make primes for them. 
+
+In the powerpoint presentaion we got where some genes shown with intresting interaction 
+with in the patways. We are goinig to use these given pathways to look to intresting genes. 
+
+Ofcourse we need ros1 
+
+With in the PI3K-Akt signaling pathway an interesting genes could be
+
+| Gene |  Why |
+|---------|---------|
+| AKT  | In the pathway it is an gene who starts a lot of other things|
+| GRB2 | Is a early gene that is also seen in MAPK Pathways maby we can see de differnce |
+| PI3K | Get al lot of singals|
+|MDM2  | is ipmoratnat for p53 |
+| FOXO3 | has influnce on cell survival, cell cycle and emetabloimse|
+| GSK3B | Same thing asn FOXO3 only some diffrent|
+|TSC1/TSC2 | influnce on cell grotwh|
+
+
+For MAPK signaling pathway 
+
+| Gene |  Why |
+|---------|---------|
+| GRB2 | Is also seen in akt pathway|
+| RAS  | Intresting for cel grotwh  |
+| MEKK1|  |
+
+For JAK-STAT signaling pathway
+
+| Gene |  Why |
+|---------|---------|
+| TYK2  | SHown in de powerpoit as intresting |
+| JAK1/2 | Early in the pathway an imprtent for sinaling  |
+| PI3K | Get al lot of signals|
+| BCL2 | Stops apotose |
+| PIAS | Stops the pathway |
+
+
+
+
