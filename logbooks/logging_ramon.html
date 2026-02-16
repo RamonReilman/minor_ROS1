@@ -119,10 +119,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Tools: primerblast</li>
 </ul>
 <p>A list of genes will be created to be used for the qPCR. This list will be given by Jasper. I’m going to write a script that can download the sequences of DNA of these genes in fasta format.</p>
-<div id="3199fa6b" class="cell" data-execution_count="1">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Bio <span class="im">import</span> Entrez</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="3dd8246d" class="cell" data-execution_count="2">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Entrez.email <span class="op">=</span> <span class="st">"r.reilman@st.hanze.nl"</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>databases <span class="op">=</span> Entrez.einfo()</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(Entrez.read(databases))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -131,13 +131,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>This contains a list of the different databases that can be accessed, we want to use the gene database to get the nucleotide sequences</p>
-<div id="b07467ce" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>handle <span class="op">=</span> Entrez.esearch(db<span class="op">=</span><span class="st">"nucleotide"</span>, term<span class="op">=</span><span class="st">"AKT[gene] AND biomol_mrna[PROP] AND srcdb_refseq[PROP] AND human[ORGN]"</span>)</span>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>handle <span class="op">=</span> Entrez.esearch(db<span class="op">=</span><span class="st">"nucleotide"</span>, term<span class="op">=</span><span class="st">"GRB2[gene] AND biomol_mrna[PROP] AND srcdb_refseq[PROP] AND human[ORGN]"</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>idlist <span class="op">=</span> Entrez.read(handle)[<span class="st">"IdList"</span>]</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>handle2 <span class="op">=</span> Entrez.efetch(db<span class="op">=</span><span class="st">"nucleotide"</span>, <span class="bu">id</span><span class="op">=</span>idlist, rettype<span class="op">=</span><span class="st">"gb"</span>, retmode<span class="op">=</span><span class="st">"text"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="c92eb345" class="cell" data-execution_count="4">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Bio <span class="im">import</span> SeqIO</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>seqs <span class="op">=</span> <span class="st">""</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>header <span class="op">=</span> <span class="st">""</span></span>
@@ -148,27 +148,335 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>This outputs many sequences for possibly the same gene, i want to check if they are the same sequences or not.</p>
-<div id="0bec5ebc" class="cell" data-execution_count="5">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>header</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>'NM_005163.2_Homo sapiens (human)'</code></pre>
+<div class="cell-output cell-output-stdout">
+<pre><code>'NM_002086.5_Homo sapiens (human)'</code></pre>
 </div>
 </div>
 <p>All sequences are equal to eachother, so the first can be used. These can be turned into a multifasta format</p>
-<div id="bb812828" class="cell" data-execution_count="6">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fasta_showcase <span class="op">=</span> <span class="ss">f"&gt;</span><span class="sc">{</span>header<span class="sc">}</span><span class="ch">\n</span><span class="sc">{</span>seqs<span class="sc">}</span><span class="ss">"</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>fasta_showcase</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
-<pre><code>'&gt;NM_005163.2_Homo sapiens (human)\nTAATTATGGGTCTGTAACCACCCTGGACTGGGTGCTCCTCACTGACGGACTTGTCTGAACCTCTCTTTGTCTCCAGCGCCCAGCACTGGGCCTGGCAAAACCTGAGACGCCCGGTACATGTTGGCCAAATGAATGAACCAGATTCAGACCGGCAGGGGCGCTGTGGTTTAGGAGGGGCCTGGGGTTTCTCCCAGGAGGTTTTTGGGCTTGCGCTGGAGGGCTCTGGACTCCCGTTTGCGCCAGTGGCCTGCATCCTGGTCCTGTCTTCCTCATGTTTGAATTTCTTTGCTTTCCTAGTCTGGGGAGCAGGGAGGAGCCCTGTGCCCTGTCCCAGGATCCATGGGTAGGAACACCATGGACAGGGAGAGCAAACGGGGCCATCTGTCACCAGGGGCTTAGGGAAGGCCGAGCCAGCCTGGGTCAAAGAAGTCAAAGGGGCTGCCTGGAGGAGGCAGCCTGTCAGCTGGTGCATCAGAGGCTGTGGCCAGGCCAGCTGGGCTCGGGGAGCGCCAGCCTGAGAGGAGCGCGTGAGCGTCGCGGGAGCCTCGGGCACCATGAGCGACGTGGCTATTGTGAAGGAGGGTTGGCTGCACAAACGAGGGGAGTACATCAAGACCTGGCGGCCACGCTACTTCCTCCTCAAGAATGATGGCACCTTCATTGGCTACAAGGAGCGGCCGCAGGATGTGGACCAACGTGAGGCTCCCCTCAACAACTTCTCTGTGGCGCAGTGCCAGCTGATGAAGACGGAGCGGCCCCGGCCCAACACCTTCATCATCCGCTGCCTGCAGTGGACCACTGTCATCGAACGCACCTTCCATGTGGAGACTCCTGAGGAGCGGGAGGAGTGGACAACCGCCATCCAGACTGTGGCTGACGGCCTCAAGAAGCAGGAGGAGGAGGAGATGGACTTCCGGTCGGGCTCACCCAGTGACAACTCAGGGGCTGAAGAGATGGAGGTGTCCCTGGCCAAGCCCAAGCACCGCGTGACCATGAACGAGTTTGAGTACCTGAAGCTGCTGGGCAAGGGCACTTTCGGCAAGGTGATCCTGGTGAAGGAGAAGGCCACAGGCCGCTACTACGCCATGAAGATCCTCAAGAAGGAAGTCATCGTGGCCAAGGACGAGGTGGCCCACACACTCACCGAGAACCGCGTCCTGCAGAACTCCAGGCACCCCTTCCTCACAGCCCTGAAGTACTCTTTCCAGACCCACGACCGCCTCTGCTTTGTCATGGAGTACGCCAACGGGGGCGAGCTGTTCTTCCACCTGTCCCGGGAGCGTGTGTTCTCCGAGGACCGGGCCCGCTTCTATGGCGCTGAGATTGTGTCAGCCCTGGACTACCTGCACTCGGAGAAGAACGTGGTGTACCGGGACCTCAAGCTGGAGAACCTCATGCTGGACAAGGACGGGCACATTAAGATCACAGACTTCGGGCTGTGCAAGGAGGGGATCAAGGACGGTGCCACCATGAAGACCTTTTGCGGCACACCTGAGTACCTGGCCCCCGAGGTGCTGGAGGACAATGACTACGGCCGTGCAGTGGACTGGTGGGGGCTGGGCGTGGTCATGTACGAGATGATGTGCGGTCGCCTGCCCTTCTACAACCAGGACCATGAGAAGCTTTTTGAGCTCATCCTCATGGAGGAGATCCGCTTCCCGCGCACGCTTGGTCCCGAGGCCAAGTCCTTGCTTTCAGGGCTGCTCAAGAAGGACCCCAAGCAGAGGCTTGGCGGGGGCTCCGAGGACGCCAAGGAGATCATGCAGCATCGCTTCTTTGCCGGTATCGTGTGGCAGCACGTGTACGAGAAGAAGCTCAGCCCACCCTTCAAGCCCCAGGTCACGTCGGAGACTGACACCAGGTATTTTGATGAGGAGTTCACGGCCCAGATGATCACCATCACACCACCTGACCAAGATGACAGCATGGAGTGTGTGGACAGCGAGCGCAGGCCCCACTTCCCCCAGTTCTCCTACTCGGCCAGCGGCACGGCCTGAGGCGGCGGTGGACTGCGCTGGACGATAGCTTGGAGGGATGGAGAGGCGGCCTCGTGCCATGATCTGTATTTAATGGTTTTTATTTCTCGGGTGCATTTGAGAGAAGCCACGCTGTCCTCTCGAGCCCAGATGGAAAGACGTTTTTGTGCTGTGGGCAGCACCCTCCCCCGCAGCGGGGTAGGGAAGAAAACTATCCTGCGGGTTTTAATTTATTTCATCCAGTTTGTTCTCCGGGTGTGGCCTCAGCCCTCAGAACAATCCGATTCACGTAGGGAAATGTTAAGGACTTCTGCAGCTATGCGCAATGTGGCATTGGGGGGCCGGGCAGGTCCTGCCCATGTGTCCCCTCACTCTGTCAGCCAGCCGCCCTGGGCTGTCTGTCACCAGCTATCTGTCATCTCTCTGGGGCCCTGGGCCTCAGTTCAACCTGGTGGCACCAGATGCAACCTCACTATGGTATGCTGGCCAGCACCCTCTCCTGGGGGTGGCAGGCACACAGCAGCCCCCCAGCACTAAGGCCGTGTCTCTGAGGACGTCATCGGAGGCTGGGCCCCTGGGATGGGACCAGGGATGGGGGATGGGCCAGGGTTTACCCAGTGGGACAGAGGAGCAAGGTTTAAATTTGTTATTGTGTATTATGTTGTTCAAATGCATTTTGGGGGTTTTTAATCTTTGTGACAGGAAAGCCCTCCCCCTTCCCCTTCTGTGTCACAGTTCTTGGTGACTGTCCCACCGGGAGCCTCCCCCTCAGATGATCTCTCCACGGTAGCACTTGACCTTTTCGACGCTTAACCTTTCCGCTGTCGCCCCAGGCCCTCCCTGACTCCCTGTGGGGGTGGCCATCCCTGGGCCCCTCCACGCCTCCTGGCCAGACGCTGCCGCTGCCGCTGCACCACGGCGTTTTTTTACAACATTCAACTTTAGTATTTTTACTATTATAATATAATATGGAACCTTCCCTCCAAATTCTTCAATAAAAGTTGCTTTTCAAAAAAAAAAAAAAAAAAAAAA'</code></pre>
+<div class="cell-output cell-output-stdout">
+<pre><code>'&gt;NM_002086.5_Homo sapiens (human)\nAGCCAGGAGGTATTGCTGCTTCGGCGACCGGGCGGCGGCAGCGGCGGCGGCGGCTGTGGCAGAGTCTGTGCCTGTGGCGGTGACGGCGGCGGGAGCAAGCGCTGCCCTCGCAGAGCAGCCTTGGGGTCGCCGGCCGCTCGCAGCGTTGTGGAGGGGCGGGCCGGACGCTGAGCGGAGCAGCTGCGCCACGGGTGGCATTGTGTGTCCCAGAGTGCCGGAGCGAGTCCCAGAAGAGAGGCGAGGCTAAGCCCAGAGCGCTGGGTTGCTTCAGCAGGGAAGACTCCCTTCCCCCTGCTTCAGGCTGCTGAGCACTGAGCAGCGCTCAGAATGGAAGCCATCGCCAAATATGACTTCAAAGCTACTGCAGACGACGAGCTGAGCTTCAAAAGGGGGGACATCCTCAAGGTTTTGAACGAAGAATGTGATCAGAACTGGTACAAGGCAGAGCTTAATGGAAAAGACGGCTTCATTCCCAAGAACTACATAGAAATGAAACCACATCCGTGGTTTTTTGGCAAAATCCCCAGAGCCAAGGCAGAAGAAATGCTTAGCAAACAGCGGCACGATGGGGCCTTTCTTATCCGAGAGAGTGAGAGCGCTCCTGGGGACTTCTCCCTCTCTGTCAAGTTTGGAAACGATGTGCAGCACTTCAAGGTGCTCCGAGATGGAGCCGGGAAGTACTTCCTCTGGGTGGTGAAGTTCAATTCTTTGAATGAGCTGGTGGATTATCACAGATCTACATCTGTCTCCAGAAACCAGCAGATATTCCTGCGGGACATAGAACAGGTGCCACAGCAGCCGACATACGTCCAGGCCCTCTTTGACTTTGATCCCCAGGAGGATGGAGAGCTGGGCTTCCGCCGGGGAGATTTTATCCATGTCATGGATAACTCAGACCCCAACTGGTGGAAAGGAGCTTGCCACGGGCAGACCGGCATGTTTCCCCGCAATTATGTCACCCCCGTGAACCGGAACGTCTAAGAGTCAAGAAGCAATTATTTAAAGAAAGTGAAAAATGTAAAACACATACAAAAGAATTAAACCCACAAGCTGCCTCTGACAGCAGCCTGTGAGGGAGTGCAGAACACCTGGCCGGGTCACCCTGTGACCCTCTCACTTTGGTTGGAACTTTAGGGGGTGGGAGGGGGCGTTGGATTTAAAAATGCCAAAACTTACCTATAAATTAAGAAGAGTTTTTATTACAAATTTTCACTGCTGCTCCTCTTTCCCCTCCTTTGTCTTTTTTTTCATCCTTTTTTCTCTTCTGTCCATCAGTGCATGACGTTTAAGGCCACGTATAGTCCTAGCTGACGCCAATAATAAAAAACAAGAAACCAAGTGGGCTGGTATTCTCTCTATGCAAAATGTCTGTTTTAGTTGGAATGACTGAAAGAAGAACAGCTGTTCCTGTGTTCTTCGTATATACACACAAAAAGGAGCGGGCAGGGCCGCTCGATGCCTTTGCTGTTTAGCTTCCTCCAGAGGAGGGGACTTGTAGGAATCTGCCTTCCAGCCCAGACCCCCAGTGTATTTTGTCCAAGTTCACAGTAGAGTAGGGTAGAAGGAAAGCATGTCTCTGCTTCCATGGCTTCCTGAGAAAGCCCACCTGGGCTGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCAAGGTGGGCGGATCACAAGGTCAGGAGTTCGAGACCAACCTAGCCAACATGGTGAAACCCCGTCTCTACTAAAAATAAGAAATTAGCCGGGTGTGGCACGCACCTGTAGTCCCAGCTACTTGGGAGCCTGAGGCAGGAGAATCGCTTGAACCTGGGAAGTGGAGGTTGAGTGAGCCGGGACCGTGCCATTGTACTCCAGCCTGGGTGACAGAGCGAGATTCCGTCTCAAAAAAAAAAAAAAAAAGCCCACCTGAAAGCCTGTCTCTTTCCACTTTGTTGGCCCTTCCAGTGGGATTATCGAGCATGTTGTTTTTTCATAGTGCCTTTTTCCTTATTTCAAGGGTTGCTTCTGAGTGGTGTTTTTTTTTTTTTTTTAATTTGTTTTGTTTTAAAATAAGTTAAAGGCAGTCCAGAGCTTTTCAGCCAATTTGTCTCCTACTCTGTGTAAATATTTTTCCCTCCGGGCAGGGGAGCCAGGGTAGAGCAAAGGAGACAAAGCAGGAGTGGAAGGTGAGGCGTTCTCCTGCTTGTACTAAGCCAGGAGGCTTTAAGCTCCAGCTTTAAGGGTTGTGAGCCCCTTGGGGGTTCAGGGAACTGCTTGCCCAGGGTGCAGTGTGAGTGTGATGGGCCACCGGGGCAAGAGGGAAGGTGACCGCCCAGCTCTCCCACATCCCACTGGATCTGGCTTACAGGGGGGTCGGAAGCCTGTCCTCACCGTCTCGGGGGTTGTGGCCCCCGCCCCCTCCCTATATGCACCCCTGGAACCAGCAAGTCCCAGACAAGGAGAGCGGAGGAGGAAGTCATGGGAACGCAGCCTCCAGTTGTAGCAGGTTTCACTATTCCTATGCTGGGGTACACAGTGAGAGTACTCACTTTTCACTTGTCTTGCTCTTAGATTGGGCCATGGCTTTCATCCTGTGTCCCCTGACCTGTCCAGGTGAGTGTGAGGGCAGCACTGGGAAGCTGGAGTGCTGCTTGTGCCTCCCTTCCCAGTGGGCTGTGTTGACTGCTGCTCCCCACCCCTACCGATGGTCCCAGGAAGCAGGGAGAGTTGGGGAAGGCAAGATTGGAAAGACAGGAAGACCAAGGCCTCGGCAGAACTCTCTGTCTTCTCTCCACTTCTGGTCCCCTGTGGTGATGTGCCTGTAATCTTTTTCTCCACCCAAACCCCTTCCCACGACAAAAACAAGACTGCCTCCCTCTCTTCCGGGAGCTGGTGACAGCCTTGGGCCTTTCAGTCCCAAAGCGGCCGATGGGAGTCTCCCTCCGACTCCAGATATGAACAGGGCCCAGGCCTGGAGCGTTTGCTGTGCCAGGAGGCGGCAGCTCTTCTGGGCAGAGCCTGTCCCCGCCTTCCCTCACTCTTCCTCATCCTGCTTCTCTTTTCCTCGCAGATGATAAAAGGAATCTGGCATTCTACACCTGGACCATTTGATTGTTTTATTTTGGAATTGGTGTATATCATGAAGCCTTGCTGAACTAAGTTTTGTGTGTATATATTTAAAAAAAAAATCAGTGTTTAAATAAAGACCTATGTACTTAATCCTTTAACTCTGCGGATAGCATTTGGTAGGTAGTGATTAACTGTGAATAATAAATACACAATGAATTCTTCA'</code></pre>
 </div>
 </div>
-<div id="b1284db8" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"temp.fasta"</span>, <span class="st">"w"</span>) <span class="im">as</span> f:</span>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"../data/showcase.fasta"</span>, <span class="st">"w"</span>, encoding<span class="op">=</span><span class="st">'utf-8'</span>) <span class="im">as</span> f:</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    f.write(fasta_showcase)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>3307</code></pre>
+</div>
 </div>
 <p>And just like that we have a fasta file containing the sequence of a given gene. I will now create a script that takes a file of gene names, and turns in into a multifasta file.</p>
-<p>These fasta files will be pulled as the mRNA variant 1 transcripts of the genes, the AKT variant 1 page can be found <a href="https://www.ncbi.nlm.nih.gov/nuccore/NM_005163.2">here</a></p>
+<p>These fasta files will be pulled as the mRNA variant 1 transcripts of the genes, the GRB2 variant 1 page can be found <a href="https://www.ncbi.nlm.nih.gov/nuccore/NM_002086.5">here</a></p>
 <p>We can design primers for these sequences using primer blast. Which takes some parameters to create these primers. I’m going to do a test-run with the fasta file generated above. I will load in these primers, with the selected parameters and discus the output of primer blast.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>packages <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"config"</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">setdiff</span>(packages, <span class="fu">rownames</span>(<span class="fu">installed.packages</span>())))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>config <span class="ot">&lt;-</span> config<span class="sc">::</span><span class="fu">get</span>(<span class="at">file =</span> <span class="st">"/home/redman/jaar3/minor/ros1/minor_ROS1/configs/config.yaml"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>primer_data <span class="ot">&lt;-</span> <span class="fu">read.csv2</span>(config<span class="sc">$</span>primer_data, <span class="at">sep =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>primer_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 2%">
+<col style="width: 0%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Primer_pair_.</th>
+<th style="text-align: left;">Forward_primer_Sequence_.5…3..</th>
+<th style="text-align: left;">Forward_primer_Template_strand</th>
+<th style="text-align: right;">Forward_primer_Length</th>
+<th style="text-align: right;">Forward_primer_Start</th>
+<th style="text-align: right;">Forward_primer_Stop</th>
+<th style="text-align: left;">Forward_primer_Tm</th>
+<th style="text-align: left;">Forward_primer_GC.</th>
+<th style="text-align: left;">Forward_primer_Self_complementarity</th>
+<th style="text-align: left;">Forward_primer_Self_3._complementarity</th>
+<th style="text-align: left;">Reverse_primer_Sequence_.5…3..</th>
+<th style="text-align: left;">Reverse_primer_Template_strand</th>
+<th style="text-align: right;">Reverse_primer_Length</th>
+<th style="text-align: right;">Reverse_primer_Start</th>
+<th style="text-align: right;">Reverse_primer_Stop</th>
+<th style="text-align: left;">Reverse_primer_Tm</th>
+<th style="text-align: left;">Reverse_primer_GC.</th>
+<th style="text-align: left;">Reverse_primer_Self_complementarity</th>
+<th style="text-align: left;">Reverse_primer_Self_3._complementarity</th>
+<th style="text-align: right;">Product_length</th>
+<th style="text-align: left;">X</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">TGGGGACTTCTCCCTCTCTG</td>
+<td style="text-align: left;">Plus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">603</td>
+<td style="text-align: right;">622</td>
+<td style="text-align: left;">59.96</td>
+<td style="text-align: left;">60.00</td>
+<td style="text-align: left;">4.00</td>
+<td style="text-align: left;">1.00</td>
+<td style="text-align: left;">TTAAATCCAACGCCCCCTCC</td>
+<td style="text-align: left;">Minus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">1160</td>
+<td style="text-align: right;">1141</td>
+<td style="text-align: left;">60.03</td>
+<td style="text-align: left;">55.00</td>
+<td style="text-align: left;">4.00</td>
+<td style="text-align: left;">0.00</td>
+<td style="text-align: right;">558</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">AATGCTTAGCAAACAGCGGC</td>
+<td style="text-align: left;">Plus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">543</td>
+<td style="text-align: right;">562</td>
+<td style="text-align: left;">60.11</td>
+<td style="text-align: left;">50.00</td>
+<td style="text-align: left;">7.00</td>
+<td style="text-align: left;">3.00</td>
+<td style="text-align: left;">TTAGACGTTCCGGTTCACGG</td>
+<td style="text-align: left;">Minus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">981</td>
+<td style="text-align: right;">962</td>
+<td style="text-align: left;">60.04</td>
+<td style="text-align: left;">55.00</td>
+<td style="text-align: left;">4.00</td>
+<td style="text-align: left;">2.00</td>
+<td style="text-align: right;">439</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">AAGCTACTGCAGACGACGAG</td>
+<td style="text-align: left;">Plus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">356</td>
+<td style="text-align: right;">375</td>
+<td style="text-align: left;">59.83</td>
+<td style="text-align: left;">55.00</td>
+<td style="text-align: left;">6.00</td>
+<td style="text-align: left;">0.00</td>
+<td style="text-align: left;">GCCGCTGTTTGCTAAGCATT</td>
+<td style="text-align: left;">Minus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">562</td>
+<td style="text-align: right;">543</td>
+<td style="text-align: left;">60.11</td>
+<td style="text-align: left;">50.00</td>
+<td style="text-align: left;">7.00</td>
+<td style="text-align: left;">3.00</td>
+<td style="text-align: right;">207</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">GCACGATGGGGCCTTTCTTA</td>
+<td style="text-align: left;">Plus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">561</td>
+<td style="text-align: right;">580</td>
+<td style="text-align: left;">60.39</td>
+<td style="text-align: left;">55.00</td>
+<td style="text-align: left;">4.00</td>
+<td style="text-align: left;">2.00</td>
+<td style="text-align: left;">CTGCTGTGGCACCTGTTCTA</td>
+<td style="text-align: left;">Minus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">798</td>
+<td style="text-align: right;">779</td>
+<td style="text-align: left;">59.96</td>
+<td style="text-align: left;">55.00</td>
+<td style="text-align: left;">5.00</td>
+<td style="text-align: left;">2.00</td>
+<td style="text-align: right;">238</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">GCAAAATCCCCAGAGCCAAG</td>
+<td style="text-align: left;">Plus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">515</td>
+<td style="text-align: right;">534</td>
+<td style="text-align: left;">59.47</td>
+<td style="text-align: left;">55.00</td>
+<td style="text-align: left;">2.00</td>
+<td style="text-align: left;">0.00</td>
+<td style="text-align: left;">TCCCACCCCCTAAAGTTCCA</td>
+<td style="text-align: left;">Minus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">1143</td>
+<td style="text-align: right;">1124</td>
+<td style="text-align: left;">60.10</td>
+<td style="text-align: left;">55.00</td>
+<td style="text-align: left;">3.00</td>
+<td style="text-align: left;">0.00</td>
+<td style="text-align: right;">629</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">TGGGGCCTTTCTTATCCGAG</td>
+<td style="text-align: left;">Plus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">567</td>
+<td style="text-align: right;">586</td>
+<td style="text-align: left;">59.16</td>
+<td style="text-align: left;">55.00</td>
+<td style="text-align: left;">4.00</td>
+<td style="text-align: left;">1.00</td>
+<td style="text-align: left;">AAGTGAGAGGGTCACAGGGT</td>
+<td style="text-align: left;">Minus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">1119</td>
+<td style="text-align: right;">1100</td>
+<td style="text-align: left;">60.10</td>
+<td style="text-align: left;">55.00</td>
+<td style="text-align: left;">4.00</td>
+<td style="text-align: left;">1.00</td>
+<td style="text-align: right;">553</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">TTTGGCAAAATCCCCAGAGC</td>
+<td style="text-align: left;">Plus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">511</td>
+<td style="text-align: right;">530</td>
+<td style="text-align: left;">59.02</td>
+<td style="text-align: left;">50.00</td>
+<td style="text-align: left;">7.00</td>
+<td style="text-align: left;">2.00</td>
+<td style="text-align: left;">CGTGGCCTTAAACGTCATGC</td>
+<td style="text-align: left;">Minus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">1296</td>
+<td style="text-align: right;">1277</td>
+<td style="text-align: left;">60.18</td>
+<td style="text-align: left;">55.00</td>
+<td style="text-align: left;">5.00</td>
+<td style="text-align: left;">2.00</td>
+<td style="text-align: right;">786</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">GGGGCCTTTCTTATCCGAGA</td>
+<td style="text-align: left;">Plus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">568</td>
+<td style="text-align: right;">587</td>
+<td style="text-align: left;">58.87</td>
+<td style="text-align: left;">55.00</td>
+<td style="text-align: left;">4.00</td>
+<td style="text-align: left;">3.00</td>
+<td style="text-align: left;">TTTCCACCAGTTGGGGTCTG</td>
+<td style="text-align: left;">Minus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">912</td>
+<td style="text-align: right;">893</td>
+<td style="text-align: left;">59.82</td>
+<td style="text-align: left;">55.00</td>
+<td style="text-align: left;">5.00</td>
+<td style="text-align: left;">1.00</td>
+<td style="text-align: right;">345</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">GAGCCAAGGCAGAAGAAATGC</td>
+<td style="text-align: left;">Plus</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">527</td>
+<td style="text-align: right;">547</td>
+<td style="text-align: left;">60.14</td>
+<td style="text-align: left;">52.38</td>
+<td style="text-align: left;">4.00</td>
+<td style="text-align: left;">2.00</td>
+<td style="text-align: left;">CACCTGTTCTATGTCCCGCA</td>
+<td style="text-align: left;">Minus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">789</td>
+<td style="text-align: right;">770</td>
+<td style="text-align: left;">59.75</td>
+<td style="text-align: left;">55.00</td>
+<td style="text-align: left;">2.00</td>
+<td style="text-align: left;">1.00</td>
+<td style="text-align: right;">263</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">ATGCTTAGCAAACAGCGGCA</td>
+<td style="text-align: left;">Plus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">544</td>
+<td style="text-align: right;">563</td>
+<td style="text-align: left;">61.24</td>
+<td style="text-align: left;">50.00</td>
+<td style="text-align: left;">7.00</td>
+<td style="text-align: left;">1.00</td>
+<td style="text-align: left;">GTGCTGCACATCGTTTCCAA</td>
+<td style="text-align: left;">Minus</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">648</td>
+<td style="text-align: right;">629</td>
+<td style="text-align: left;">59.69</td>
+<td style="text-align: left;">50.00</td>
+<td style="text-align: left;">7.00</td>
+<td style="text-align: left;">2.00</td>
+<td style="text-align: right;">105</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>This dataframe contains the ouput of a primerblast run, i want to explore the different columns, and see what they mean.</p>
+<p>The first couple of columns are about the <strong>forward primer</strong> starting with basic information about the length of the primer and where the primer starts/ends. The more interesting metrics show up after this:</p>
+<ul>
+<li>Tm, the primer melting temperature</li>
+<li>Self complementary, a metric to display how much a primer can bind to itself (or copies of itself) this is naturally not wanted, the lower the value is, the better.</li>
+<li>3` self complementary, similar to the self complementary metric, but now specifically for the 3` end. Naturally unwanted too, so the lower the better.</li>
+</ul>
+<p>The same metrics exist for the <strong>reverse primer</strong></p>
 </section>
 </section>
 </section>
