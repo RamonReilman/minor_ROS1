@@ -6,9 +6,18 @@ In this Logbook you can find the flow of the minor me and Ramon are doing.
 
 We are doing an research about the affect of different drugs with in the ROS1-positive NSCLC
 
-""" 
-info over ros1 
-"""
+The ROS1 gene is normally not actively expressed in most human adult tissues. Under normal physiological conditions, ROS1 activity is very low or absent, meaning it does not continuously send growth signals to cells.
+
+However, genomic alterations such as **chromosomal rearrangements** or **gene fusions** 
+can lead to abnormal activation of ROS1. These mutations place the ROS1 kinase domain 
+under the control of an alternative promoter or create a constitutively active fusion protein. 
+As a result, the ROS1 gene becomes transcribed and translated, leading to persistent expression of an active receptor tyrosine kinase.
+
+Activated ROS1 continuously sends intracellular signals independent of normal regulatory mechanisms. 
+This results in activation of multiple downstream signaling pathways.
+
+Continuous activation of these pathways promotes cell proliferation, survival, and resistance to apoptosis. 
+Over time, this uncontrolled signaling can contribute to tumor initiation and cancer progression.
 
 The lab asked us to look at some interesting genes and make primes for them. 
 
@@ -17,36 +26,48 @@ with in the patways. We are goinig to use these given pathways to look to intres
 
 Ofcourse we need ros1 
 
-With in the PI3K-Akt signaling pathway an interesting genes could be
-
-| Gene |  Why |
-|---------|---------|
-| AKT  | In the pathway it is an gene who starts a lot of other things|
-| GRB2 | Is a early gene that is also seen in MAPK Pathways maby we can see de differnce |
-| PI3K | Get al lot of singals|
-|MDM2  | is ipmoratnat for p53 |
-| FOXO3 | has influnce on cell survival, cell cycle and emetabloimse|
-| GSK3B | Same thing asn FOXO3 only some diffrent|
-|TSC1/TSC2 | influnce on cell grotwh|
+Based on the pathways provided in the PowerPoint presentation, several genes were
+selected that show important interactions within the PI3K–AKT, MAPK, and JAK–STAT
+signaling pathways. These genes were chosen because of their roles in signal
+transduction, cell growth, survival, and apoptosis regulation.
 
 
-For MAPK signaling pathway 
 
-| Gene |  Why |
-|---------|---------|
-| GRB2 | Is also seen in akt pathway|
-| RAS  | Intresting for cel grotwh  |
-| MEKK1|  |
+### PI3K–AKT Signaling Pathway
 
-For JAK-STAT signaling pathway
+| Gene | Why |
+|------|-----|
+| **AKT** | Central kinase in the pathway that regulates many downstream cellular processes including survival and growth. |
+| **GRB2** | Early adaptor protein linking receptor activation to downstream signaling; also involved in the MAPK pathway, allowing pathway comparison. |
+| **PI3K** | Key signaling molecule that integrates multiple upstream signals and activates AKT. |
+| **MDM2** | Regulates the tumor suppressor protein p53 and influences cell cycle control. |
+| **FOXO3** | Transcription factor involved in cell survival, metabolism, and cell cycle regulation. |
+| **GSK3B** | Downstream target of AKT involved in metabolism and cell proliferation regulation. |
+| **TSC1/TSC2** | Protein complex regulating mTOR signaling and cellular growth control. |
 
-| Gene |  Why |
-|---------|---------|
-| TYK2  | SHown in de powerpoit as intresting |
-| JAK1/2 | Early in the pathway an imprtent for sinaling  |
-| PI3K | Get al lot of signals|
-| BCL2 | Stops apotose |
-| PIAS | Stops the pathway |
+  ![Image of PI3K-akt pathway and the chosen genes](images/p13_akt_pathway.png)
+
+### MAPK Signaling Pathway
+
+| Gene | Why |
+|------|-----|
+| **GRB2** | Shared component with the PI3K–AKT pathway, enabling comparison between signaling routes. |
+| **RAS** | Important regulator of cell proliferation and signal amplification. |
+| **MEKK1** | Kinase involved in transmitting signals downstream within the MAPK cascade. |
+
+![Image of MAPK pathway and the chosen genes](images/mapk_pathway.png)
+
+### JAK–STAT Signaling Pathway
+
+| Gene | Why |
+|------|-----|
+| **TYK2** | Identified in the presentation as an important signaling kinase within the pathway. |
+| **JAK1/2** | Early signaling kinases essential for pathway activation and signal propagation. |
+| **PI3K** | Acts as a signaling integration point connecting JAK–STAT with other pathways. |
+| **BCL2** | Anti-apoptotic protein promoting cell survival. |
+| **PIAS** | Negative regulator that inhibits STAT signaling and limits pathway activation. |
+
+![Image of JAK-STAT pathway and the chosen genes](images/jak_stat_pathway.png)
 
 
 
