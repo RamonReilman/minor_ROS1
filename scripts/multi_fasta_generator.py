@@ -32,18 +32,25 @@ def extract_gene_names(gene_file):
 def get_fasta(gene_list):
     fasta = ""
     for gene in gene_list:
-        handle = Entrez.esearch(db="nucleotide", term=f"{gene}[gene] AND biomol_mrna[PROP] AND srcdb_refseq[PROP] AND human[ORGN]")
+        handle = Entrez.esearch(db="nucleotide", term=f"{gene}[Gene Name] AND biomol_mrna[PROP] AND srcdb_refseq[PROP] AND human[ORGN]", retmax = 50)
         idlist = Entrez.read(handle)["IdList"]
         handle2 = Entrez.efetch(db="nucleotide", id=idlist, rettype="gb", retmode="text")
-        header, seq = get_seqs(handle2)
+        try:
+            header, seq = get_seqs(handle2)
+        except Exception as _:
+            print(f"{gene} not found, try manually")
+            continue
         fasta += f">{gene} {header}\n{seq}\n"
     return fasta
         
 def get_seqs(handle):
-    for seq in SeqIO.parse(handle, "gb"):
-        if "transcript variant 1" in seq.description.lower():
+    seqs = list(SeqIO.parse(handle, "gb"))
+    for seq in seqs:
+        if "transcript variant 1," in seq.description.lower():
             return seq.id + "_" + seq.annotations["source"], seq.seq
-   
+    if "nm" in seqs[0].id.lower():
+        return seqs[0].id + "_" + seqs[0].annotations["source"], seqs[0].seq
+    raise ValueError()
 
 def write_multifasta(fasta, output):
     with open(output, "w") as f:

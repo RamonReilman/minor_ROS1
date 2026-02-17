@@ -1,3 +1,2 @@
 default:
   primer_data: "/home/redman/jaar3/minor/ros1/minor_ROS1/data/primer-pairs-showcase.txt"
-  data_dir: "/home/redman/jaar3/minor/ros1/minor_ROS1/data"

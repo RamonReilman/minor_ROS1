@@ -1,0 +1,117 @@
+---
+format:
+  html:
+    toc: true
+    toc-location: left
+    df-print: kable
+execute:
+  echo: true
+---
+
+# Logging ROS1 medicational research
+
+This logbook contains the logs of the research part of the bio-informatics minor at the Hanze in 2025-2026.
+
+-   Author: Ramon Reilman
+-   Class: BFV3
+-   Minor: Bio-informatics
+
+## First things First
+
+The first thing done for this minor is researching the best working time for the medication series, we have no involvement in this part. We do need to select genes, done by Jasper Jonker, and design / find primers for these. This has to be done to QPCR (quantative) these given genes, so that we can do a transcriptomics analasis on the sequencing data.
+
+### Primers
+
+After speaking to the head of the labwork, we came to an agreement on primer design. This agreement came wth a set of rules for designing these primers, listed below.
+
+-   Melting temp: Preferably around 60 degrees celcius
+-   Length range: 15-25 with a preference of 20 base pairs.
+-   No circular primer forming.
+-   Tools: primerblast
+
+A list of genes will be created to be used for the qPCR. This list will be given by Jasper. I'm going to write a script that can download the sequences of DNA of these genes in fasta format.
+
+```{python}
+from Bio import Entrez
+```
+
+```{python}
+Entrez.email = "r.reilman@st.hanze.nl"
+databases = Entrez.einfo()
+print(Entrez.read(databases))
+```
+
+This contains a list of the different databases that can be accessed, we want to use the gene database to get the nucleotide sequences
+
+```{python}
+handle = Entrez.esearch(db="nucleotide", term="GRB2[gene] AND biomol_mrna[PROP] AND srcdb_refseq[PROP] AND human[ORGN]")
+idlist = Entrez.read(handle)["IdList"]
+
+handle2 = Entrez.efetch(db="nucleotide", id=idlist, rettype="gb", retmode="text")
+
+```
+
+```{python}
+from Bio import SeqIO
+seqs = ""
+header = ""
+for seqq in SeqIO.parse(handle2, "gb"):
+    if "transcript variant 1" in seqq.description.lower():
+        header = seqq.id + "_" + seqq.annotations["source"]
+        seqs = seqq.seq
+        break
+
+```
+
+This outputs many sequences for possibly the same gene, i want to check if they are the same sequences or not.
+
+```{python}
+header
+```
+
+All sequences are equal to eachother, so the first can be used. These can be turned into a multifasta format
+
+```{python}
+fasta_showcase = f">{header}\n{seqs}"
+fasta_showcase
+```
+
+```{python}
+with open("../data/showcase.fasta", "w", encoding='utf-8') as f:
+    f.write(fasta_showcase)
+    
+```
+
+And just like that we have a fasta file containing the sequence of a given gene. I will now create a script that takes a file of gene names, and turns in into a multifasta file.
+
+These fasta files will be pulled as the mRNA variant 1 transcripts of the genes, the GRB2 variant 1 page can be found [here](https://www.ncbi.nlm.nih.gov/nuccore/NM_002086.5)
+
+We can design primers for these sequences using primer blast. Which takes some parameters to create these primers. I'm going to do a test-run with the fasta file generated above. I will load in these primers, with the selected parameters and discus the output of primer blast.
+
+```{r}
+packages <- c("config")
+install.packages(setdiff(packages, rownames(installed.packages())))
+```
+
+```{r}
+config <- config::get(file = "/home/redman/jaar3/minor/ros1/minor_ROS1/configs/config.yaml")
+
+
+```
+
+```{r}
+primer_data <- read.csv2(config$primer_data, sep = "\t")
+primer_data
+```
+
+This dataframe contains the ouput of a primerblast run, i want to explore the different columns, and see what they mean.
+
+The first couple of columns are about the **forward primer** starting with basic information about the length of the primer and where the primer starts/ends. The more interesting metrics show up after this:
+
+- Tm, the primer melting temperature
+- Self complementary, a metric to display how much a primer can bind to itself (or copies of itself) this is naturally not wanted, the lower the value is, the better.
+- 3\` self complementary, similar to the self complementary metric, but now specifically for the 3\` end. Naturally unwanted too, so the lower the better.
+
+The same metrics exist for the **reverse primer**
+
+
