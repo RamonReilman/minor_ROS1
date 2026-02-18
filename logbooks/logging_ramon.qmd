@@ -20,6 +20,9 @@ This logbook contains the logs of the research part of the bio-informatics minor
 
 The first thing done for this minor is researching the best working time for the medication series, we have no involvement in this part. We do need to select genes, done by Jasper Jonker, and design / find primers for these. This has to be done to QPCR (quantative) these given genes, so that we can do a transcriptomics analasis on the sequencing data.
 
+### Gene choices
+Literary research was done by Jasper, the findings and gene choices can be found in his [logbook](./Logbook_Jasper.html)
+
 ### Primers
 
 After speaking to the head of the labwork, we came to an agreement on primer design. This agreement came wth a set of rules for designing these primers, listed below.
@@ -113,4 +116,3 @@ The first couple of columns are about the **forward primer** starting with basic
 - 3\` self complementary, similar to the self complementary metric, but now specifically for the 3\` end. Naturally unwanted too, so the lower the better.
 
 The same metrics exist for the **reverse primer**
-
