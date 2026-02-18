@@ -66,14 +66,6 @@ def main():
     gene_names = extract_gene_names(input_file)
     fasta = get_fasta(gene_names)
     write_multifasta(fasta, output_file)
-    
-    
-    
-    
-    
-    
-    
-    
 
 
 if __name__ == "__main__":
