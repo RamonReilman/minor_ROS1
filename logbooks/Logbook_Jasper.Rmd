@@ -39,13 +39,13 @@ transduction, cell growth, survival, and apoptosis regulation.
 |------|-----|
 | **AKT** | Central kinase in the pathway that regulates many downstream cellular processes including survival and growth. |
 | **GRB2** | Early adaptor protein linking receptor activation to downstream signaling; also involved in the MAPK pathway, allowing pathway comparison. |
-| **PI3K** | Key signaling molecule that integrates multiple upstream signals and activates AKT. |
+| **PI3KCA** | Key signaling molecule that integrates multiple upstream signals and activates AKT. |
 | **MDM2** | Regulates the tumor suppressor protein p53 and influences cell cycle control. |
 | **FOXO3** | Transcription factor involved in cell survival, metabolism, and cell cycle regulation. |
 | **GSK3B** | Downstream target of AKT involved in metabolism and cell proliferation regulation. |
 | **TSC1/TSC2** | Protein complex regulating mTOR signaling and cellular growth control. |
 
-  ![Image of PI3K-akt pathway and the chosen genes](images/p13_akt_pathway.png)
+  ![Image of PI3K-akt pathway and the chosen genes](../img/pathway/p13_akt_pathway.png)
 
 ### MAPK Signaling Pathway
 
@@ -55,7 +55,7 @@ transduction, cell growth, survival, and apoptosis regulation.
 | **RAS** | Important regulator of cell proliferation and signal amplification. |
 | **MEKK1** | Kinase involved in transmitting signals downstream within the MAPK cascade. |
 
-![Image of MAPK pathway and the chosen genes](images/mapk_pathway.png)
+![Image of MAPK pathway and the chosen genes](../img/pathway/mapk_pathway.png)
 
 ### JAK–STAT Signaling Pathway
 
@@ -67,8 +67,26 @@ transduction, cell growth, survival, and apoptosis regulation.
 | **BCL2** | Anti-apoptotic protein promoting cell survival. |
 | **PIAS** | Negative regulator that inhibits STAT signaling and limits pathway activation. |
 
-![Image of JAK-STAT pathway and the chosen genes](images/jak_stat_pathway.png)
+![Image of JAK-STAT pathway and the chosen genes](../img/pathway/jak_stat_pathway.png)
 
+This are genes we are moste intrested in for out research. But we need some reserves because our teacher of the lab wanted it. She asked about some housekeeping genes this are genes who expres normal when there is tumor tisue 
 
+We have some genes
+|Gene|Why|
+|----|---|
+|GAPDH| housekeeping gene|
+|B-actine| housekeeping gene|
+|PIK3CG| Imporant gene in PI3K-akt pathway|
+|B2M | housekeeping gene | 
+|CREB1| Gene for cell cycle, PI3K-Akt signaling pathway |
+|MAP3K14| It plays a crucial role in immune system regulation, MAPK signaling pathway |
+|ELK1| ternary complex factor,  MAPK signaling pathway |
+|CISH| In JAK-STAT signaling pathway|
+|PIK3CA | Imporant gene in PI3K-akt pathway|
+|ARID1a | a key tumor suppressor gene|
 
+Mean while there are some result of the lab that we show here
 
+![Before incubation with medicine en dsmo](../img/lab/PC2_before.jpeg)
+
+![After 17.5 hours incbartion time](../img/lab/PC2_Cells_after_17H.jpeg)
