@@ -71,9 +71,10 @@ transduction, cell growth, survival, and apoptosis regulation.
 
 This are genes we are moste intrested in for out research. But we need some reserves because our teacher of the lab wanted it. She asked about some housekeeping genes this are genes who expres normal when there is tumor tisue 
 
-We have some genes
+We have some more  genes
+
 |Gene|Why|
-|----|---|
+|------|-----|
 |GAPDH| housekeeping gene|
 |B-actine| housekeeping gene|
 |PIK3CG| Imporant gene in PI3K-akt pathway|
