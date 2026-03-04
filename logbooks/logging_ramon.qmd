@@ -149,19 +149,9 @@ We can continue with the mapping process after this dumping is done. We will sur
 
 ```{bash, eval=FALSE}
 
-cat /students/2025-2026/ros1_transcriptomics/SRA_GSE214715.sra | \
-    parallel 'STAR --runThreadN 6 ' \
-        '--genomeDir /students/2024-2025/Thema05/BlaasKanker/Transcriptomics/tools/star/index_GRCm39/ ' \
-        '--readFilesIn /students/2024-2025/Thema05/BlaasKanker/Transcriptomics/output/fastq/{}_1.fastq /students/2024-2025/Thema05/BlaasKanker/Transcriptomics/output/fastq/{}_2.fastq ' \
-        '--outSAMtype BAM SortedByCoordinate ' \
-        '--quantMode GeneCounts ' \
-        '--genomeLoad LoadAndRemove' \
-        '--limitBAMsortRAM 2000000000 ' \
-        '--outFileNamePrefix /students/2024-2025/Thema05/BlaasKanker/Transcriptomics/output/mapping/{}_mm39_star_'
-
 STAR --runThreadN 6 \
   --genomeDir /students/2025-2026/ros1_transcriptomics/genomes/hg38/index/ \
-  --readFilesIn /students/2025-2026/ros1_transcriptomics/GSE214715/fasta/SRR21789608_1.fastq /students/2025-2026/ros1_transcriptomics/GSE214715/fasta/SRR21789608_2.fastq \
+  --readFilesIn /students/2025-2026/ros1_transcriptomics/GSE214715/fasta/SRR21789608_12.fastq /students/2025-2026/ros1_transcriptomics/GSE214715/fasta/SRR21789608_2.fas2tq \
   --outSAMtype BAM SortedByCoordinate ' \
   '--quantMode GeneCounts ' \
   '--genomeLoad LoadAndRemove' \
