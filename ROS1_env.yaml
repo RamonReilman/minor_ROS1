@@ -1,0 +1,8 @@
+name: ROS1
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - python==3.13.3
+  - pip:
+      - snakemake==9.1.3

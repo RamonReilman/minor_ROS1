@@ -88,6 +88,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#gene-choices" id="toc-gene-choices" class="nav-link" data-scroll-target="#gene-choices">Gene choices</a></li>
   <li><a href="#primers" id="toc-primers" class="nav-link" data-scroll-target="#primers">Primers</a></li>
   </ul></li>
+  <li><a href="#transcriptomics" id="toc-transcriptomics" class="nav-link" data-scroll-target="#transcriptomics">Transcriptomics</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -483,6 +484,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>The same metrics exist for the <strong>reverse primer</strong></p>
 </section>
+</section>
+<section id="transcriptomics" class="level2">
+<h2 class="anchored" data-anchor-id="transcriptomics">Transcriptomics</h2>
+<p>We’ve gotten data from different research to prepare our pipeline for the sequencing data that will arrive in a couple of weeks. This data has been downloaded.</p>
+<p>Jasper and I are thinking of creating a snakemake pipeline to process our data, considering this; We will create a complete pipeline for transcriptomics, starting with the downloading of data - turning it into fasta files and even creating an indexed reference genome. All of these steps, and more will be found in this (and Jasper’s) logs.</p>
+<p>The first thing I want to do while we are waiting for the downloading of data is creating an indexed reference genome using STAR. We’ve done this before, so should not be that much of an effort.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> hallo i kben een object</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 </section>
 

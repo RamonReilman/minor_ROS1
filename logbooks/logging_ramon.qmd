@@ -116,3 +116,57 @@ The first couple of columns are about the **forward primer** starting with basic
 - 3\` self complementary, similar to the self complementary metric, but now specifically for the 3\` end. Naturally unwanted too, so the lower the better.
 
 The same metrics exist for the **reverse primer**
+
+## Transcriptomics
+
+We've gotten data from different research to prepare our pipeline for the sequencing data that will arrive in a couple of weeks. This data has been downloaded.
+
+Jasper and I are thinking of creating a snakemake pipeline to process our data, considering this; We will create a complete pipeline for transcriptomics, starting with the downloading of data - turning it into fasta files and even creating an indexed reference genome. All of these steps, and more will be found in this (and Jasper's) logs.
+
+The first thing I want to do while we are waiting for the downloading of data is creating an indexed reference genome using STAR. We've done this before, so should not be that much of an effort.
+
+```{bash, eval=FALSE}
+sbatch --partition=assemblix --job-name=hg38_index --ntasks=1 --cpus-per-task=32 --mem=300G --time=10:00:00 --wrap="/students/2025-2026/ros1_transcriptomics/bin/STAR_2.7.11b/Linux_x86_64/STAR --runThreadN 4 --runMode genomeGenerate --genomeDir /students/2025-2026/ros1_transcriptomics/genomes/hg38/index --genomeFastaFiles /students/2025-2026/ros1_transcriptomics/genomes/hg38/GCA_000001405.29_GRCh38.p14_genomic.fna --sjdbGTFfile /students/2025-2026/ros1_transcriptomics/genomes/hg38/GCA_000001405.29_GRCh38.p14_genomic.gtf --sjdbOverhang 75"
+```
+
+```{bash, eval=FALSE}
+sbatch --partition=assemblix --job-name=hg19_index --ntasks=1 --cpus-per-task=32 --mem=300G --time=10:00:00 --wrap="/students/2025-2026/ros1_transcriptomics/bin/STAR_2.7.11b/Linux_x86_64/STAR --runThreadN 4 --runMode genomeGenerate --genomeDir /students/2025-2026/ros1_transcriptomics/genomes/hg19/index --genomeFastaFiles /students/2025-2026/ros1_transcriptomics/genomes/hg19/GCA_000001405.14_GRCh37.p13_genomic.fna --sjdbGTFfile /students/2025-2026/ros1_transcriptomics/genomes/hg19/GCA_000001405.14_GRCh37.p13_genomic.gtf --sjdbOverhang 75"
+```
+
+Both the test data has been downloaded, and the genomes have been indexed. This means i will have to fasta-dump the sra files, and then afterwards map these.
+
+```{bash, eval=FALSE}
+find /students/2025-2026/ros1_transcriptomics/GSE214715/SRA -name "*.sra" | \
+  parallel fasterq-dump -O /students/2025-2026/ros1_transcriptomics/GSE214715j/fasta/ {} &
+```
+
+```{bash, eval=FALSE}
+find /students/2025-2026/ros1_transcriptomics/GSE239844/SRA -name "*.sra" | \
+  parallel fasterq-dump -O /students/2025-2026/ros1_transcriptomics/GSE239844/fasta/ {} &
+```
+
+We can continue with the mapping process after this dumping is done. We will sure star for this. I will do a singular test run on 2 fasta files, then afterwards i will implement STAR into snakemake and run it via that, it will be run in parallel, and will make a nice start to our pipeline. This pipeline will eventually be extended by a bit of quality control, but mostly R scripts to generate different plots and statistical results.
+
+```{bash, eval=FALSE}
+
+cat /students/2025-2026/ros1_transcriptomics/SRA_GSE214715.sra | \
+    parallel 'STAR --runThreadN 6 ' \
+        '--genomeDir /students/2024-2025/Thema05/BlaasKanker/Transcriptomics/tools/star/index_GRCm39/ ' \
+        '--readFilesIn /students/2024-2025/Thema05/BlaasKanker/Transcriptomics/output/fastq/{}_1.fastq /students/2024-2025/Thema05/BlaasKanker/Transcriptomics/output/fastq/{}_2.fastq ' \
+        '--outSAMtype BAM SortedByCoordinate ' \
+        '--quantMode GeneCounts ' \
+        '--genomeLoad LoadAndRemove' \
+        '--limitBAMsortRAM 2000000000 ' \
+        '--outFileNamePrefix /students/2024-2025/Thema05/BlaasKanker/Transcriptomics/output/mapping/{}_mm39_star_'
+
+STAR --runThreadN 6 \
+  --genomeDir /students/2025-2026/ros1_transcriptomics/genomes/hg38/index/ \
+  --readFilesIn /students/2025-2026/ros1_transcriptomics/GSE214715/fasta/SRR21789608_1.fastq /students/2025-2026/ros1_transcriptomics/GSE214715/fasta/SRR21789608_2.fastq \
+  --outSAMtype BAM SortedByCoordinate ' \
+  '--quantMode GeneCounts ' \
+  '--genomeLoad LoadAndRemove' \
+  '--limitBAMsortRAM 2000000000 ' \
+  '--outFileNamePrefix /students/2025-2026/ros1_transcriptomics/GSE214715/mapping/test_hg38_star_'
+  
+
+```

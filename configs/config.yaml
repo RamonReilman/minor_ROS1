@@ -1,2 +1,14 @@
 default:
   primer_data: "/home/redman/jaar3/minor/ros1/minor_ROS1/data/primer-pairs-showcase.txt"
+
+src_dir: "/students/2025-2026/ros1_transcriptomics"
+
+genomes:
+- "hg38"
+- "hg19"
+
+samples:
+- "GSE214715"
+- "GSE239844"
+
+
