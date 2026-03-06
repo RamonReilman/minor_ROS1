@@ -1,0 +1,5 @@
+name: STAR
+channels:
+  - bioconda
+  - conda-forge
+  
