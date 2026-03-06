@@ -98,8 +98,6 @@ install.packages(setdiff(packages, rownames(installed.packages())))
 
 ```{r}
 config <- config::get(file = "/home/redman/jaar3/minor/ros1/minor_ROS1/configs/config.yaml")
-
-
 ```
 
 ```{r}
@@ -151,12 +149,12 @@ We can continue with the mapping process after this dumping is done. We will sur
 
 STAR --runThreadN 6 \
   --genomeDir /students/2025-2026/ros1_transcriptomics/genomes/hg38/index/ \
-  --readFilesIn /students/2025-2026/ros1_transcriptomics/GSE214715/fasta/SRR21789608_12.fastq /students/2025-2026/ros1_transcriptomics/GSE214715/fasta/SRR21789608_2.fas2tq \
-  --outSAMtype BAM SortedByCoordinate ' \
-  '--quantMode GeneCounts ' \
-  '--genomeLoad LoadAndRemove' \
-  '--limitBAMsortRAM 2000000000 ' \
-  '--outFileNamePrefix /students/2025-2026/ros1_transcriptomics/GSE214715/mapping/test_hg38_star_'
+  --readFilesIn /students/2025-2026/ros1_transcriptomics/GSE214715/fasta/SRR21789608_1.fastq /students/2025-2026/ros1_transcriptomics/GSE214715/fasta/SRR21789608_2.fastq \
+  --outSAMtype BAM SortedByCoordinate  \
+  --quantMode GeneCounts  \
+  --genomeLoad LoadAndRemove \
+  --limitBAMsortRAM 20000000000 \
+  --outFileNamePrefix /students/2025-2026/ros1_transcriptomics/GSE214715/mapping/test_hg38_star_
   
 
 ```
