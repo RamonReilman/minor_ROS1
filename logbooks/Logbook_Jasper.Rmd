@@ -86,6 +86,51 @@ We have some more  genes
 |PIK3CA | Imporant gene in PI3K-akt pathway|
 |ARID1a | a key tumor suppressor gene|
 
+# End result for the genes 
+Here we have all the genes and in wich pathway they have influnece
+
+| Gen    | Forward primer (5'→3') | Reverse primer (5'→3') | Tm F (°C) | Tm R (°C) |Reason | 
+| ------ | ---------------------- | ---------------------- | --------- | --------- |-----|
+| GAPDH             | TGCACCACCAACTGCTTAGC   | GGCATGGACTGTGGTCATGAG  | 61.17     | 61.02     | Housekeeping gene|
+| ROS1 (exon 40–41) | GGATGGCTCCAGAAAGTTTG   | GGATAAGGCTGATGACCAAG   | 56.69     | 55.59     | Important because it is ros1|
+| ROS1              | TGTTGACGGGACACACAGAC   | GGTATCCCCAGTGCTCTGTC   | 60.18     | 59.53     | Important because it is ros1|
+
+## PI3K-akt pathway
+| Gen    | Forward primer (5'→3') | Reverse primer (5'→3') | Tm F (°C) | Tm R (°C) |Reason | 
+| ------ | ---------------------- | ---------------------- | --------- | --------- |-----|
+| PIK3CG            | ACCATGAAGGAAACCAGTCG   | GCCTTCATCTGCTCCACGTT   | 57.81     | 60.67     | Is an important gene that strats a lot|
+| CREB1             | GTGTGTTACGTGGGGGAGAG   | CTGCTGGCATAGATACCTGGG  | 60.04     | 60.00     | Downstream gene for gense survival|
+| MDM2              | TGGTGAGGAGCAGGCAAATG   | TGGCACGCCAAACAAATCTC   | 60.61     | 59.69     | Downstream gene for gense survival for p53 pathway|
+| GSK3B             | CTCAGGAGTGCGGGTCTTC    | AAGAGTGCAGGTGTGTCTCG   | 59.78     | 59.97     | Downstream gene that get stopt by PIK3CG|
+| TSC1              | AACCTGTAGCACACGTCCTG   | CCTGTCCAAGAGGTGCTTGT   | 59.97     | 59.89     | Gene for protein synthese|
+| TSC2              | CTGCGGTCCAATGTCCTCTT   | GACGTCTGTATCCTGCTGCG   | 60.04     | 60.87     |Gene for protein synthese|
+| DDIT4             | CTGTCCTCACCATGCCTAGC   | ATCCAGGTAAGCCGTGTCTTC  | 60.18     | 59.79     |Gene form other pathway that has influce in this pathway|
+
+## MAPK Signaling Pathway
+| Gen    | Forward primer (5'→3') | Reverse primer (5'→3') | Tm F (°C) | Tm R (°C) |
+| ------ | ---------------------- | ---------------------- | --------- | --------- |-----|
+| GRB2              | TGGGGACTTCTCCCTCTCTG   | GACGTATGTCGGCTGCTGTG   | 59.96     | 61.41     |First gene in this pathway after ros1|
+| MAP3K1            | CTCTTCCTTGCCGCCTCAC    | TTCTCCATCTCACGACCGGC   | 60.74     | 61.95     |Gene in the middle of the pathway|
+| MAPK14            | GCATAATGGCCGAGCTGTTG   | TCATGGCTTGGCATCCTGTT   | 59.97     | 59.96     | Downstream gene|
+| ELK1              | CCCGTCCGTGGCCTTATTTA   | CTCTGCATCCACCAGCTTGA   | 59.82     | 60.04     | Downstream gene has influnce on p53|
+| RPTOR             | CTGTCGGCATCTTCCCCTAC   | CGGTGTTCAGCTGGCATGT    | 59.89     | 60.97     | Down stream gene|
+
+## JAK–STAT Signaling Pathway
+| Gen    | Forward primer (5'→3') | Reverse primer (5'→3') | Tm F (°C) | Tm R (°C) |
+| ------ | ---------------------- | ---------------------- | --------- | --------- |-----|
+| TYK2              | GCTCAATGTAGTCCCAGCCTT  | AGACGTCAGCAAGATTGTGGG  | 60.07     | 60.61     | An early gene|
+| JAK2              | CTGGTCGCCCGATCTGTGTA   | TCAGAACATTTGCCGTCGC    | 61.66     | 59.13     | One of the firts genes|
+| PIAS3             | AGCTGGGCGAATTAAAGCACA  | TCATCTGGACACTAGGGGCA   | 60.89     | 59.96     | Influnce on dna|
+| CISH              | GGACATGGTCCTCTGCGTT    | CAAAGGACGAGGTCTGGGCA   | 59.70     | 62.11     | Stops Jak2|
+
+
+
+
+
+
+
+
+
 Mean while there are some result of the lab that we show here
 
 ![Before incubation with medicine en dsmo](../img/lab/PC2_before.jpeg)
