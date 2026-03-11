@@ -34,6 +34,13 @@ After speaking to the head of the labwork, we came to an agreement on primer des
 
 A list of genes will be created to be used for the qPCR. This list will be given by Jasper. I'm going to write a script that can download the sequences of DNA of these genes in fasta format.
 
+```{r}
+library(reticulate)
+Sys.setenv(RETICULATE_AUTOCREATE = "FALSE")
+use_condaenv("ROS1", required = TRUE)
+py_config()
+```
+
 ```{python}
 from Bio import Entrez
 ```
@@ -80,7 +87,7 @@ fasta_showcase
 ```
 
 ```{python}
-with open("../data/showcase.fasta", "w", encoding='utf-8') as f:
+with open("/students/2025-2026/ros1_transcriptomics/minor_ROS1/data/showcase.fasta", "w", encoding='utf-8') as f:
     f.write(fasta_showcase)
     
 ```
@@ -97,7 +104,7 @@ install.packages(setdiff(packages, rownames(installed.packages())))
 ```
 
 ```{r}
-config <- config::get(file = "/home/redman/jaar3/minor/ros1/minor_ROS1/configs/config.yaml")
+config <- config::get(file = "/students/2025-2026/ros1_transcriptomics/minor_ROS1/configs/config.yaml")
 ```
 
 ```{r}
@@ -158,3 +165,55 @@ STAR --runThreadN 6 \
   
 
 ```
+
+The results of STAR will end up as multiple read count files, i will create a script (functions defined below first) that will process these different counts, and replace the ensembl gene names with human readable gene names.
+
+```{r}
+config$src_dir
+
+```
+
+```{r}
+library(glue)
+
+## Function for reading in files
+read_sample <- function(file.name) {
+  ## Extract the sample name for naming the column (retaining the 'SRR....' part)
+  sample.name <- strsplit(file.name, ".", fixed = TRUE)[[1]][1]
+  sample <- read.table(file.name, header = FALSE, sep="\t", 
+                       row.names = NULL, skip = 4)
+  ## Rename the count column
+  names(sample)[2] <- sample.name
+  ## Return a subset containing the transcript ID and sample name columns
+  return(sample[c(1, 2)])
+}
+
+merge_counts <- function(genome, exp) {
+  setwd(glue("{src}/{exp}/mapping/{genome}/", src = config$src_dir, exp = exp, genome = genome))
+  file.names <- list.files('./', pattern = "*ReadsPerGene.out.tab")
+  counts <- read_sample(file.names[1])
+  
+  for (file.name in file.names[2:length(file.names)]) {
+  sample <- read_sample(file.name)
+  counts <- merge(counts, sample, by = 1)
+  }
+  rownames(counts) <- counts$V1
+  counts <- counts[-1]
+  return(counts)
+  
+}
+
+
+```
+```{r}
+genomes = c("hg19", "hg38")
+experiments = c("GSE214715", "GSE239844")
+for (exp in experiments) {
+  for (genome in genomes) {
+    counts <- merge_counts(genome, exp)
+  }
+}
+
+```
+
+

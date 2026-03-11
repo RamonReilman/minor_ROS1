@@ -3,14 +3,14 @@ default-resources:
   slurm_walltime: 86400
   slurm_partition: assemblix
   ntasks: 1
-  mem_mb: 30000
-  cpus_per_task: 1
+  mem_mb: 80000
+  cpus_per_task: 8
   runtime: 1440
   nodes: 1
   account: student
 set_resources:
-  slurm_extra: "'--latency_wait=600' '--mem={resources.mem_mb}M"
+  slurm_extra: "'--latency_wait=600' '--mem=80000M"
 
-jobs: 4
+jobs: 6 
 use-conda: True
 conda-frontend: conda
