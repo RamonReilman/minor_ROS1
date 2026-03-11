@@ -176,15 +176,12 @@ config$src_dir
 ```{r}
 library(glue)
 
-## Function for reading in files
 read_sample <- function(file.name) {
-  ## Extract the sample name for naming the column (retaining the 'SRR....' part)
   sample.name <- strsplit(file.name, ".", fixed = TRUE)[[1]][1]
   sample <- read.table(file.name, header = FALSE, sep="\t", 
                        row.names = NULL, skip = 4)
-  ## Rename the count column
   names(sample)[2] <- sample.name
-  ## Return a subset containing the transcript ID and sample name columns
+
   return(sample[c(1, 2)])
 }
 
@@ -216,4 +213,61 @@ for (exp in experiments) {
 
 ```
 
+The gene names resulting from this are Ensembl transcripts, i will use biomaRt to transcribe these and annotate these to readable gene names.
+```{r}
 
+library(biomaRt)
+
+```
+
+```{r}
+df <- data.frame(counts)
+
+```
+
+```{r}
+ensembl_ids <- gsub("\\..*$", "", rownames(df))
+
+ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+
+gene_info <- getBM(
+    attributes = c("ensembl_gene_id", "hgnc_symbol", "external_gene_name"),
+    filters = "ensembl_gene_id",
+    values = ensembl_ids,
+    mart = ensembl
+)
+
+
+```
+
+```{r}
+duplicates <- gene_info[duplicated(gene_info$ensembl_gene_id) | 
+                        duplicated(gene_info$ensembl_gene_id, fromLast = TRUE), ]
+
+# Sort to see them together
+duplicates <- duplicates[order(duplicates$ensembl_gene_id), ]
+head(duplicates, 10)
+```
+
+We see here that there are 2 duplicates happening, i will just use the unique version of the hgnc_symbol
+
+```{r}
+library(dplyr)
+
+gene_info_unique <- gene_info %>%
+  group_by(ensembl_gene_id) %>%
+  summarise(
+    hgnc_symbol = paste(unique(hgnc_symbol[!is.na(hgnc_symbol) & hgnc_symbol != ""]), 
+                       collapse = "/"),
+    external_gene_name = first(na.omit(external_gene_name))
+  ) %>%
+  ungroup()
+
+rownames(df) <- gene_info_unique
+```
+
+```{r}
+rownames(df) <- make.unique(gene_info$hgnc_symbol, sep = "_")
+```
+
+Now the gene symbols are set as the row names, i will turn this functionality in an R script so that it can be used in the snakemake pipeline.

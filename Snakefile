@@ -1,7 +1,7 @@
 configfile: "configs/config.yaml"
 
 EXPERIMENTS = config["samples"]
-print(EXPERIMENTS)
+
 
 SAMPLES = {
     exp: glob_wildcards(
@@ -10,22 +10,24 @@ SAMPLES = {
     for exp in EXPERIMENTS
 }
 
-print(SAMPLES)
+
 
 GENOMES = config["genomes"]
 
-print(GENOMES)
+
 
 rule all:
     input:
         [
             expand(
-                f'{config["src_dir"]}/{experiment}/mapping/{{genome}}/{{sample}}Aligned.sortedByCoord.out.bam',
+                f'{config["src_dir"]}/{exp}/counts/{{genome}}_counts.csv',
                 genome=GENOMES,
-                sample=SAMPLES[experiment],
+                sample=SAMPLES[exp]
             )
-            for experiment in EXPERIMENTS
+            for exp in EXPERIMENTS
         ]
+
+
 
 rule STAR:
     input:
@@ -33,7 +35,7 @@ rule STAR:
         r2 = f'{config["src_dir"]}/{{experiment}}/fasta/{{sample}}_2.fastq',
         index = f'{config["src_dir"]}/genomes/{{genome}}/index/'
     output:
-        bam = f'{config["src_dir"]}/{{experiment}}/mapping/{{genome}}/{{sample}}Aligned.sortedByCoord.out.bam'
+        bam = f'{config["src_dir"]}/{{experiment}}/mapping/{{genome}}/{{sample}}ReadsPerGene.out.tab'
     params:
         tmpdir = lambda wildcards: f'{config["src_dir"]}/tmp/STAR_{wildcards.sample}_{wildcards.genome}'
     log:
@@ -51,3 +53,11 @@ rule STAR:
             --outFileNamePrefix {config[src_dir]}/{wildcards.experiment}/mapping/{wildcards.genome}/{wildcards.sample}
             2> {log.stderr}
         """
+rule preprocess_counts:
+    input:
+        folder = f'{config["src_dir"]}/{{experiment}}/mapping/{{genome}}'
+    output:
+        output = f'{config["src_dir"]}/{{experiment}}/counts/{{genome}}_counts.csv'
+
+    shell:
+        "Rscript /students/2025-2026/ros1_transcriptomics/minor_ROS1/scripts/R/preprocess_counts.R --input {input.folder} --output {output.output}"
