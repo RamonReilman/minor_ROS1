@@ -136,3 +136,158 @@ Mean while there are some result of the lab that we show here
 ![Before incubation with medicine en dsmo](../img/lab/PC2_before.jpeg)
 
 ![After 17.5 hours incbartion time](../img/lab/PC2_Cells_after_17H.jpeg)
+
+# Data analysis
+
+Now we are going to do an analysis on data from two different studies that are provided by our supervisor. This data you can compare with our data so if we can make an beautiful little pipeline, we can make an snakemake pipeline and when the data arrives we can put this data in our pipeline.
+
+The use of star and annotaion of the data is done by Ramon 
+
+I maded the coldata for the two data sets so we can do desseq2 with the data. 
+
+I am going to work with the data from GSE214715. In this study they are working with the human genome h19.. So we are going to do desseq2 once for h19 and one time with the h38 so we can see the difference in results.
+
+So first we need to read the data in. 
+
+```{r}
+coldata <- read.csv("/students/2025-2026/ros1_transcriptomics/GSE214715/col_data/coldata.csv",sep = ";")
+
+coldata
+```
+
+```{r}
+count_data_hg19 <- read.csv("/students/2025-2026/ros1_transcriptomics/GSE214715/counts/hg19_counts.csv", row.names = 1)
+head(count_data_hg19)
+```
+
+```{r}
+count_data_hg38 <- read.csv("/students/2025-2026/ros1_transcriptomics/GSE214715/counts/hg38_counts.csv",row.names = 1)
+head(count_data_hg38)
+```
+
+```{r, results='hide', message=FALSE}
+library("DESeq2")
+```
+
+
+```{r, results='hide', message=FALSE}
+dds_hg19 <- DESeqDataSetFromMatrix(countData = count_data_hg19, 
+                              colData = coldata, 
+                              design = ~ treatment)
+dds_hg19 <- DESeq(dds_hg19)
+res_hg19 <- results(dds_hg19)
+```
+
+```{r, results='hide', message=FALSE}
+dds_hg38 <- DESeqDataSetFromMatrix(countData = count_data_hg38, 
+                              colData = coldata, 
+                              design = ~ treatment)
+dds_hg38 <- DESeq(dds_hg38)
+res_hg38 <- results(dds_hg38)
+```
+## Plots 
+###hg 19
+
+```{r}
+plotMA(res_hg19)
+```
+
+```{r}
+res_df_h19 <- as.data.frame(res_hg19)
+res_df_h19$gene <- rownames(res_df_h19)
+head(res_df_h19)
+```
+
+```{r, results='hide', message=FALSE}
+library(ggplot2)
+library(dplyr)
+
+res_df_h19 <- res_df_h19 %>%
+  mutate(significant = ifelse(padj < 0.05, "yes", "no"))
+
+
+top_genes <- res_df_h19 %>%
+  filter(!is.na(padj)) %>%
+  arrange(padj) %>%
+  slice(1:10)
+
+
+ggplot(res_df_h19, aes(x = log2FoldChange, y = -log10(pvalue))) +
+  geom_point(aes(color = significant), alpha = 0.6) +
+  scale_color_manual(values = c("no" = "grey", "yes" = "red")) +
+  geom_text(data = top_genes,
+            aes(label = gene),
+            vjust = -1,
+            size = 3.5) +
+  theme_minimal() +
+  labs(title = "Volcano plot DESeq2",
+       x = "log2 Fold Change",
+       y = "-log10(p-value)") 
+```
+```{r}
+rld_hg19 <- rlog(dds_hg19, blind=TRUE)
+```
+
+```{r}
+
+pcaData_hg19 <- plotPCA(rld_hg19, intgroup = c("genotype","treatment"), returnData = TRUE)
+percentVar <- round(100 * attr(pcaData_hg19, "percentVar"))
+# Plot with ggplot2
+ggplot(pcaData_hg19, aes(x=PC1, y=PC2, color=treatment, shape = genotype)) +
+  geom_point(size=3) +
+  xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+  ylab(paste0("PC2: ", percentVar[2], "% variance")) +
+  theme_bw() +
+  ggtitle("PCA of DESeq2 data HG19")
+```
+
+
+### HG 38
+
+```{r}
+res_df_h38 <- as.data.frame(res_hg38)
+res_df_h38$gene <- rownames(res_df_h38)
+head(res_df_h38)
+```
+
+```{r}
+res_df_h38 <- res_df_h38 %>%
+  mutate(significant = ifelse(padj < 0.05, "yes", "no"))
+
+
+top_genes <- res_df_h38 %>%
+  filter(!is.na(padj)) %>%
+  arrange(padj) %>%
+  slice(1:10)
+
+top_genes
+ggplot(res_df_h38, aes(x = log2FoldChange, y = -log10(pvalue))) +
+  geom_point(aes(color = significant), alpha = 0.6) +
+  scale_color_manual(values = c("no" = "grey", "yes" = "red")) +
+  geom_text(data = top_genes,
+            aes(label = gene),
+            vjust = -1,
+            size = 3.5) +
+  theme_minimal() +
+  labs(title = "Volcano plot DESeq2",
+       x = "log2 Fold Change",
+       y = "-log10(p-value)") 
+```
+
+```{r}
+rld_hg38 <- rlog(dds_hg38, blind=TRUE)
+```
+
+```{r}
+
+pcaData_hg38 <- plotPCA(rld_hg38, intgroup = c("genotype","treatment"), returnData = TRUE)
+percentVar <- round(100 * attr(pcaData_hg38, "percentVar"))
+# Plot with ggplot2
+ggplot(pcaData_hg38, aes(x=PC1, y=PC2, color=treatment, shape = genotype)) +
+  geom_point(size=3) +
+  xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+  ylab(paste0("PC2: ", percentVar[2], "% variance")) +
+  theme_bw() +
+  ggtitle("PCA of DESeq2 data HG38")
+```
+
