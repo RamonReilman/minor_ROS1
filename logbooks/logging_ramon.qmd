@@ -5,7 +5,7 @@ format:
     toc-location: left
     df-print: kable
 execute:
-  echo: true
+  echo: false
 ---
 
 # Logging ROS1 medicational research
@@ -104,7 +104,8 @@ install.packages(setdiff(packages, rownames(installed.packages())))
 ```
 
 ```{r}
-config <- config::get(file = "/students/2025-2026/ros1_transcriptomics/minor_ROS1/configs/config.yaml")
+library(yaml)
+config <- read_yaml("/students/2025-2026/ros1_transcriptomics/minor_ROS1/configs/config.yaml")
 ```
 
 ```{r}
@@ -162,6 +163,19 @@ STAR --runThreadN 6 \
   --genomeLoad LoadAndRemove \
   --limitBAMsortRAM 20000000000 \
   --outFileNamePrefix /students/2025-2026/ros1_transcriptomics/GSE214715/mapping/test_hg38_star_
+  
+
+```
+
+```{bash, eval=FALSE}
+
+STAR --runThreadN 8 \
+  --genomeDir /students/2025-2026/ros1_transcriptomics/genomes/hg38/index/ \
+  --readFilesIn /students/2025-2026/ros1_transcriptomics/GSE239844/fasta/SRR25486700_1.fastq /students/2025-2026/ros1_transcriptomics/GSE239844/fasta/SRR25486700_2.fastq \
+  --outSAMtype BAM SortedByCoordinate  \
+  --quantMode GeneCounts  \
+  --genomeLoad NoSharedMemory \
+  --outFileNamePrefix /students/2025-2026/ros1_transcriptomics/GSE239844/mapping/hg38/SRR25486700
   
 
 ```
@@ -263,11 +277,189 @@ gene_info_unique <- gene_info %>%
   ) %>%
   ungroup()
 
-rownames(df) <- gene_info_unique
+
+merge_counts_with_symbols <- function(counts, gene_info_unique) {
+  ensembl_ids <- gsub("\\..*$", "", rownames(counts))
+  
+  counts_df <- data.frame(
+    ensembl_gene_id = ensembl_ids,
+    counts,
+    row.names = NULL
+  )
+  
+  merged_df <- merge(
+    counts_df,
+    gene_info_unique[, c("ensembl_gene_id", "hgnc_symbol")],
+    by = "ensembl_gene_id",
+    all.x = TRUE
+  )
+  
+  merged_df$hgnc_symbol[is.na(merged_df$hgnc_symbol)] <- 
+    merged_df$ensembl_gene_id[is.na(merged_df$hgnc_symbol)]
+  
+  merged_df$hgnc_symbol[merged_df$hgnc_symbol == ""] <- 
+    merged_df$ensembl_gene_id[merged_df$hgnc_symbol == ""]
+  
+  rownames(merged_df) <- make.unique(merged_df$hgnc_symbol, sep = "_")
+  
+  final_counts <- merged_df[, !names(merged_df) %in% c("ensembl_gene_id", "hgnc_symbol")]
+  
+  return(final_counts)
+}
+
 ```
 
 ```{r}
-rownames(df) <- make.unique(gene_info$hgnc_symbol, sep = "_")
+counts <- merge_counts_with_symbols(df, gene_info_unique)
 ```
 
 Now the gene symbols are set as the row names, i will turn this functionality in an R script so that it can be used in the snakemake pipeline.
+
+## DESEQ2
+
+So now that we have the counts data ready, merged and annotated, we can start working on the actual analysis. Both me and Jasper will work on the experiments respectively, which means that I will be working on GSE23. The analyses will be done using deseq2, as we both have done before. Our plan for this is to create different functionalities that can be used in the snakemake pipeline, so that when we eventually get our data, we will be able to generate results rather fast in 1 go.
+
+```{r}
+library(DESeq2)
+
+```
+
+
+```{r}
+
+data <- read.csv2(paste0(config$counts_dir, "/hg38_counts.csv"), sep = ",", row.names = 1)
+col_data <- read.csv2(config$col_data, sep = ";")
+rownames(col_data) <- col_data[,1]
+col_data$treatment <- factor(col_data$treatment, levels = c("DMSO", "250 nM crizotinib"))
+head(data)
+```
+
+This is the count data for the GSE23 experiment, mapped to the hg38 human genome. There is also another file being loaded in; The column data file.
+
+```{r}
+head(col_data)
+```
+
+This contains information about the different samples. To select certain samples or groups of samples i will generate masks for all possible assay and treatment combination. First i will make sure that the order of the columns of the count data is the same as the Run column in the col_data
+
+
+```{r}
+data <- data[, rownames(col_data)]
+all(rownames(col_data) == colnames(data))
+```
+
+This means that all of the rownames of the coldata is alligned with the colname of the counts data. Which means I can now generate masks for the different groups, i will also rename the SRR reads so that they're named after the assay type and treatment
+
+```{r}
+col_data <- col_data %>%
+  dplyr::group_by(Assay.Type, treatment) %>%
+  dplyr::mutate(r_num = row_number()) %>%
+  dplyr::ungroup() %>%
+  mutate(condition = paste0(Assay.Type, "_", treatment, "_r", r_num))
+
+head(col_data)
+
+```
+
+This will make it more readable what every point is, including which one of the tripples it is.
+
+```{r}
+for (i in 1:nrow(col_data)) {
+  idx <- grep(col_data$Run[i], names(data))
+  names(data)[idx] <- col_data$condition[i]
+}
+```
+
+
+```{r}
+head(data)
+
+```
+
+Now the names of the SRR files align with more readable names, we can now seperate them into groups
+
+```{r}
+HCC78_crizo <- grep("HCC78_250 nM crizotinib", names(data))
+HCC78_DMSO <- grep("HCC78_DMSO", names(data))
+
+CUTO38_crizo <- grep("CUTO38_250 nM crizotinib", names(data))
+CUTO38_DMSO <- grep("CUTO38_DMSO", names(data))
+
+CUTO37_crizo <- grep("CUTO37_250 nM crizotinib", names(data))
+CUTO37_DMSO <- grep("CUTO37_DMSO", names(data))
+
+CUTO33_crizo <- grep("CUTO33_250 nM crizotinib", names(data))
+CUTO33_DMSO <- grep("CUTO33_DMSO", names(data))
+
+CUTO28_crizo <- grep("CUTO28_250 nM crizotinib", names(data))
+CUTO28_DMSO <- grep("CUTO28_DMSO", names(data))
+
+CUTO27_crizo <- grep("CUTO27_250 nM crizotinib", names(data))
+CUTO27_DMSO <- grep("CUTO27_DMSO", names(data))
+
+CUTO23_crizo <- grep("CUTO23_250 nM crizotinib", names(data))
+CUTO23_DMSO <- grep("CUTO23_DMSO", names(data))
+```
+
+Now we can start with DESEQ, finally.
+
+```{r deseq-analysis, cache=TRUE}
+dds <- DESeqDataSetFromMatrix(countData = data,
+                              colData = col_data,
+                              design = ~ Assay.Type + treatment)
+
+dds <- DESeq(dds)
+```
+
+With this we can do a Differential Expression Analysis
+
+### Differential Expression Analysis
+
+
+```{r}
+res <- results(dds, contrast=c("treatment", "250 nM crizotinib", "DMSO"))
+
+res
+
+```
+
+This is the result of comparing the treatments (either no treatment or 250 nM of crizotinib). I need to shrink the log fold change, this is usefull for the visualisations.
+
+```{r}
+
+print(resultsNames(dds))
+resLFC <- lfcShrink(dds, coef = "treatment_250.nM.crizotinib_vs_DMSO", type = "apeglm")
+```
+
+
+```{r}
+vsd <- vst(dds, blind = F)
+pcaData <- plotPCA(vsd, intgroup= c("Assay.Type", "treatment"), returnData=T)
+
+```
+
+I want to generate a PCA plot to look at the different samples, and see if they align or if there are any outliers. I will do this using the given PCA data from deseq2 and generating a PCA plot from this using ggplot.
+
+```{r}
+library(ggplot2)
+```
+Before I do that, i will take a peak at the given PCA data:
+```{r}
+head(pcaData)
+```
+
+Here we see a couple of different interesting things:
+- The 2 PCA values used for plotting
+- It also stores the treatment, assay-types and triplo-number.
+
+```{r}
+percentVar <- round(100 * attr(pcaData, "percentVar"))
+
+ggplot(pcaData, aes(PC1, PC2, color = Assay.Type, shape = treatment)) +
+  geom_point(size = 3) +
+  xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+  ylab(paste0("PC2: ", percentVar[2], "% variance"))
+
+```
+
+Interesting is that some of the cell types like CUTO23 and 33 don't seem to respond to the treatments, as they are all clustered very tightly around 1 area. We see a clearer seperation with CUTO 38 and CUTO 27. 

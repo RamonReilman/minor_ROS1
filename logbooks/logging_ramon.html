@@ -20,41 +20,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -90,6 +55,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#primers" id="toc-primers" class="nav-link" data-scroll-target="#primers">Primers</a></li>
   </ul></li>
   <li><a href="#transcriptomics" id="toc-transcriptomics" class="nav-link" data-scroll-target="#transcriptomics">Transcriptomics</a></li>
+  <li><a href="#deseq2" id="toc-deseq2" class="nav-link" data-scroll-target="#deseq2">DESEQ2</a>
+  <ul class="collapse">
+  <li><a href="#differential-expression-analysis" id="toc-differential-expression-analysis" class="nav-link" data-scroll-target="#differential-expression-analysis">Differential Expression Analysis</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -127,10 +96,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>A list of genes will be created to be used for the qPCR. This list will be given by Jasper. I’m going to write a script that can download the sequences of DNA of these genes in fasta format.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(reticulate)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">RETICULATE_AUTOCREATE =</span> <span class="st">"FALSE"</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">use_condaenv</span>(<span class="st">"ROS1"</span>, <span class="at">required =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">py_config</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>python:         /homes/rreilman/miniforge3/envs/ROS1/bin/python
 libpython:      /homes/rreilman/miniforge3/envs/ROS1/lib/libpython3.10.so
@@ -143,51 +108,24 @@ NOTE: Python version was forced by use_python() function</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Bio <span class="im">import</span> Entrez</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>Entrez.email <span class="op">=</span> <span class="st">"r.reilman@st.hanze.nl"</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>databases <span class="op">=</span> Entrez.einfo()</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(Entrez.read(databases))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>{'DbList': ['pubmed', 'protein', 'nuccore', 'ipg', 'nucleotide', 'structure', 'genome', 'annotinfo', 'assembly', 'bioproject', 'biosample', 'blastdbinfo', 'books', 'cdd', 'clinvar', 'gap', 'gapplus', 'grasp', 'dbvar', 'gene', 'gds', 'geoprofiles', 'medgen', 'mesh', 'nlmcatalog', 'omim', 'orgtrack', 'pmc', 'proteinclusters', 'pcassay', 'protfam', 'pccompound', 'pcsubstance', 'seqannot', 'snp', 'sra', 'taxonomy', 'biocollections', 'gtr']}</code></pre>
 </div>
 </div>
 <p>This contains a list of the different databases that can be accessed, we want to use the gene database to get the nucleotide sequences</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>handle <span class="op">=</span> Entrez.esearch(db<span class="op">=</span><span class="st">"nucleotide"</span>, term<span class="op">=</span><span class="st">"GRB2[gene] AND biomol_mrna[PROP] AND srcdb_refseq[PROP] AND human[ORGN]"</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>idlist <span class="op">=</span> Entrez.read(handle)[<span class="st">"IdList"</span>]</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>handle2 <span class="op">=</span> Entrez.efetch(db<span class="op">=</span><span class="st">"nucleotide"</span>, <span class="bu">id</span><span class="op">=</span>idlist, rettype<span class="op">=</span><span class="st">"gb"</span>, retmode<span class="op">=</span><span class="st">"text"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Bio <span class="im">import</span> SeqIO</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>seqs <span class="op">=</span> <span class="st">""</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>header <span class="op">=</span> <span class="st">""</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> seqq <span class="kw">in</span> SeqIO.parse(handle2, <span class="st">"gb"</span>):</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">"transcript variant 1"</span> <span class="kw">in</span> seqq.description.lower():</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        header <span class="op">=</span> seqq.<span class="bu">id</span> <span class="op">+</span> <span class="st">"_"</span> <span class="op">+</span> seqq.annotations[<span class="st">"source"</span>]</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        seqs <span class="op">=</span> seqq.seq</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
 <p>This outputs many sequences for possibly the same gene, i want to check if they are the same sequences or not.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>header</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>'NM_002086.5_Homo sapiens (human)'</code></pre>
 </div>
 </div>
 <p>All sequences are equal to eachother, so the first can be used. These can be turned into a multifasta format</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fasta_showcase <span class="op">=</span> <span class="ss">f"&gt;</span><span class="sc">{</span>header<span class="sc">}</span><span class="ch">\n</span><span class="sc">{</span>seqs<span class="sc">}</span><span class="ss">"</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>fasta_showcase</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>'&gt;NM_002086.5_Homo sapiens (human)\nAGCCAGGAGGTATTGCTGCTTCGGCGACCGGGCGGCGGCAGCGGCGGCGGCGGCTGTGGCAGAGTCTGTGCCTGTGGCGGTGACGGCGGCGGGAGCAAGCGCTGCCCTCGCAGAGCAGCCTTGGGGTCGCCGGCCGCTCGCAGCGTTGTGGAGGGGCGGGCCGGACGCTGAGCGGAGCAGCTGCGCCACGGGTGGCATTGTGTGTCCCAGAGTGCCGGAGCGAGTCCCAGAAGAGAGGCGAGGCTAAGCCCAGAGCGCTGGGTTGCTTCAGCAGGGAAGACTCCCTTCCCCCTGCTTCAGGCTGCTGAGCACTGAGCAGCGCTCAGAATGGAAGCCATCGCCAAATATGACTTCAAAGCTACTGCAGACGACGAGCTGAGCTTCAAAAGGGGGGACATCCTCAAGGTTTTGAACGAAGAATGTGATCAGAACTGGTACAAGGCAGAGCTTAATGGAAAAGACGGCTTCATTCCCAAGAACTACATAGAAATGAAACCACATCCGTGGTTTTTTGGCAAAATCCCCAGAGCCAAGGCAGAAGAAATGCTTAGCAAACAGCGGCACGATGGGGCCTTTCTTATCCGAGAGAGTGAGAGCGCTCCTGGGGACTTCTCCCTCTCTGTCAAGTTTGGAAACGATGTGCAGCACTTCAAGGTGCTCCGAGATGGAGCCGGGAAGTACTTCCTCTGGGTGGTGAAGTTCAATTCTTTGAATGAGCTGGTGGATTATCACAGATCTACATCTGTCTCCAGAAACCAGCAGATATTCCTGCGGGACATAGAACAGGTGCCACAGCAGCCGACATACGTCCAGGCCCTCTTTGACTTTGATCCCCAGGAGGATGGAGAGCTGGGCTTCCGCCGGGGAGATTTTATCCATGTCATGGATAACTCAGACCCCAACTGGTGGAAAGGAGCTTGCCACGGGCAGACCGGCATGTTTCCCCGCAATTATGTCACCCCCGTGAACCGGAACGTCTAAGAGTCAAGAAGCAATTATTTAAAGAAAGTGAAAAATGTAAAACACATACAAAAGAATTAAACCCACAAGCTGCCTCTGACAGCAGCCTGTGAGGGAGTGCAGAACACCTGGCCGGGTCACCCTGTGACCCTCTCACTTTGGTTGGAACTTTAGGGGGTGGGAGGGGGCGTTGGATTTAAAAATGCCAAAACTTACCTATAAATTAAGAAGAGTTTTTATTACAAATTTTCACTGCTGCTCCTCTTTCCCCTCCTTTGTCTTTTTTTTCATCCTTTTTTCTCTTCTGTCCATCAGTGCATGACGTTTAAGGCCACGTATAGTCCTAGCTGACGCCAATAATAAAAAACAAGAAACCAAGTGGGCTGGTATTCTCTCTATGCAAAATGTCTGTTTTAGTTGGAATGACTGAAAGAAGAACAGCTGTTCCTGTGTTCTTCGTATATACACACAAAAAGGAGCGGGCAGGGCCGCTCGATGCCTTTGCTGTTTAGCTTCCTCCAGAGGAGGGGACTTGTAGGAATCTGCCTTCCAGCCCAGACCCCCAGTGTATTTTGTCCAAGTTCACAGTAGAGTAGGGTAGAAGGAAAGCATGTCTCTGCTTCCATGGCTTCCTGAGAAAGCCCACCTGGGCTGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCAAGGTGGGCGGATCACAAGGTCAGGAGTTCGAGACCAACCTAGCCAACATGGTGAAACCCCGTCTCTACTAAAAATAAGAAATTAGCCGGGTGTGGCACGCACCTGTAGTCCCAGCTACTTGGGAGCCTGAGGCAGGAGAATCGCTTGAACCTGGGAAGTGGAGGTTGAGTGAGCCGGGACCGTGCCATTGTACTCCAGCCTGGGTGACAGAGCGAGATTCCGTCTCAAAAAAAAAAAAAAAAAGCCCACCTGAAAGCCTGTCTCTTTCCACTTTGTTGGCCCTTCCAGTGGGATTATCGAGCATGTTGTTTTTTCATAGTGCCTTTTTCCTTATTTCAAGGGTTGCTTCTGAGTGGTGTTTTTTTTTTTTTTTTAATTTGTTTTGTTTTAAAATAAGTTAAAGGCAGTCCAGAGCTTTTCAGCCAATTTGTCTCCTACTCTGTGTAAATATTTTTCCCTCCGGGCAGGGGAGCCAGGGTAGAGCAAAGGAGACAAAGCAGGAGTGGAAGGTGAGGCGTTCTCCTGCTTGTACTAAGCCAGGAGGCTTTAAGCTCCAGCTTTAAGGGTTGTGAGCCCCTTGGGGGTTCAGGGAACTGCTTGCCCAGGGTGCAGTGTGAGTGTGATGGGCCACCGGGGCAAGAGGGAAGGTGACCGCCCAGCTCTCCCACATCCCACTGGATCTGGCTTACAGGGGGGTCGGAAGCCTGTCCTCACCGTCTCGGGGGTTGTGGCCCCCGCCCCCTCCCTATATGCACCCCTGGAACCAGCAAGTCCCAGACAAGGAGAGCGGAGGAGGAAGTCATGGGAACGCAGCCTCCAGTTGTAGCAGGTTTCACTATTCCTATGCTGGGGTACACAGTGAGAGTACTCACTTTTCACTTGTCTTGCTCTTAGATTGGGCCATGGCTTTCATCCTGTGTCCCCTGACCTGTCCAGGTGAGTGTGAGGGCAGCACTGGGAAGCTGGAGTGCTGCTTGTGCCTCCCTTCCCAGTGGGCTGTGTTGACTGCTGCTCCCCACCCCTACCGATGGTCCCAGGAAGCAGGGAGAGTTGGGGAAGGCAAGATTGGAAAGACAGGAAGACCAAGGCCTCGGCAGAACTCTCTGTCTTCTCTCCACTTCTGGTCCCCTGTGGTGATGTGCCTGTAATCTTTTTCTCCACCCAAACCCCTTCCCACGACAAAAACAAGACTGCCTCCCTCTCTTCCGGGAGCTGGTGACAGCCTTGGGCCTTTCAGTCCCAAAGCGGCCGATGGGAGTCTCCCTCCGACTCCAGATATGAACAGGGCCCAGGCCTGGAGCGTTTGCTGTGCCAGGAGGCGGCAGCTCTTCTGGGCAGAGCCTGTCCCCGCCTTCCCTCACTCTTCCTCATCCTGCTTCTCTTTTCCTCGCAGATGATAAAAGGAATCTGGCATTCTACACCTGGACCATTTGATTGTTTTATTTTGGAATTGGTGTATATCATGAAGCCTTGCTGAACTAAGTTTTGTGTGTATATATTTAAAAAAAAAATCAGTGTTTAAATAAAGACCTATGTACTTAATCCTTTAACTCTGCGGATAGCATTTGGTAGGTAGTGATTAACTGTGAATAATAAATACACAATGAATTCTTCA'</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"/students/2025-2026/ros1_transcriptomics/minor_ROS1/data/showcase.fasta"</span>, <span class="st">"w"</span>, encoding<span class="op">=</span><span class="st">'utf-8'</span>) <span class="im">as</span> f:</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    f.write(fasta_showcase)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>3307</code></pre>
 </div>
@@ -196,20 +134,11 @@ NOTE: Python version was forced by use_python() function</code></pre>
 <p>These fasta files will be pulled as the mRNA variant 1 transcripts of the genes, the GRB2 variant 1 page can be found <a href="https://www.ncbi.nlm.nih.gov/nuccore/NM_002086.5">here</a></p>
 <p>We can design primers for these sequences using primer blast. Which takes some parameters to create these primers. I’m going to do a test-run with the fasta file generated above. I will load in these primers, with the selected parameters and discus the output of primer blast.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>packages <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"config"</span>)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">setdiff</span>(packages, <span class="fu">rownames</span>(<span class="fu">installed.packages</span>())))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>config <span class="ot">&lt;-</span> config<span class="sc">::</span><span class="fu">get</span>(<span class="at">file =</span> <span class="st">"/students/2025-2026/ros1_transcriptomics/minor_ROS1/configs/config.yaml"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>primer_data <span class="ot">&lt;-</span> <span class="fu">read.csv2</span>(config<span class="sc">$</span>primer_data, <span class="at">sep =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in read.table(file = file, header = header, sep = sep, quote = quote, :
 incomplete final line found by readTableHeader on
 '/students/2025-2026/ros1_transcriptomics/minor_ROS1/data/showcase.fasta'</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>primer_data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="caption-top table table-sm table-striped small">
@@ -245,80 +174,1363 @@ incomplete final line found by readTableHeader on
 <p>We’ve gotten data from different research to prepare our pipeline for the sequencing data that will arrive in a couple of weeks. This data has been downloaded.</p>
 <p>Jasper and I are thinking of creating a snakemake pipeline to process our data, considering this; We will create a complete pipeline for transcriptomics, starting with the downloading of data - turning it into fasta files and even creating an indexed reference genome. All of these steps, and more will be found in this (and Jasper’s) logs.</p>
 <p>The first thing I want to do while we are waiting for the downloading of data is creating an indexed reference genome using STAR. We’ve done this before, so should not be that much of an effort.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> <span class="at">--partition</span><span class="op">=</span>assemblix <span class="at">--job-name</span><span class="op">=</span>hg38_index <span class="at">--ntasks</span><span class="op">=</span>1 <span class="at">--cpus-per-task</span><span class="op">=</span>32 <span class="at">--mem</span><span class="op">=</span>300G <span class="at">--time</span><span class="op">=</span>10:00:00 <span class="at">--wrap</span><span class="op">=</span><span class="st">"/students/2025-2026/ros1_transcriptomics/bin/STAR_2.7.11b/Linux_x86_64/STAR --runThreadN 4 --runMode genomeGenerate --genomeDir /students/2025-2026/ros1_transcriptomics/genomes/hg38/index --genomeFastaFiles /students/2025-2026/ros1_transcriptomics/genomes/hg38/GCA_000001405.29_GRCh38.p14_genomic.fna --sjdbGTFfile /students/2025-2026/ros1_transcriptomics/genomes/hg38/GCA_000001405.29_GRCh38.p14_genomic.gtf --sjdbOverhang 75"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> <span class="at">--partition</span><span class="op">=</span>assemblix <span class="at">--job-name</span><span class="op">=</span>hg19_index <span class="at">--ntasks</span><span class="op">=</span>1 <span class="at">--cpus-per-task</span><span class="op">=</span>32 <span class="at">--mem</span><span class="op">=</span>300G <span class="at">--time</span><span class="op">=</span>10:00:00 <span class="at">--wrap</span><span class="op">=</span><span class="st">"/students/2025-2026/ros1_transcriptomics/bin/STAR_2.7.11b/Linux_x86_64/STAR --runThreadN 4 --runMode genomeGenerate --genomeDir /students/2025-2026/ros1_transcriptomics/genomes/hg19/index --genomeFastaFiles /students/2025-2026/ros1_transcriptomics/genomes/hg19/GCA_000001405.14_GRCh37.p13_genomic.fna --sjdbGTFfile /students/2025-2026/ros1_transcriptomics/genomes/hg19/GCA_000001405.14_GRCh37.p13_genomic.gtf --sjdbOverhang 75"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
 <p>Both the test data has been downloaded, and the genomes have been indexed. This means i will have to fasta-dump the sra files, and then afterwards map these.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> /students/2025-2026/ros1_transcriptomics/GSE214715/SRA <span class="at">-name</span> <span class="st">"*.sra"</span> <span class="kw">|</span> <span class="dt">\</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">parallel</span> fasterq-dump <span class="at">-O</span> /students/2025-2026/ros1_transcriptomics/GSE214715j/fasta/ {} <span class="kw">&amp;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> /students/2025-2026/ros1_transcriptomics/GSE239844/SRA <span class="at">-name</span> <span class="st">"*.sra"</span> <span class="kw">|</span> <span class="dt">\</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">parallel</span> fasterq-dump <span class="at">-O</span> /students/2025-2026/ros1_transcriptomics/GSE239844/fasta/ {} <span class="kw">&amp;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
 <p>We can continue with the mapping process after this dumping is done. We will sure star for this. I will do a singular test run on 2 fasta files, then afterwards i will implement STAR into snakemake and run it via that, it will be run in parallel, and will make a nice start to our pipeline. This pipeline will eventually be extended by a bit of quality control, but mostly R scripts to generate different plots and statistical results.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="ex">STAR</span> <span class="at">--runThreadN</span> 6 <span class="dt">\</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--genomeDir</span> /students/2025-2026/ros1_transcriptomics/genomes/hg38/index/ <span class="dt">\</span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--readFilesIn</span> /students/2025-2026/ros1_transcriptomics/GSE214715/fasta/SRR21789608_1.fastq /students/2025-2026/ros1_transcriptomics/GSE214715/fasta/SRR21789608_2.fastq <span class="dt">\</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--outSAMtype</span> BAM SortedByCoordinate  <span class="dt">\</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--quantMode</span> GeneCounts  <span class="dt">\</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--genomeLoad</span> LoadAndRemove <span class="dt">\</span></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--limitBAMsortRAM</span> 20000000000 <span class="dt">\</span></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--outFileNamePrefix</span> /students/2025-2026/ros1_transcriptomics/GSE214715/mapping/test_hg38_star_</span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
 <p>The results of STAR will end up as multiple read count files, i will create a script (functions defined below first) that will process these different counts, and replace the ensembl gene names with human readable gene names.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>config<span class="sc">$</span>src_dir</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "/students/2025-2026/ros1_transcriptomics"</code></pre>
 </div>
 </div>
+<p>The gene names resulting from this are Ensembl transcripts, i will use biomaRt to transcribe these and annotate these to readable gene names.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glue)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Function for reading in files</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>read_sample <span class="ot">&lt;-</span> <span class="cf">function</span>(file.name) {</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="do">## Extract the sample name for naming the column (retaining the 'SRR....' part)</span></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  sample.name <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(file.name, <span class="st">"."</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>)[[<span class="dv">1</span>]][<span class="dv">1</span>]</span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  sample <span class="ot">&lt;-</span> <span class="fu">read.table</span>(file.name, <span class="at">header =</span> <span class="cn">FALSE</span>, <span class="at">sep=</span><span class="st">"</span><span class="sc">\t</span><span class="st">"</span>, </span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>                       <span class="at">row.names =</span> <span class="cn">NULL</span>, <span class="at">skip =</span> <span class="dv">4</span>)</span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="do">## Rename the count column</span></span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(sample)[<span class="dv">2</span>] <span class="ot">&lt;-</span> sample.name</span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  <span class="do">## Return a subset containing the transcript ID and sample name columns</span></span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(sample[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)])</span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>merge_counts <span class="ot">&lt;-</span> <span class="cf">function</span>(genome, exp) {</span>
-<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setwd</span>(<span class="fu">glue</span>(<span class="st">"{src}/{exp}/mapping/{genome}/"</span>, <span class="at">src =</span> config<span class="sc">$</span>src_dir, <span class="at">exp =</span> exp, <span class="at">genome =</span> genome))</span>
-<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>  file.names <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">'./'</span>, <span class="at">pattern =</span> <span class="st">"*ReadsPerGene.out.tab"</span>)</span>
-<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>  counts <span class="ot">&lt;-</span> <span class="fu">read_sample</span>(file.names[<span class="dv">1</span>])</span>
-<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (file.name <span class="cf">in</span> file.names[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(file.names)]) {</span>
-<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>  sample <span class="ot">&lt;-</span> <span class="fu">read_sample</span>(file.name)</span>
-<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>  counts <span class="ot">&lt;-</span> <span class="fu">merge</span>(counts, sample, <span class="at">by =</span> <span class="dv">1</span>)</span>
-<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>(counts) <span class="ot">&lt;-</span> counts<span class="sc">$</span>V1</span>
-<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>  counts <span class="ot">&lt;-</span> counts[<span class="sc">-</span><span class="dv">1</span>]</span>
-<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(counts)</span>
-<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">ensembl_gene_id</th>
+<th style="text-align: left;">hgnc_symbol</th>
+<th style="text-align: left;">external_gene_name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">30156</td>
+<td style="text-align: left;">ENSG00000230417</td>
+<td style="text-align: left;">LINC00595</td>
+<td style="text-align: left;">LINC00595</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">30157</td>
+<td style="text-align: left;">ENSG00000230417</td>
+<td style="text-align: left;">LINC00856</td>
+<td style="text-align: left;">LINC00595</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">67385</td>
+<td style="text-align: left;">ENSG00000290758</td>
+<td style="text-align: left;">POLR2J4</td>
+<td style="text-align: left;">POLR2J4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">67386</td>
+<td style="text-align: left;">ENSG00000290758</td>
+<td style="text-align: left;">RASA4CP</td>
+<td style="text-align: left;">POLR2J4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>We see here that there are 2 duplicates happening, i will just use the unique version of the hgnc_symbol</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:biomaRt':
+
+    select</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+</div>
+<p>Now the gene symbols are set as the row names, i will turn this functionality in an R script so that it can be used in the snakemake pipeline.</p>
+</section>
+<section id="deseq2" class="level2">
+<h2 class="anchored" data-anchor-id="deseq2">DESEQ2</h2>
+<p>So now that we have the counts data ready, merged and annotated, we can start working on the actual analysis. Both me and Jasper will work on the experiments respectively, which means that I will be working on GSE23. The analyses will be done using deseq2, as we both have done before. Our plan for this is to create different functionalities that can be used in the snakemake pipeline, so that when we eventually get our data, we will be able to generate results rather fast in 1 go.</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: S4Vectors</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: stats4</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: BiocGenerics</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: generics</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'generics'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:dplyr':
+
+    explain</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    as.difftime, as.factor, as.ordered, intersect, is.element, setdiff,
+    setequal, union</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'BiocGenerics'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:dplyr':
+
+    combine</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    IQR, mad, sd, var, xtabs</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    Filter, Find, Map, Position, Reduce, anyDuplicated, aperm, append,
+    as.data.frame, basename, cbind, colnames, dirname, do.call,
+    duplicated, eval, evalq, get, grep, grepl, is.unsorted, lapply,
+    mapply, match, mget, order, paste, pmax, pmax.int, pmin, pmin.int,
+    rank, rbind, rownames, sapply, saveRDS, table, tapply, unique,
+    unsplit, which.max, which.min</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'S4Vectors'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:dplyr':
+
+    first, rename</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:utils':
+
+    findMatches</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    I, expand.grid, unname</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: IRanges</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'IRanges'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:dplyr':
+
+    collapse, desc, slice</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:glue':
+
+    trim</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: GenomicRanges</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: GenomeInfoDb</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: SummarizedExperiment</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: MatrixGenerics</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: matrixStats</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'matrixStats'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:dplyr':
+
+    count</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'MatrixGenerics'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:matrixStats':
+
+    colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,
+    colCounts, colCummaxs, colCummins, colCumprods, colCumsums,
+    colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,
+    colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,
+    colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,
+    colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,
+    colWeightedMeans, colWeightedMedians, colWeightedSds,
+    colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,
+    rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,
+    rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,
+    rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,
+    rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,
+    rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,
+    rowWeightedMads, rowWeightedMeans, rowWeightedMedians,
+    rowWeightedSds, rowWeightedVars</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Biobase</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Welcome to Bioconductor
+
+    Vignettes contain introductory material; view with
+    'browseVignettes()'. To cite Bioconductor, see
+    'citation("Biobase")', and for packages 'citation("pkgname")'.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'Biobase'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:MatrixGenerics':
+
+    rowMedians</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:matrixStats':
+
+    anyMissing, rowMedians</code></pre>
+</div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>genomes <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"hg19"</span>, <span class="st">"hg38"</span>)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>experiments <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"GSE214715"</span>, <span class="st">"GSE239844"</span>)</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (exp <span class="cf">in</span> experiments) {</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (genome <span class="cf">in</span> genomes) {</span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    counts <span class="ot">&lt;-</span> <span class="fu">merge_counts</span>(genome, exp)</span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 0%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">SRR25486680ReadsPerGene</th>
+<th style="text-align: right;">SRR25486681ReadsPerGene</th>
+<th style="text-align: right;">SRR25486682ReadsPerGene</th>
+<th style="text-align: right;">SRR25486683ReadsPerGene</th>
+<th style="text-align: right;">SRR25486684ReadsPerGene</th>
+<th style="text-align: right;">SRR25486685ReadsPerGene</th>
+<th style="text-align: right;">SRR25486686ReadsPerGene</th>
+<th style="text-align: right;">SRR25486687ReadsPerGene</th>
+<th style="text-align: right;">SRR25486688ReadsPerGene</th>
+<th style="text-align: right;">SRR25486689ReadsPerGene</th>
+<th style="text-align: right;">SRR25486690ReadsPerGene</th>
+<th style="text-align: right;">SRR25486691ReadsPerGene</th>
+<th style="text-align: right;">SRR25486692ReadsPerGene</th>
+<th style="text-align: right;">SRR25486693ReadsPerGene</th>
+<th style="text-align: right;">SRR25486694ReadsPerGene</th>
+<th style="text-align: right;">SRR25486695ReadsPerGene</th>
+<th style="text-align: right;">SRR25486696ReadsPerGene</th>
+<th style="text-align: right;">SRR25486697ReadsPerGene</th>
+<th style="text-align: right;">SRR25486698ReadsPerGene</th>
+<th style="text-align: right;">SRR25486699ReadsPerGene</th>
+<th style="text-align: right;">SRR25486700ReadsPerGene</th>
+<th style="text-align: right;">SRR25486701ReadsPerGene</th>
+<th style="text-align: right;">SRR25486702ReadsPerGene</th>
+<th style="text-align: right;">SRR25486703ReadsPerGene</th>
+<th style="text-align: right;">SRR25486704ReadsPerGene</th>
+<th style="text-align: right;">SRR25486705ReadsPerGene</th>
+<th style="text-align: right;">SRR25486706ReadsPerGene</th>
+<th style="text-align: right;">SRR25486707ReadsPerGene</th>
+<th style="text-align: right;">SRR25486708ReadsPerGene</th>
+<th style="text-align: right;">SRR25486709ReadsPerGene</th>
+<th style="text-align: right;">SRR25486710ReadsPerGene</th>
+<th style="text-align: right;">SRR25486711ReadsPerGene</th>
+<th style="text-align: right;">SRR25486712ReadsPerGene</th>
+<th style="text-align: right;">SRR25486713ReadsPerGene</th>
+<th style="text-align: right;">SRR25486714ReadsPerGene</th>
+<th style="text-align: right;">SRR25486715ReadsPerGene</th>
+<th style="text-align: right;">SRR25486716ReadsPerGene</th>
+<th style="text-align: right;">SRR25486717ReadsPerGene</th>
+<th style="text-align: right;">SRR25486718ReadsPerGene</th>
+<th style="text-align: right;">SRR25486719ReadsPerGene</th>
+<th style="text-align: right;">SRR25486720ReadsPerGene</th>
+<th style="text-align: right;">SRR25486721ReadsPerGene</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">TSPAN6</td>
+<td style="text-align: right;">2032</td>
+<td style="text-align: right;">1612</td>
+<td style="text-align: right;">1883</td>
+<td style="text-align: right;">2343</td>
+<td style="text-align: right;">1427</td>
+<td style="text-align: right;">1836</td>
+<td style="text-align: right;">1629</td>
+<td style="text-align: right;">2702</td>
+<td style="text-align: right;">2739</td>
+<td style="text-align: right;">2293</td>
+<td style="text-align: right;">2389</td>
+<td style="text-align: right;">2393</td>
+<td style="text-align: right;">1971</td>
+<td style="text-align: right;">1803</td>
+<td style="text-align: right;">1690</td>
+<td style="text-align: right;">1534</td>
+<td style="text-align: right;">2045</td>
+<td style="text-align: right;">1907</td>
+<td style="text-align: right;">700</td>
+<td style="text-align: right;">659</td>
+<td style="text-align: right;">659</td>
+<td style="text-align: right;">666</td>
+<td style="text-align: right;">609</td>
+<td style="text-align: right;">688</td>
+<td style="text-align: right;">3776</td>
+<td style="text-align: right;">3478</td>
+<td style="text-align: right;">3344</td>
+<td style="text-align: right;">2034</td>
+<td style="text-align: right;">2425</td>
+<td style="text-align: right;">2130</td>
+<td style="text-align: right;">728</td>
+<td style="text-align: right;">660</td>
+<td style="text-align: right;">628</td>
+<td style="text-align: right;">758</td>
+<td style="text-align: right;">714</td>
+<td style="text-align: right;">609</td>
+<td style="text-align: right;">1656</td>
+<td style="text-align: right;">1678</td>
+<td style="text-align: right;">1396</td>
+<td style="text-align: right;">1775</td>
+<td style="text-align: right;">2339</td>
+<td style="text-align: right;">2042</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TNMD</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">516</td>
+<td style="text-align: right;">254</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DPM1</td>
+<td style="text-align: right;">657</td>
+<td style="text-align: right;">590</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">822</td>
+<td style="text-align: right;">887</td>
+<td style="text-align: right;">927</td>
+<td style="text-align: right;">368</td>
+<td style="text-align: right;">556</td>
+<td style="text-align: right;">778</td>
+<td style="text-align: right;">544</td>
+<td style="text-align: right;">616</td>
+<td style="text-align: right;">640</td>
+<td style="text-align: right;">594</td>
+<td style="text-align: right;">382</td>
+<td style="text-align: right;">373</td>
+<td style="text-align: right;">436</td>
+<td style="text-align: right;">451</td>
+<td style="text-align: right;">515</td>
+<td style="text-align: right;">821</td>
+<td style="text-align: right;">885</td>
+<td style="text-align: right;">802</td>
+<td style="text-align: right;">802</td>
+<td style="text-align: right;">1014</td>
+<td style="text-align: right;">985</td>
+<td style="text-align: right;">671</td>
+<td style="text-align: right;">667</td>
+<td style="text-align: right;">672</td>
+<td style="text-align: right;">862</td>
+<td style="text-align: right;">905</td>
+<td style="text-align: right;">929</td>
+<td style="text-align: right;">631</td>
+<td style="text-align: right;">594</td>
+<td style="text-align: right;">823</td>
+<td style="text-align: right;">753</td>
+<td style="text-align: right;">900</td>
+<td style="text-align: right;">1046</td>
+<td style="text-align: right;">724</td>
+<td style="text-align: right;">622</td>
+<td style="text-align: right;">665</td>
+<td style="text-align: right;">630</td>
+<td style="text-align: right;">825</td>
+<td style="text-align: right;">830</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SCYL3</td>
+<td style="text-align: right;">282</td>
+<td style="text-align: right;">202</td>
+<td style="text-align: right;">245</td>
+<td style="text-align: right;">260</td>
+<td style="text-align: right;">190</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">77</td>
+<td style="text-align: right;">127</td>
+<td style="text-align: right;">138</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">202</td>
+<td style="text-align: right;">177</td>
+<td style="text-align: right;">249</td>
+<td style="text-align: right;">213</td>
+<td style="text-align: right;">192</td>
+<td style="text-align: right;">195</td>
+<td style="text-align: right;">181</td>
+<td style="text-align: right;">140</td>
+<td style="text-align: right;">156</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">102</td>
+<td style="text-align: right;">187</td>
+<td style="text-align: right;">223</td>
+<td style="text-align: right;">280</td>
+<td style="text-align: right;">232</td>
+<td style="text-align: right;">278</td>
+<td style="text-align: right;">245</td>
+<td style="text-align: right;">248</td>
+<td style="text-align: right;">333</td>
+<td style="text-align: right;">349</td>
+<td style="text-align: right;">273</td>
+<td style="text-align: right;">275</td>
+<td style="text-align: right;">263</td>
+<td style="text-align: right;">254</td>
+<td style="text-align: right;">312</td>
+<td style="text-align: right;">312</td>
+<td style="text-align: right;">300</td>
+<td style="text-align: right;">220</td>
+<td style="text-align: right;">237</td>
+<td style="text-align: right;">228</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FIRRM</td>
+<td style="text-align: right;">168</td>
+<td style="text-align: right;">259</td>
+<td style="text-align: right;">393</td>
+<td style="text-align: right;">642</td>
+<td style="text-align: right;">847</td>
+<td style="text-align: right;">662</td>
+<td style="text-align: right;">174</td>
+<td style="text-align: right;">290</td>
+<td style="text-align: right;">308</td>
+<td style="text-align: right;">333</td>
+<td style="text-align: right;">402</td>
+<td style="text-align: right;">330</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">317</td>
+<td style="text-align: right;">222</td>
+<td style="text-align: right;">390</td>
+<td style="text-align: right;">552</td>
+<td style="text-align: right;">654</td>
+<td style="text-align: right;">663</td>
+<td style="text-align: right;">618</td>
+<td style="text-align: right;">701</td>
+<td style="text-align: right;">733</td>
+<td style="text-align: right;">826</td>
+<td style="text-align: right;">157</td>
+<td style="text-align: right;">78</td>
+<td style="text-align: right;">174</td>
+<td style="text-align: right;">361</td>
+<td style="text-align: right;">393</td>
+<td style="text-align: right;">406</td>
+<td style="text-align: right;">642</td>
+<td style="text-align: right;">512</td>
+<td style="text-align: right;">674</td>
+<td style="text-align: right;">1025</td>
+<td style="text-align: right;">916</td>
+<td style="text-align: right;">1039</td>
+<td style="text-align: right;">131</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">364</td>
+<td style="text-align: right;">405</td>
+<td style="text-align: right;">402</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FGR</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
 </div>
+</div>
+</div>
+<p>This is the count data for the GSE23 experiment, mapped to the hg38 human genome. There is also another file being loaded in; The column data file.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 31%">
+<col style="width: 31%">
+<col style="width: 14%">
+<col style="width: 23%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Run</th>
+<th style="text-align: left;">Assay.Type</th>
+<th style="text-align: left;">treatment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">SRR25486680ReadsPerGene</td>
+<td style="text-align: left;">SRR25486680ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">250 nM crizotinib</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SRR25486681ReadsPerGene</td>
+<td style="text-align: left;">SRR25486681ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">250 nM crizotinib</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SRR25486682ReadsPerGene</td>
+<td style="text-align: left;">SRR25486682ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">250 nM crizotinib</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SRR25486683ReadsPerGene</td>
+<td style="text-align: left;">SRR25486683ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">DMSO</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SRR25486684ReadsPerGene</td>
+<td style="text-align: left;">SRR25486684ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">DMSO</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SRR25486685ReadsPerGene</td>
+<td style="text-align: left;">SRR25486685ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">DMSO</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>This contains information about the different samples. To select certain samples or groups of samples i will generate masks for all possible assay and treatment combination. First i will make sure that the order of the columns of the count data is the same as the Run column in the col_data</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>This means that all of the rownames of the coldata is alligned with the colname of the counts data. Which means I can now generate masks for the different groups, i will also rename the SRR reads so that they’re named after the assay type and treatment</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 12%">
+<col style="width: 20%">
+<col style="width: 6%">
+<col style="width: 31%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Run</th>
+<th style="text-align: left;">Assay.Type</th>
+<th style="text-align: left;">treatment</th>
+<th style="text-align: right;">r_num</th>
+<th style="text-align: left;">condition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">SRR25486680ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">250 nM crizotinib</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">HCC78_250 nM crizotinib_r1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SRR25486681ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">250 nM crizotinib</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">HCC78_250 nM crizotinib_r2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SRR25486682ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">250 nM crizotinib</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">HCC78_250 nM crizotinib_r3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SRR25486683ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">DMSO</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">HCC78_DMSO_r1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SRR25486684ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">DMSO</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">HCC78_DMSO_r2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SRR25486685ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">DMSO</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">HCC78_DMSO_r3</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>This will make it more readable what every point is, including which one of the tripples it is.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 0%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">HCC78_250 nM crizotinib_r1</th>
+<th style="text-align: right;">HCC78_250 nM crizotinib_r2</th>
+<th style="text-align: right;">HCC78_250 nM crizotinib_r3</th>
+<th style="text-align: right;">HCC78_DMSO_r1</th>
+<th style="text-align: right;">HCC78_DMSO_r2</th>
+<th style="text-align: right;">HCC78_DMSO_r3</th>
+<th style="text-align: right;">CUTO38_250 nM crizotinib_r1</th>
+<th style="text-align: right;">CUTO38_250 nM crizotinib_r2</th>
+<th style="text-align: right;">CUTO38_250 nM crizotinib_r3</th>
+<th style="text-align: right;">CUTO38_DMSO_r1</th>
+<th style="text-align: right;">CUTO38_DMSO_r2</th>
+<th style="text-align: right;">CUTO38_DMSO_r3</th>
+<th style="text-align: right;">CUTO37_250 nM crizotinib_r1</th>
+<th style="text-align: right;">CUTO37_250 nM crizotinib_r2</th>
+<th style="text-align: right;">CUTO37_250 nM crizotinib_r3</th>
+<th style="text-align: right;">CUTO37_DMSO_r1</th>
+<th style="text-align: right;">CUTO37_DMSO_r2</th>
+<th style="text-align: right;">CUTO37_DMSO_r3</th>
+<th style="text-align: right;">CUTO33_250 nM crizotinib_r1</th>
+<th style="text-align: right;">CUTO33_250 nM crizotinib_r2</th>
+<th style="text-align: right;">CUTO33_250 nM crizotinib_r3</th>
+<th style="text-align: right;">CUTO33_DMSO_r1</th>
+<th style="text-align: right;">CUTO33_DMSO_r2</th>
+<th style="text-align: right;">CUTO33_DMSO_r3</th>
+<th style="text-align: right;">CUTO28_250 nM crizotinib_r1</th>
+<th style="text-align: right;">CUTO28_250 nM crizotinib_r2</th>
+<th style="text-align: right;">CUTO28_250 nM crizotinib_r3</th>
+<th style="text-align: right;">CUTO28_DMSO_r1</th>
+<th style="text-align: right;">CUTO28_DMSO_r2</th>
+<th style="text-align: right;">CUTO28_DMSO_r3</th>
+<th style="text-align: right;">CUTO27_250 nM crizotinib_r1</th>
+<th style="text-align: right;">CUTO27_250 nM crizotinib_r2</th>
+<th style="text-align: right;">CUTO27_250 nM crizotinib_r3</th>
+<th style="text-align: right;">CUTO27_DMSO_r1</th>
+<th style="text-align: right;">CUTO27_DMSO_r2</th>
+<th style="text-align: right;">CUTO27_DMSO_r3</th>
+<th style="text-align: right;">CUTO23_250 nM crizotinib_r1</th>
+<th style="text-align: right;">CUTO23_250 nM crizotinib_r2</th>
+<th style="text-align: right;">CUTO23_250 nM crizotinib_r3</th>
+<th style="text-align: right;">CUTO23_DMSO_r1</th>
+<th style="text-align: right;">CUTO23_DMSO_r2</th>
+<th style="text-align: right;">CUTO23_DMSO_r3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">TSPAN6</td>
+<td style="text-align: right;">2032</td>
+<td style="text-align: right;">1612</td>
+<td style="text-align: right;">1883</td>
+<td style="text-align: right;">2343</td>
+<td style="text-align: right;">1427</td>
+<td style="text-align: right;">1836</td>
+<td style="text-align: right;">1629</td>
+<td style="text-align: right;">2702</td>
+<td style="text-align: right;">2739</td>
+<td style="text-align: right;">2293</td>
+<td style="text-align: right;">2389</td>
+<td style="text-align: right;">2393</td>
+<td style="text-align: right;">1971</td>
+<td style="text-align: right;">1803</td>
+<td style="text-align: right;">1690</td>
+<td style="text-align: right;">1534</td>
+<td style="text-align: right;">2045</td>
+<td style="text-align: right;">1907</td>
+<td style="text-align: right;">700</td>
+<td style="text-align: right;">659</td>
+<td style="text-align: right;">659</td>
+<td style="text-align: right;">666</td>
+<td style="text-align: right;">609</td>
+<td style="text-align: right;">688</td>
+<td style="text-align: right;">3776</td>
+<td style="text-align: right;">3478</td>
+<td style="text-align: right;">3344</td>
+<td style="text-align: right;">2034</td>
+<td style="text-align: right;">2425</td>
+<td style="text-align: right;">2130</td>
+<td style="text-align: right;">728</td>
+<td style="text-align: right;">660</td>
+<td style="text-align: right;">628</td>
+<td style="text-align: right;">758</td>
+<td style="text-align: right;">714</td>
+<td style="text-align: right;">609</td>
+<td style="text-align: right;">1656</td>
+<td style="text-align: right;">1678</td>
+<td style="text-align: right;">1396</td>
+<td style="text-align: right;">1775</td>
+<td style="text-align: right;">2339</td>
+<td style="text-align: right;">2042</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TNMD</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">516</td>
+<td style="text-align: right;">254</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DPM1</td>
+<td style="text-align: right;">657</td>
+<td style="text-align: right;">590</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">822</td>
+<td style="text-align: right;">887</td>
+<td style="text-align: right;">927</td>
+<td style="text-align: right;">368</td>
+<td style="text-align: right;">556</td>
+<td style="text-align: right;">778</td>
+<td style="text-align: right;">544</td>
+<td style="text-align: right;">616</td>
+<td style="text-align: right;">640</td>
+<td style="text-align: right;">594</td>
+<td style="text-align: right;">382</td>
+<td style="text-align: right;">373</td>
+<td style="text-align: right;">436</td>
+<td style="text-align: right;">451</td>
+<td style="text-align: right;">515</td>
+<td style="text-align: right;">821</td>
+<td style="text-align: right;">885</td>
+<td style="text-align: right;">802</td>
+<td style="text-align: right;">802</td>
+<td style="text-align: right;">1014</td>
+<td style="text-align: right;">985</td>
+<td style="text-align: right;">671</td>
+<td style="text-align: right;">667</td>
+<td style="text-align: right;">672</td>
+<td style="text-align: right;">862</td>
+<td style="text-align: right;">905</td>
+<td style="text-align: right;">929</td>
+<td style="text-align: right;">631</td>
+<td style="text-align: right;">594</td>
+<td style="text-align: right;">823</td>
+<td style="text-align: right;">753</td>
+<td style="text-align: right;">900</td>
+<td style="text-align: right;">1046</td>
+<td style="text-align: right;">724</td>
+<td style="text-align: right;">622</td>
+<td style="text-align: right;">665</td>
+<td style="text-align: right;">630</td>
+<td style="text-align: right;">825</td>
+<td style="text-align: right;">830</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SCYL3</td>
+<td style="text-align: right;">282</td>
+<td style="text-align: right;">202</td>
+<td style="text-align: right;">245</td>
+<td style="text-align: right;">260</td>
+<td style="text-align: right;">190</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">77</td>
+<td style="text-align: right;">127</td>
+<td style="text-align: right;">138</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">202</td>
+<td style="text-align: right;">177</td>
+<td style="text-align: right;">249</td>
+<td style="text-align: right;">213</td>
+<td style="text-align: right;">192</td>
+<td style="text-align: right;">195</td>
+<td style="text-align: right;">181</td>
+<td style="text-align: right;">140</td>
+<td style="text-align: right;">156</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">102</td>
+<td style="text-align: right;">187</td>
+<td style="text-align: right;">223</td>
+<td style="text-align: right;">280</td>
+<td style="text-align: right;">232</td>
+<td style="text-align: right;">278</td>
+<td style="text-align: right;">245</td>
+<td style="text-align: right;">248</td>
+<td style="text-align: right;">333</td>
+<td style="text-align: right;">349</td>
+<td style="text-align: right;">273</td>
+<td style="text-align: right;">275</td>
+<td style="text-align: right;">263</td>
+<td style="text-align: right;">254</td>
+<td style="text-align: right;">312</td>
+<td style="text-align: right;">312</td>
+<td style="text-align: right;">300</td>
+<td style="text-align: right;">220</td>
+<td style="text-align: right;">237</td>
+<td style="text-align: right;">228</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FIRRM</td>
+<td style="text-align: right;">168</td>
+<td style="text-align: right;">259</td>
+<td style="text-align: right;">393</td>
+<td style="text-align: right;">642</td>
+<td style="text-align: right;">847</td>
+<td style="text-align: right;">662</td>
+<td style="text-align: right;">174</td>
+<td style="text-align: right;">290</td>
+<td style="text-align: right;">308</td>
+<td style="text-align: right;">333</td>
+<td style="text-align: right;">402</td>
+<td style="text-align: right;">330</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">317</td>
+<td style="text-align: right;">222</td>
+<td style="text-align: right;">390</td>
+<td style="text-align: right;">552</td>
+<td style="text-align: right;">654</td>
+<td style="text-align: right;">663</td>
+<td style="text-align: right;">618</td>
+<td style="text-align: right;">701</td>
+<td style="text-align: right;">733</td>
+<td style="text-align: right;">826</td>
+<td style="text-align: right;">157</td>
+<td style="text-align: right;">78</td>
+<td style="text-align: right;">174</td>
+<td style="text-align: right;">361</td>
+<td style="text-align: right;">393</td>
+<td style="text-align: right;">406</td>
+<td style="text-align: right;">642</td>
+<td style="text-align: right;">512</td>
+<td style="text-align: right;">674</td>
+<td style="text-align: right;">1025</td>
+<td style="text-align: right;">916</td>
+<td style="text-align: right;">1039</td>
+<td style="text-align: right;">131</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">364</td>
+<td style="text-align: right;">405</td>
+<td style="text-align: right;">402</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FGR</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Now the names of the SRR files align with more readable names, we can now seperate them into groups</p>
+<p>Now we can start with DESEQ, finally.</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in DESeqDataSet(se, design = design, ignoreRank): some variables in
+design formula are characters, converting to factors</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>  Note: levels of factors in the design contain characters other than
+  letters, numbers, '_' and '.'. It is recommended (but not required) to use
+  only letters, numbers, and delimiters '_' or '.', as these are safe characters
+  for column names in R. [This is a message, not a warning or an error]</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>estimating size factors</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>  Note: levels of factors in the design contain characters other than
+  letters, numbers, '_' and '.'. It is recommended (but not required) to use
+  only letters, numbers, and delimiters '_' or '.', as these are safe characters
+  for column names in R. [This is a message, not a warning or an error]</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>estimating dispersions</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>gene-wise dispersion estimates</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>mean-dispersion relationship</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>-- note: fitType='parametric', but the dispersion trend was not well captured by the
+   function: y = a/x + b, and a local regression fit was automatically substituted.
+   specify fitType='local' or 'mean' to avoid this message next time.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>  Note: levels of factors in the design contain characters other than
+  letters, numbers, '_' and '.'. It is recommended (but not required) to use
+  only letters, numbers, and delimiters '_' or '.', as these are safe characters
+  for column names in R. [This is a message, not a warning or an error]</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>final dispersion estimates</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>fitting model and testing</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>36 rows did not converge in beta, labelled in mcols(object)$betaConv. Use larger maxit argument with nbinomWaldTest</code></pre>
+</div>
+</div>
+<p>With this we can do a Differential Expression Analysis</p>
+<section id="differential-expression-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="differential-expression-analysis">Differential Expression Analysis</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>log2 fold change (MLE): treatment 250 nM crizotinib vs DMSO 
+Wald test p-value: treatment 250.nM.crizotinib vs DMSO 
+DataFrame with 86369 rows and 6 columns
+                 baseMean log2FoldChange     lfcSE       stat      pvalue
+                &lt;numeric&gt;      &lt;numeric&gt; &lt;numeric&gt;  &lt;numeric&gt;   &lt;numeric&gt;
+TSPAN6          1695.8415      0.0171044 0.0665818   0.256893 7.97261e-01
+TNMD              26.6081      1.1863478 1.0763697   1.102175 2.70386e-01
+DPM1             692.3769     -0.2761502 0.0531167  -5.198938 2.00431e-07
+SCYL3            205.4780      0.2014794 0.0622861   3.234739 1.21754e-03
+FIRRM            434.6356     -1.0117381 0.1341219  -7.543420 4.57805e-14
+...                   ...            ...       ...        ...         ...
+ENSG00000310589 0.3045308      0.2374414  2.945779  0.0806040    0.935757
+ENSG00000310590 0.0000000             NA        NA         NA          NA
+ENSG00000310591 0.8821230     -0.7383822  0.949942 -0.7772920    0.436987
+ENSG00000310592 0.0915997     -0.0148159  2.953024 -0.0050172    0.995997
+ENSG00000310593 0.3205796      0.1663381  1.472575  0.1129573    0.910064
+                       padj
+                  &lt;numeric&gt;
+TSPAN6          8.81669e-01
+TNMD            4.22602e-01
+DPM1            1.47749e-06
+SCYL3           4.29899e-03
+FIRRM           1.13227e-12
+...                     ...
+ENSG00000310589          NA
+ENSG00000310590          NA
+ENSG00000310591    0.597132
+ENSG00000310592          NA
+ENSG00000310593          NA</code></pre>
+</div>
+</div>
+<p>This is the result of comparing the treatments (either no treatment or 250 nM of crizotinib). I need to shrink the log fold change, this is usefull for the visualisations.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Intercept"                           "Assay.Type_CUTO27_vs_CUTO23"        
+[3] "Assay.Type_CUTO28_vs_CUTO23"         "Assay.Type_CUTO33_vs_CUTO23"        
+[5] "Assay.Type_CUTO37_vs_CUTO23"         "Assay.Type_CUTO38_vs_CUTO23"        
+[7] "Assay.Type_HCC78_vs_CUTO23"          "treatment_250.nM.crizotinib_vs_DMSO"</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>using 'apeglm' for LFC shrinkage. If used in published research, please cite:
+    Zhu, A., Ibrahim, J.G., Love, M.I. (2018) Heavy-tailed prior distributions for
+    sequence count data: removing the noise and preserving large differences.
+    Bioinformatics. https://doi.org/10.1093/bioinformatics/bty895</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>using ntop=500 top features by variance</code></pre>
+</div>
+</div>
+<p>I want to generate a PCA plot to look at the different samples, and see if they align or if there are any outliers. I will do this using the given PCA data from deseq2 and generating a PCA plot from this using ggplot.</p>
+<p>Before I do that, i will take a peak at the given PCA data:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 11%">
+<col style="width: 13%">
+<col style="width: 11%">
+<col style="width: 5%">
+<col style="width: 8%">
+<col style="width: 2%">
+<col style="width: 13%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">PC1</th>
+<th style="text-align: right;">PC2</th>
+<th style="text-align: left;">group</th>
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">Run</th>
+<th style="text-align: left;">Assay.Type</th>
+<th style="text-align: left;">treatment</th>
+<th style="text-align: right;">r_num</th>
+<th style="text-align: left;">condition</th>
+<th style="text-align: right;">sizeFactor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">HCC78_250 nM crizotinib_r1</td>
+<td style="text-align: right;">7.633584e+20</td>
+<td style="text-align: right;">2.077023e+21</td>
+<td style="text-align: left;">HCC78:250 nM crizotinib</td>
+<td style="text-align: left;">HCC78_250 nM crizotinib_r1</td>
+<td style="text-align: left;">SRR25486680ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">250 nM crizotinib</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">HCC78_250 nM crizotinib_r1</td>
+<td style="text-align: right;">1.143292</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">HCC78_250 nM crizotinib_r2</td>
+<td style="text-align: right;">3.853864e+20</td>
+<td style="text-align: right;">2.429308e+21</td>
+<td style="text-align: left;">HCC78:250 nM crizotinib</td>
+<td style="text-align: left;">HCC78_250 nM crizotinib_r2</td>
+<td style="text-align: left;">SRR25486681ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">250 nM crizotinib</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">HCC78_250 nM crizotinib_r2</td>
+<td style="text-align: right;">1.058743</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">HCC78_250 nM crizotinib_r3</td>
+<td style="text-align: right;">5.231452e+20</td>
+<td style="text-align: right;">2.225661e+21</td>
+<td style="text-align: left;">HCC78:250 nM crizotinib</td>
+<td style="text-align: left;">HCC78_250 nM crizotinib_r3</td>
+<td style="text-align: left;">SRR25486682ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">250 nM crizotinib</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">HCC78_250 nM crizotinib_r3</td>
+<td style="text-align: right;">1.119312</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">HCC78_DMSO_r1</td>
+<td style="text-align: right;">1.302141e+21</td>
+<td style="text-align: right;">2.843726e+21</td>
+<td style="text-align: left;">HCC78:DMSO</td>
+<td style="text-align: left;">HCC78_DMSO_r1</td>
+<td style="text-align: left;">SRR25486683ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">DMSO</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">HCC78_DMSO_r1</td>
+<td style="text-align: right;">1.087994</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">HCC78_DMSO_r2</td>
+<td style="text-align: right;">1.446269e+21</td>
+<td style="text-align: right;">2.989905e+21</td>
+<td style="text-align: left;">HCC78:DMSO</td>
+<td style="text-align: left;">HCC78_DMSO_r2</td>
+<td style="text-align: left;">SRR25486684ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">DMSO</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">HCC78_DMSO_r2</td>
+<td style="text-align: right;">1.098741</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">HCC78_DMSO_r3</td>
+<td style="text-align: right;">1.659602e+21</td>
+<td style="text-align: right;">3.044645e+21</td>
+<td style="text-align: left;">HCC78:DMSO</td>
+<td style="text-align: left;">HCC78_DMSO_r3</td>
+<td style="text-align: left;">SRR25486685ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">DMSO</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">HCC78_DMSO_r3</td>
+<td style="text-align: right;">1.081068</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Here we see a couple of different interesting things: - The 2 PCA values used for plotting - It also stores the treatment, assay-types and triplo-number.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="logging_ramon_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Interesting is that some of the cell types like CUTO23 and 33 don’t seem to respond to the treatments, as they are all clustered very tightly around 1 area. We see a clearer seperation with CUTO 38 and CUTO 27.</p>
+</section>
 </section>
 </section>
 

@@ -1,7 +1,10 @@
-default:
-  primer_data: "/students/2025-2026/ros1_transcriptomics/minor_ROS1/data/showcase.fasta"
+
+primer_data: "/students/2025-2026/ros1_transcriptomics/minor_ROS1/data/showcase.fasta"
 
 src_dir: "/students/2025-2026/ros1_transcriptomics"
+
+counts_dir: "/students/2025-2026/ros1_transcriptomics/GSE239844/counts"
+col_data: "/students/2025-2026/ros1_transcriptomics/GSE239844/col_data/newrun.csv"
 
 genomes:
 - "hg38"
