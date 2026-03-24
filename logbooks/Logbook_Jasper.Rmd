@@ -1,6 +1,10 @@
 ---
 title: "Logbook_Jasper"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+
 ---
 In this Logbook you can find the flow of the minor me and Ramon are doing. 
 
@@ -169,50 +173,54 @@ head(count_data_hg38)
 library("DESeq2")
 ```
 
-
 ```{r, results='hide', message=FALSE}
-dds_hg19 <- DESeqDataSetFromMatrix(countData = count_data_hg19, 
-                              colData = coldata, 
+
+desseq_for_CD74_ROS1 <- coldata$genotype == "CD74-ROS1"
+
+dds_hg19_CD74 <- DESeqDataSetFromMatrix(countData = count_data_hg19[,desseq_for_CD74_ROS1], 
+                              colData = coldata[desseq_for_CD74_ROS1,], 
                               design = ~ treatment)
-dds_hg19 <- DESeq(dds_hg19)
-res_hg19 <- results(dds_hg19)
+dds_hg19_CD74 <- DESeq(dds_hg19_CD74)
+res_hg19_CD74 <- results(dds_hg19_CD74)
 ```
 
 ```{r, results='hide', message=FALSE}
-dds_hg38 <- DESeqDataSetFromMatrix(countData = count_data_hg38, 
-                              colData = coldata, 
+dds_hg38 <- DESeqDataSetFromMatrix(countData = count_data_hg38[,desseq_for_CD74_ROS1], 
+                              colData = coldata[desseq_for_CD74_ROS1,], 
                               design = ~ treatment)
 dds_hg38 <- DESeq(dds_hg38)
 res_hg38 <- results(dds_hg38)
 ```
 ## Plots 
-###hg 19
+
+
+### hg 19
 
 ```{r}
-plotMA(res_hg19)
+plotMA(res_hg19_CD74)
 ```
 
 ```{r}
-res_df_h19 <- as.data.frame(res_hg19)
-res_df_h19$gene <- rownames(res_df_h19)
-head(res_df_h19)
+res_df_hg19_CD74 <- as.data.frame(res_hg19_CD74)
+res_df_hg19_CD74$gene <- rownames(res_df_hg19_CD74)
+head(res_df_hg19_CD74)
 ```
 
 ```{r, results='hide', message=FALSE}
 library(ggplot2)
 library(dplyr)
 
-res_df_h19 <- res_df_h19 %>%
+res_df_hg19_CD74 <- res_df_hg19_CD74 %>%
   mutate(significant = ifelse(padj < 0.05, "yes", "no"))
 
 
-top_genes <- res_df_h19 %>%
+top_genes <- res_df_hg19_CD74 %>%
   filter(!is.na(padj)) %>%
   arrange(padj) %>%
   slice(1:10)
 
 
-ggplot(res_df_h19, aes(x = log2FoldChange, y = -log10(pvalue))) +
+ggplot(res_df_hg19_CD74, aes(x = log2FoldChange, y = -log10(pvalue))) +
   geom_point(aes(color = significant), alpha = 0.6) +
   scale_color_manual(values = c("no" = "grey", "yes" = "red")) +
   geom_text(data = top_genes,
@@ -225,7 +233,7 @@ ggplot(res_df_h19, aes(x = log2FoldChange, y = -log10(pvalue))) +
        y = "-log10(p-value)") 
 ```
 ```{r}
-rld_hg19 <- rlog(dds_hg19, blind=TRUE)
+rld_hg19 <- rlog(dds_hg19_CD74, blind=T)
 ```
 
 ```{r}
@@ -238,7 +246,16 @@ ggplot(pcaData_hg19, aes(x=PC1, y=PC2, color=treatment, shape = genotype)) +
   xlab(paste0("PC1: ", percentVar[1], "% variance")) +
   ylab(paste0("PC2: ", percentVar[2], "% variance")) +
   theme_bw() +
-  ggtitle("PCA of DESeq2 data HG19")
+  ggtitle("PCA of DESeq2 data HG19 ")
+```
+
+```{r}
+library(pheatmap)
+
+sampleDists <- dist(t(assay(rld_hg19)))
+sampleDistMatrix <- as.matrix(sampleDists)
+
+pheatmap(sampleDistMatrix)
 ```
 
 
@@ -260,7 +277,6 @@ top_genes <- res_df_h38 %>%
   arrange(padj) %>%
   slice(1:10)
 
-top_genes
 ggplot(res_df_h38, aes(x = log2FoldChange, y = -log10(pvalue))) +
   geom_point(aes(color = significant), alpha = 0.6) +
   scale_color_manual(values = c("no" = "grey", "yes" = "red")) +
@@ -290,4 +306,12 @@ ggplot(pcaData_hg38, aes(x=PC1, y=PC2, color=treatment, shape = genotype)) +
   theme_bw() +
   ggtitle("PCA of DESeq2 data HG38")
 ```
+
+```{r}
+sampleDists <- dist(t(assay(rld_hg38)))
+sampleDistMatrix <- as.matrix(sampleDists)
+
+pheatmap(sampleDistMatrix)
+```
+
 
