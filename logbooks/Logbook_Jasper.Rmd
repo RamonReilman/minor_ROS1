@@ -4,8 +4,14 @@ output:
   html_document:
     toc: true
     toc_float: true
-
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  cache = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+```
 In this Logbook you can find the flow of the minor me and Ramon are doing. 
 
 We are doing an research about the affect of different drugs with in the ROS1-positive NSCLC
@@ -172,11 +178,14 @@ head(count_data_hg38)
 ```{r, results='hide', message=FALSE}
 library("DESeq2")
 ```
-
+I am seperating the dat on celtype so i can da an in depth analisys.
 ```{r, results='hide', message=FALSE}
 
 desseq_for_CD74_ROS1 <- coldata$genotype == "CD74-ROS1"
-
+desseq_for_TPM3_ROS1 <- coldata$genotype == "TPM3-ROS1"
+```
+Firtst i wil do the desseq on hg 19
+```{r}
 dds_hg19_CD74 <- DESeqDataSetFromMatrix(countData = count_data_hg19[,desseq_for_CD74_ROS1], 
                               colData = coldata[desseq_for_CD74_ROS1,], 
                               design = ~ treatment)
@@ -184,13 +193,30 @@ dds_hg19_CD74 <- DESeq(dds_hg19_CD74)
 res_hg19_CD74 <- results(dds_hg19_CD74)
 ```
 
+```{r}
+dds_hg19_TPM3 <- DESeqDataSetFromMatrix(countData = count_data_hg19[,desseq_for_TPM3_ROS1], 
+                              colData = coldata[desseq_for_TPM3_ROS1,], 
+                              design = ~ treatment)
+dds_hg19_TPM3 <- DESeq(dds_hg19_TPM3)
+res_hg19_TPM3 <- results(dds_hg19_TPM3)
+```
+
+
 ```{r, results='hide', message=FALSE}
-dds_hg38 <- DESeqDataSetFromMatrix(countData = count_data_hg38[,desseq_for_CD74_ROS1], 
+dds_hg38_CD74_ROS1 <- DESeqDataSetFromMatrix(countData = count_data_hg38[,desseq_for_CD74_ROS1], 
                               colData = coldata[desseq_for_CD74_ROS1,], 
                               design = ~ treatment)
-dds_hg38 <- DESeq(dds_hg38)
-res_hg38 <- results(dds_hg38)
+dds_hg38_CD74_ROS1 <- DESeq(dds_hg38_CD74_ROS1)
+res_hg38_CD74_ROS1 <- results(dds_hg38_CD74_ROS1)
 ```
+```{r}
+dds_hg38_TPM3 <- DESeqDataSetFromMatrix(countData = count_data_hg38[,desseq_for_TPM3_ROS1], 
+                              colData = coldata[desseq_for_TPM3_ROS1,], 
+                              design = ~ treatment)
+dds_hg38_TPM3 <- DESeq(dds_hg38_TPM3)
+res_hg38_TPM3 <- results(dds_hg38_TPM3)
+```
+
 ## Plots 
 
 
@@ -232,16 +258,16 @@ ggplot(res_df_hg19_CD74, aes(x = log2FoldChange, y = -log10(pvalue))) +
        x = "log2 Fold Change",
        y = "-log10(p-value)") 
 ```
-```{r}
-rld_hg19 <- rlog(dds_hg19_CD74, blind=T)
+```{r, results='hide', message=FALSE}
+rld_hg19_CD74 <- rlog(dds_hg19_CD74, blind=T)
 ```
 
-```{r}
+```{r, results='hide', message=FALSE}
 
-pcaData_hg19 <- plotPCA(rld_hg19, intgroup = c("genotype","treatment"), returnData = TRUE)
-percentVar <- round(100 * attr(pcaData_hg19, "percentVar"))
+pcaData_hg19_CD74 <- plotPCA(rld_hg19_CD74, intgroup = "treatment", returnData = TRUE)
+percentVar <- round(100 * attr(rld_hg19_CD74, "percentVar"))
 # Plot with ggplot2
-ggplot(pcaData_hg19, aes(x=PC1, y=PC2, color=treatment, shape = genotype)) +
+ggplot(pcaData_hg19_CD74, aes(x=PC1, y=PC2, color=treatment, shape = genotype)) +
   geom_point(size=3) +
   xlab(paste0("PC1: ", percentVar[1], "% variance")) +
   ylab(paste0("PC2: ", percentVar[2], "% variance")) +
@@ -249,35 +275,71 @@ ggplot(pcaData_hg19, aes(x=PC1, y=PC2, color=treatment, shape = genotype)) +
   ggtitle("PCA of DESeq2 data HG19 ")
 ```
 
-```{r}
-library(pheatmap)
 
-sampleDists <- dist(t(assay(rld_hg19)))
-sampleDistMatrix <- as.matrix(sampleDists)
-
-pheatmap(sampleDistMatrix)
+```{r, results='hide', message=FALSE}
+res_df_hg19_TPM3 <- as.data.frame(res_hg19_TPM3)
+res_df_hg19_TPM3$gene <- rownames(res_df_hg19_TPM3)
+head(res_df_hg19_TPM3)
 ```
+```{r, results='hide', message=FALSE}
 
-
-### HG 38
-
-```{r}
-res_df_h38 <- as.data.frame(res_hg38)
-res_df_h38$gene <- rownames(res_df_h38)
-head(res_df_h38)
-```
-
-```{r}
-res_df_h38 <- res_df_h38 %>%
+res_df_hg19_TPM3 <- res_df_hg19_TPM3 %>%
   mutate(significant = ifelse(padj < 0.05, "yes", "no"))
 
 
-top_genes <- res_df_h38 %>%
+top_genes <- res_df_hg19_TPM3 %>%
   filter(!is.na(padj)) %>%
   arrange(padj) %>%
   slice(1:10)
 
-ggplot(res_df_h38, aes(x = log2FoldChange, y = -log10(pvalue))) +
+
+ggplot(res_df_hg19_TPM3, aes(x = log2FoldChange, y = -log10(pvalue))) +
+  geom_point(aes(color = significant), alpha = 0.6) +
+  scale_color_manual(values = c("no" = "grey", "yes" = "red")) +
+  geom_text(data = top_genes,
+            aes(label = gene),
+            vjust = -1,
+            size = 3.5) +
+  theme_minimal() +
+  labs(title = "Volcano plot DESeq2",
+       x = "log2 Fold Change",
+       y = "-log10(p-value)") 
+```
+```{r, results='hide', message=FALSE}
+rld_hg19_TPM3 <- vst(dds_hg19_TPM3, blind=TRUE)
+```
+
+```{r, results='hide', message=FALSE}
+#pcaData_1 <- plotPCA(rld_hg19_TPM3, intgroup = "treatment", returnData = TRUE)
+#percentVar_1 <- round(100 * attr(rld_hg19_TPM3, "percentVar"))
+
+#ggplot(pcaData_1, aes(PC1, PC2, color=treatment, shape=genotype)) +
+ # geom_point(size=3) +
+  #xlab(paste0("PC1: ", percentVar_1[1], "% variance")) +
+  #ylab(paste0("PC2: ", percentVar_1[2], "% variance")) +
+  #theme_bw()
+```
+
+### HG 38
+
+```{r, results='hide', message=FALSE}
+res_df_h38_CD74_ROS1 <- as.data.frame(res_hg38_CD74_ROS1)
+res_df_h38_CD74_ROS1$gene <- rownames(res_hg38_CD74_ROS1)
+head(res_df_h38_CD74_ROS1)
+```
+
+
+```{r, results='hide', message=FALSE}
+res_df_h38_CD74_ROS1 <- res_df_h38_CD74_ROS1 %>%
+  mutate(significant = ifelse(padj < 0.05, "yes", "no"))
+
+
+top_genes <- res_df_h38_CD74_ROS1 %>%
+  filter(!is.na(padj)) %>%
+  arrange(padj) %>%
+  slice(1:10)
+
+ggplot(res_df_h38_CD74_ROS1, aes(x = log2FoldChange, y = -log10(pvalue))) +
   geom_point(aes(color = significant), alpha = 0.6) +
   scale_color_manual(values = c("no" = "grey", "yes" = "red")) +
   geom_text(data = top_genes,
@@ -290,16 +352,16 @@ ggplot(res_df_h38, aes(x = log2FoldChange, y = -log10(pvalue))) +
        y = "-log10(p-value)") 
 ```
 
-```{r}
-rld_hg38 <- rlog(dds_hg38, blind=TRUE)
+```{r, results='hide', message=FALSE}
+rld_hg38_CD74_ROS1 <- rlog(dds_hg38_CD74_ROS1, blind=TRUE)
 ```
 
-```{r}
+```{r, results='hide', message=FALSE}
 
-pcaData_hg38 <- plotPCA(rld_hg38, intgroup = c("genotype","treatment"), returnData = TRUE)
-percentVar <- round(100 * attr(pcaData_hg38, "percentVar"))
+pcaData_hg38_CD74_ROS1 <- plotPCA(rld_hg38_CD74_ROS1, intgroup = c("genotype","treatment"), returnData = TRUE)
+percentVar <- round(100 * attr(pcaData_hg38_CD74_ROS1, "percentVar"))
 # Plot with ggplot2
-ggplot(pcaData_hg38, aes(x=PC1, y=PC2, color=treatment, shape = genotype)) +
+ggplot(pcaData_hg38_CD74_ROS1, aes(x=PC1, y=PC2, color=treatment, shape = genotype)) +
   geom_point(size=3) +
   xlab(paste0("PC1: ", percentVar[1], "% variance")) +
   ylab(paste0("PC2: ", percentVar[2], "% variance")) +
@@ -307,11 +369,246 @@ ggplot(pcaData_hg38, aes(x=PC1, y=PC2, color=treatment, shape = genotype)) +
   ggtitle("PCA of DESeq2 data HG38")
 ```
 
-```{r}
-sampleDists <- dist(t(assay(rld_hg38)))
-sampleDistMatrix <- as.matrix(sampleDists)
 
-pheatmap(sampleDistMatrix)
+
+```{r, results='hide', message=FALSE}
+dds_hg19<- DESeqDataSetFromMatrix(countData = count_data_hg19, 
+                              colData = coldata, 
+                              design = ~ treatment)
+
+dds_hg19 <- DESeq(dds_hg19)
+res_hg19 <- results(dds_hg19)
+```
+
+```{r, results='hide', message=FALSE}
+rld_hg19 <- rlog(dds_hg19, blind=T)
+```
+
+```{r, results='hide', message=FALSE}
+pcaData_hg19 <- plotPCA(rld_hg19, intgroup = c("genotype","treatment"), returnData = TRUE)
+percentVar <- round(100 * attr(rld_hg19, "percentVar"))
+# Plot with ggplot2
+ggplot(pcaData_hg19, aes(x=PC1, y=PC2, color=treatment, shape = genotype)) +
+  geom_point(size=3) +
+  xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+  ylab(paste0("PC2: ", percentVar[2], "% variance")) +
+  theme_bw() +
+  ggtitle("PCA of DESeq2 data HG19 ")
+```
+
+# Enricgment 
+## hg19_CD74
+
+```{r}
+library(clusterProfiler)
+library(org.Hs.eg.db)
+library(enrichplot)
+library(ggplot2)
+```
+```{r}
+
+res <- res_hg19_CD74
+
+
+res <- res[!is.na(res$log2FoldChange), ]
+
+
+gene_list <- res$log2FoldChange
+names(gene_list) <- rownames(res)
+
+gene_list <- sort(gene_list, decreasing = TRUE)
+
+
+gene_df <- bitr(names(gene_list),
+                fromType = "SYMBOL",
+                toType = "ENTREZID",
+                OrgDb = org.Hs.eg.db)
+
+
+gene_list <- gene_list[gene_df$SYMBOL]
+names(gene_list) <- gene_df$ENTREZID
+
+
+gene_list <- gene_list[!duplicated(names(gene_list))]
 ```
 
 
+
+
+```{r}
+gsea <- gseGO(
+  geneList = gene_list,
+  OrgDb = org.Hs.eg.db,
+  keyType = "ENTREZID",
+  ont = "BP",
+  pvalueCutoff = 0.05,
+  verbose = FALSE
+)
+```
+
+```{r}
+dotplot(gsea, showCategory=20)
+```
+
+```{r}
+gseaplot2(gsea, geneSetID = 1)
+```
+
+```{r}
+ridgeplot(gsea)
+```
+
+## hg19_TMP3
+
+```{r}
+res_2 <- res_hg19_TPM3
+
+
+res_2 <- res_2[!is.na(res_2$log2FoldChange), ]
+
+
+gene_list_2 <- res_2$log2FoldChange
+names(gene_list_2) <- rownames(res_2)
+
+gene_list_2 <- sort(gene_list_2, decreasing = TRUE)
+
+
+gene_df_2 <- bitr(names(gene_list_2),
+                fromType = "SYMBOL",
+                toType = "ENTREZID",
+                OrgDb = org.Hs.eg.db)
+
+
+gene_list_2 <- gene_list_2[gene_df_2$SYMBOL]
+names(gene_list_2) <- gene_df_2$ENTREZID
+
+gene_list_2 <- gene_list_2[!duplicated(names(gene_list_2))]
+```
+
+```{r}
+gsea_2 <- gseGO(
+  geneList = gene_list_2,
+  OrgDb = org.Hs.eg.db,
+  keyType = "ENTREZID",
+  ont = "BP",
+  pvalueCutoff = 0.05,
+  verbose = FALSE
+)
+```
+
+```{r}
+dotplot(gsea_2, showCategory=20)
+```
+
+```{r}
+gseaplot2(gsea_2, geneSetID = 1)
+```
+
+```{r}
+ridgeplot(gsea_2)
+```
+
+## hg38_CD74
+
+
+```{r}
+
+res_3 <- res_hg38_CD74_ROS1
+
+
+res_3 <- res_3[!is.na(res_3$log2FoldChange), ]
+
+
+gene_list_3 <- res_3$log2FoldChange
+names(gene_list_3) <- rownames(res_3)
+
+gene_list_3 <- sort(gene_list_3, decreasing = TRUE)
+
+gene_df_3 <- bitr(names(gene_list_3),
+                fromType = "SYMBOL",
+                toType = "ENTREZID",
+                OrgDb = org.Hs.eg.db)
+
+gene_list_3 <- gene_list_3[gene_df_3$SYMBOL]
+names(gene_list_3) <- gene_df_3$ENTREZID
+
+
+gene_list_3 <- gene_list_3[!duplicated(names(gene_list_3))]
+```
+
+```{r}
+gsea_3 <- gseGO(
+  geneList = gene_list_3,
+  OrgDb = org.Hs.eg.db,
+  keyType = "ENTREZID",
+  ont = "BP",
+  pvalueCutoff = 0.05,
+  verbose = FALSE
+)
+```
+
+
+```{r}
+dotplot(gsea_3, showCategory=20)
+```
+
+```{r}
+gseaplot2(gsea_3, geneSetID = 1)
+```
+
+```{r}
+ridgeplot(gsea_3)
+```
+
+
+
+
+## hg38_TMP3
+
+```{r}
+res_4 <- res_hg38_TPM3
+
+
+res_4 <- res_4[!is.na(res_4$log2FoldChange), ]
+
+
+gene_list_4 <- res_4$log2FoldChange
+names(gene_list_4) <- rownames(res_4)
+
+gene_list_4 <- sort(gene_list_4, decreasing = TRUE)
+
+gene_df_4 <- bitr(names(gene_list_4),
+                fromType = "SYMBOL",
+                toType = "ENTREZID",
+                OrgDb = org.Hs.eg.db)
+
+
+gene_list_4 <- gene_list_4[gene_df_4$SYMBOL]
+names(gene_list_4) <- gene_df_4$ENTREZID
+
+gene_list_4 <- gene_list_4[!duplicated(names(gene_list_4))]
+```
+
+
+```{r}
+gsea_4 <- gseGO(
+  geneList = gene_list_4,
+  OrgDb = org.Hs.eg.db,
+  keyType = "ENTREZID",
+  ont = "BP",
+  pvalueCutoff = 0.05,
+  verbose = FALSE
+)
+```
+
+```{r}
+dotplot(gsea_4, showCategory=20)
+```
+
+```{r}
+gseaplot2(gsea_4, geneSetID = 1)
+```
+
+```{r}
+ridgeplot(gsea_4)
+```
