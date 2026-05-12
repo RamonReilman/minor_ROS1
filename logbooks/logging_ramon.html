@@ -2,13 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.25">
+<meta name="generator" content="quarto-1.9.36">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
 <title>logging_ramon</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -20,21 +23,55 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
 <script src="logging_ramon_files/libs/clipboard/clipboard.min.js"></script>
 <script src="logging_ramon_files/libs/quarto-html/quarto.js" type="module"></script>
 <script src="logging_ramon_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="logging_ramon_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="logging_ramon_files/libs/quarto-html/popper.min.js"></script>
 <script src="logging_ramon_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="logging_ramon_files/libs/quarto-html/anchor.min.js"></script>
 <link href="logging_ramon_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="logging_ramon_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="logging_ramon_files/libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="logging_ramon_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="logging_ramon_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="logging_ramon_files/libs/bootstrap/bootstrap-9e3ffae467580fdb927a41352e75a2e0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="logging_ramon_files/libs/bootstrap/bootstrap-efbb37e9afcc02144ebbc7afd12a776f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -57,7 +94,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#transcriptomics" id="toc-transcriptomics" class="nav-link" data-scroll-target="#transcriptomics">Transcriptomics</a></li>
   <li><a href="#deseq2" id="toc-deseq2" class="nav-link" data-scroll-target="#deseq2">DESEQ2</a>
   <ul class="collapse">
-  <li><a href="#differential-expression-analysis" id="toc-differential-expression-analysis" class="nav-link" data-scroll-target="#differential-expression-analysis">Differential Expression Analysis</a></li>
+  <li><a href="#hg38" id="toc-hg38" class="nav-link" data-scroll-target="#hg38">HG38</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -96,6 +133,11 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <p>A list of genes will be created to be used for the qPCR. This list will be given by Jasper. I’m going to write a script that can download the sequences of DNA of these genes in fasta format.</p>
 <div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(reticulate)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">RETICULATE_AUTOCREATE =</span> <span class="st">"FALSE"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">use_condaenv</span>(<span class="st">"ROS1"</span>, <span class="at">required =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">py_config</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>python:         /homes/rreilman/miniforge3/envs/ROS1/bin/python
 libpython:      /homes/rreilman/miniforge3/envs/ROS1/lib/libpython3.10.so
@@ -108,24 +150,51 @@ NOTE: Python version was forced by use_python() function</code></pre>
 </div>
 </div>
 <div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Bio <span class="im">import</span> Entrez</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>Entrez.email <span class="op">=</span> <span class="st">"r.reilman@st.hanze.nl"</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>databases <span class="op">=</span> Entrez.einfo()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(Entrez.read(databases))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>{'DbList': ['pubmed', 'protein', 'nuccore', 'ipg', 'nucleotide', 'structure', 'genome', 'annotinfo', 'assembly', 'bioproject', 'biosample', 'blastdbinfo', 'books', 'cdd', 'clinvar', 'gap', 'gapplus', 'grasp', 'dbvar', 'gene', 'gds', 'geoprofiles', 'medgen', 'mesh', 'nlmcatalog', 'omim', 'orgtrack', 'pmc', 'proteinclusters', 'pcassay', 'protfam', 'pccompound', 'pcsubstance', 'seqannot', 'snp', 'sra', 'taxonomy', 'biocollections', 'gtr']}</code></pre>
 </div>
 </div>
 <p>This contains a list of the different databases that can be accessed, we want to use the gene database to get the nucleotide sequences</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>handle <span class="op">=</span> Entrez.esearch(db<span class="op">=</span><span class="st">"nucleotide"</span>, term<span class="op">=</span><span class="st">"GRB2[gene] AND biomol_mrna[PROP] AND srcdb_refseq[PROP] AND human[ORGN]"</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>idlist <span class="op">=</span> Entrez.read(handle)[<span class="st">"IdList"</span>]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>handle2 <span class="op">=</span> Entrez.efetch(db<span class="op">=</span><span class="st">"nucleotide"</span>, <span class="bu">id</span><span class="op">=</span>idlist, rettype<span class="op">=</span><span class="st">"gb"</span>, retmode<span class="op">=</span><span class="st">"text"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Bio <span class="im">import</span> SeqIO</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>seqs <span class="op">=</span> <span class="st">""</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>header <span class="op">=</span> <span class="st">""</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> seqq <span class="kw">in</span> SeqIO.parse(handle2, <span class="st">"gb"</span>):</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">"transcript variant 1"</span> <span class="kw">in</span> seqq.description.lower():</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        header <span class="op">=</span> seqq.<span class="bu">id</span> <span class="op">+</span> <span class="st">"_"</span> <span class="op">+</span> seqq.annotations[<span class="st">"source"</span>]</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        seqs <span class="op">=</span> seqq.seq</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 <p>This outputs many sequences for possibly the same gene, i want to check if they are the same sequences or not.</p>
 <div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>header</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>'NM_002086.5_Homo sapiens (human)'</code></pre>
 </div>
 </div>
 <p>All sequences are equal to eachother, so the first can be used. These can be turned into a multifasta format</p>
 <div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fasta_showcase <span class="op">=</span> <span class="ss">f"&gt;</span><span class="sc">{</span>header<span class="sc">}</span><span class="ch">\n</span><span class="sc">{</span>seqs<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>fasta_showcase</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>'&gt;NM_002086.5_Homo sapiens (human)\nAGCCAGGAGGTATTGCTGCTTCGGCGACCGGGCGGCGGCAGCGGCGGCGGCGGCTGTGGCAGAGTCTGTGCCTGTGGCGGTGACGGCGGCGGGAGCAAGCGCTGCCCTCGCAGAGCAGCCTTGGGGTCGCCGGCCGCTCGCAGCGTTGTGGAGGGGCGGGCCGGACGCTGAGCGGAGCAGCTGCGCCACGGGTGGCATTGTGTGTCCCAGAGTGCCGGAGCGAGTCCCAGAAGAGAGGCGAGGCTAAGCCCAGAGCGCTGGGTTGCTTCAGCAGGGAAGACTCCCTTCCCCCTGCTTCAGGCTGCTGAGCACTGAGCAGCGCTCAGAATGGAAGCCATCGCCAAATATGACTTCAAAGCTACTGCAGACGACGAGCTGAGCTTCAAAAGGGGGGACATCCTCAAGGTTTTGAACGAAGAATGTGATCAGAACTGGTACAAGGCAGAGCTTAATGGAAAAGACGGCTTCATTCCCAAGAACTACATAGAAATGAAACCACATCCGTGGTTTTTTGGCAAAATCCCCAGAGCCAAGGCAGAAGAAATGCTTAGCAAACAGCGGCACGATGGGGCCTTTCTTATCCGAGAGAGTGAGAGCGCTCCTGGGGACTTCTCCCTCTCTGTCAAGTTTGGAAACGATGTGCAGCACTTCAAGGTGCTCCGAGATGGAGCCGGGAAGTACTTCCTCTGGGTGGTGAAGTTCAATTCTTTGAATGAGCTGGTGGATTATCACAGATCTACATCTGTCTCCAGAAACCAGCAGATATTCCTGCGGGACATAGAACAGGTGCCACAGCAGCCGACATACGTCCAGGCCCTCTTTGACTTTGATCCCCAGGAGGATGGAGAGCTGGGCTTCCGCCGGGGAGATTTTATCCATGTCATGGATAACTCAGACCCCAACTGGTGGAAAGGAGCTTGCCACGGGCAGACCGGCATGTTTCCCCGCAATTATGTCACCCCCGTGAACCGGAACGTCTAAGAGTCAAGAAGCAATTATTTAAAGAAAGTGAAAAATGTAAAACACATACAAAAGAATTAAACCCACAAGCTGCCTCTGACAGCAGCCTGTGAGGGAGTGCAGAACACCTGGCCGGGTCACCCTGTGACCCTCTCACTTTGGTTGGAACTTTAGGGGGTGGGAGGGGGCGTTGGATTTAAAAATGCCAAAACTTACCTATAAATTAAGAAGAGTTTTTATTACAAATTTTCACTGCTGCTCCTCTTTCCCCTCCTTTGTCTTTTTTTTCATCCTTTTTTCTCTTCTGTCCATCAGTGCATGACGTTTAAGGCCACGTATAGTCCTAGCTGACGCCAATAATAAAAAACAAGAAACCAAGTGGGCTGGTATTCTCTCTATGCAAAATGTCTGTTTTAGTTGGAATGACTGAAAGAAGAACAGCTGTTCCTGTGTTCTTCGTATATACACACAAAAAGGAGCGGGCAGGGCCGCTCGATGCCTTTGCTGTTTAGCTTCCTCCAGAGGAGGGGACTTGTAGGAATCTGCCTTCCAGCCCAGACCCCCAGTGTATTTTGTCCAAGTTCACAGTAGAGTAGGGTAGAAGGAAAGCATGTCTCTGCTTCCATGGCTTCCTGAGAAAGCCCACCTGGGCTGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCAAGGTGGGCGGATCACAAGGTCAGGAGTTCGAGACCAACCTAGCCAACATGGTGAAACCCCGTCTCTACTAAAAATAAGAAATTAGCCGGGTGTGGCACGCACCTGTAGTCCCAGCTACTTGGGAGCCTGAGGCAGGAGAATCGCTTGAACCTGGGAAGTGGAGGTTGAGTGAGCCGGGACCGTGCCATTGTACTCCAGCCTGGGTGACAGAGCGAGATTCCGTCTCAAAAAAAAAAAAAAAAAGCCCACCTGAAAGCCTGTCTCTTTCCACTTTGTTGGCCCTTCCAGTGGGATTATCGAGCATGTTGTTTTTTCATAGTGCCTTTTTCCTTATTTCAAGGGTTGCTTCTGAGTGGTGTTTTTTTTTTTTTTTTAATTTGTTTTGTTTTAAAATAAGTTAAAGGCAGTCCAGAGCTTTTCAGCCAATTTGTCTCCTACTCTGTGTAAATATTTTTCCCTCCGGGCAGGGGAGCCAGGGTAGAGCAAAGGAGACAAAGCAGGAGTGGAAGGTGAGGCGTTCTCCTGCTTGTACTAAGCCAGGAGGCTTTAAGCTCCAGCTTTAAGGGTTGTGAGCCCCTTGGGGGTTCAGGGAACTGCTTGCCCAGGGTGCAGTGTGAGTGTGATGGGCCACCGGGGCAAGAGGGAAGGTGACCGCCCAGCTCTCCCACATCCCACTGGATCTGGCTTACAGGGGGGTCGGAAGCCTGTCCTCACCGTCTCGGGGGTTGTGGCCCCCGCCCCCTCCCTATATGCACCCCTGGAACCAGCAAGTCCCAGACAAGGAGAGCGGAGGAGGAAGTCATGGGAACGCAGCCTCCAGTTGTAGCAGGTTTCACTATTCCTATGCTGGGGTACACAGTGAGAGTACTCACTTTTCACTTGTCTTGCTCTTAGATTGGGCCATGGCTTTCATCCTGTGTCCCCTGACCTGTCCAGGTGAGTGTGAGGGCAGCACTGGGAAGCTGGAGTGCTGCTTGTGCCTCCCTTCCCAGTGGGCTGTGTTGACTGCTGCTCCCCACCCCTACCGATGGTCCCAGGAAGCAGGGAGAGTTGGGGAAGGCAAGATTGGAAAGACAGGAAGACCAAGGCCTCGGCAGAACTCTCTGTCTTCTCTCCACTTCTGGTCCCCTGTGGTGATGTGCCTGTAATCTTTTTCTCCACCCAAACCCCTTCCCACGACAAAAACAAGACTGCCTCCCTCTCTTCCGGGAGCTGGTGACAGCCTTGGGCCTTTCAGTCCCAAAGCGGCCGATGGGAGTCTCCCTCCGACTCCAGATATGAACAGGGCCCAGGCCTGGAGCGTTTGCTGTGCCAGGAGGCGGCAGCTCTTCTGGGCAGAGCCTGTCCCCGCCTTCCCTCACTCTTCCTCATCCTGCTTCTCTTTTCCTCGCAGATGATAAAAGGAATCTGGCATTCTACACCTGGACCATTTGATTGTTTTATTTTGGAATTGGTGTATATCATGAAGCCTTGCTGAACTAAGTTTTGTGTGTATATATTTAAAAAAAAAATCAGTGTTTAAATAAAGACCTATGTACTTAATCCTTTAACTCTGCGGATAGCATTTGGTAGGTAGTGATTAACTGTGAATAATAAATACACAATGAATTCTTCA'</code></pre>
 </div>
 </div>
 <div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"/students/2025-2026/ros1_transcriptomics/minor_ROS1/data/showcase.fasta"</span>, <span class="st">"w"</span>, encoding<span class="op">=</span><span class="st">'utf-8'</span>) <span class="im">as</span> f:</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    f.write(fasta_showcase)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>3307</code></pre>
 </div>
@@ -134,11 +203,16 @@ NOTE: Python version was forced by use_python() function</code></pre>
 <p>These fasta files will be pulled as the mRNA variant 1 transcripts of the genes, the GRB2 variant 1 page can be found <a href="https://www.ncbi.nlm.nih.gov/nuccore/NM_002086.5">here</a></p>
 <p>We can design primers for these sequences using primer blast. Which takes some parameters to create these primers. I’m going to do a test-run with the fasta file generated above. I will load in these primers, with the selected parameters and discus the output of primer blast.</p>
 <div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in read.table(file = file, header = header, sep = sep, quote = quote, :
-incomplete final line found by readTableHeader on
-'/students/2025-2026/ros1_transcriptomics/minor_ROS1/data/showcase.fasta'</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>packages <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"config"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">setdiff</span>(packages, <span class="fu">rownames</span>(<span class="fu">installed.packages</span>())))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(yaml)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>config <span class="ot">&lt;-</span> <span class="fu">read_yaml</span>(<span class="st">"/students/2025-2026/ros1_transcriptomics/minor_ROS1/configs/config.yaml"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>primer_data <span class="ot">&lt;-</span> <span class="fu">read.csv2</span>(config<span class="sc">$</span>primer_data, <span class="at">sep =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>primer_data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="caption-top table table-sm table-striped small">
@@ -174,16 +248,78 @@ incomplete final line found by readTableHeader on
 <p>We’ve gotten data from different research to prepare our pipeline for the sequencing data that will arrive in a couple of weeks. This data has been downloaded.</p>
 <p>Jasper and I are thinking of creating a snakemake pipeline to process our data, considering this; We will create a complete pipeline for transcriptomics, starting with the downloading of data - turning it into fasta files and even creating an indexed reference genome. All of these steps, and more will be found in this (and Jasper’s) logs.</p>
 <p>The first thing I want to do while we are waiting for the downloading of data is creating an indexed reference genome using STAR. We’ve done this before, so should not be that much of an effort.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> <span class="at">--partition</span><span class="op">=</span>assemblix <span class="at">--job-name</span><span class="op">=</span>hg38_index <span class="at">--ntasks</span><span class="op">=</span>1 <span class="at">--cpus-per-task</span><span class="op">=</span>32 <span class="at">--mem</span><span class="op">=</span>300G <span class="at">--time</span><span class="op">=</span>10:00:00 <span class="at">--wrap</span><span class="op">=</span><span class="st">"/students/2025-2026/ros1_transcriptomics/bin/STAR_2.7.11b/Linux_x86_64/STAR --runThreadN 4 --runMode genomeGenerate --genomeDir /students/2025-2026/ros1_transcriptomics/genomes/hg38/index --genomeFastaFiles /students/2025-2026/ros1_transcriptomics/genomes/hg38/GCA_000001405.29_GRCh38.p14_genomic.fna --sjdbGTFfile /students/2025-2026/ros1_transcriptomics/genomes/hg38/GCA_000001405.29_GRCh38.p14_genomic.gtf --sjdbOverhang 75"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> <span class="at">--partition</span><span class="op">=</span>assemblix <span class="at">--job-name</span><span class="op">=</span>hg19_index <span class="at">--ntasks</span><span class="op">=</span>1 <span class="at">--cpus-per-task</span><span class="op">=</span>32 <span class="at">--mem</span><span class="op">=</span>300G <span class="at">--time</span><span class="op">=</span>10:00:00 <span class="at">--wrap</span><span class="op">=</span><span class="st">"/students/2025-2026/ros1_transcriptomics/bin/STAR_2.7.11b/Linux_x86_64/STAR --runThreadN 4 --runMode genomeGenerate --genomeDir /students/2025-2026/ros1_transcriptomics/genomes/hg19/index --genomeFastaFiles /students/2025-2026/ros1_transcriptomics/genomes/hg19/GCA_000001405.14_GRCh37.p13_genomic.fna --sjdbGTFfile /students/2025-2026/ros1_transcriptomics/genomes/hg19/GCA_000001405.14_GRCh37.p13_genomic.gtf --sjdbOverhang 75"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 <p>Both the test data has been downloaded, and the genomes have been indexed. This means i will have to fasta-dump the sra files, and then afterwards map these.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> /students/2025-2026/ros1_transcriptomics/GSE214715/SRA <span class="at">-name</span> <span class="st">"*.sra"</span> <span class="kw">|</span> <span class="dt">\</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">parallel</span> fasterq-dump <span class="at">-O</span> /students/2025-2026/ros1_transcriptomics/GSE214715j/fasta/ {} <span class="kw">&amp;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> /students/2025-2026/ros1_transcriptomics/GSE239844/SRA <span class="at">-name</span> <span class="st">"*.sra"</span> <span class="kw">|</span> <span class="dt">\</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">parallel</span> fasterq-dump <span class="at">-O</span> /students/2025-2026/ros1_transcriptomics/GSE239844/fasta/ {} <span class="kw">&amp;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 <p>We can continue with the mapping process after this dumping is done. We will sure star for this. I will do a singular test run on 2 fasta files, then afterwards i will implement STAR into snakemake and run it via that, it will be run in parallel, and will make a nice start to our pipeline. This pipeline will eventually be extended by a bit of quality control, but mostly R scripts to generate different plots and statistical results.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">STAR</span> <span class="at">--runThreadN</span> 6 <span class="dt">\</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--genomeDir</span> /students/2025-2026/ros1_transcriptomics/genomes/hg38/index/ <span class="dt">\</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--readFilesIn</span> /students/2025-2026/ros1_transcriptomics/GSE214715/fasta/SRR21789608_1.fastq /students/2025-2026/ros1_transcriptomics/GSE214715/fasta/SRR21789608_2.fastq <span class="dt">\</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--outSAMtype</span> BAM SortedByCoordinate  <span class="dt">\</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--quantMode</span> GeneCounts  <span class="dt">\</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--genomeLoad</span> LoadAndRemove <span class="dt">\</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--limitBAMsortRAM</span> 20000000000 <span class="dt">\</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--outFileNamePrefix</span> /students/2025-2026/ros1_transcriptomics/GSE214715/mapping/test_hg38_star_</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="ex">STAR</span> <span class="at">--runThreadN</span> 8 <span class="dt">\</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--genomeDir</span> /students/2025-2026/ros1_transcriptomics/genomes/hg38/index/ <span class="dt">\</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--readFilesIn</span> /students/2025-2026/ros1_transcriptomics/GSE239844/fasta/SRR25486700_1.fastq /students/2025-2026/ros1_transcriptomics/GSE239844/fasta/SRR25486700_2.fastq <span class="dt">\</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--outSAMtype</span> BAM SortedByCoordinate  <span class="dt">\</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--quantMode</span> GeneCounts  <span class="dt">\</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--genomeLoad</span> NoSharedMemory <span class="dt">\</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--outFileNamePrefix</span> /students/2025-2026/ros1_transcriptomics/GSE239844/mapping/hg38/SRR25486700</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 <p>The results of STAR will end up as multiple read count files, i will create a script (functions defined below first) that will process these different counts, and replace the ensembl gene names with human readable gene names.</p>
 <div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>config<span class="sc">$</span>src_dir</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "/students/2025-2026/ros1_transcriptomics"</code></pre>
 </div>
 </div>
 <p>The gene names resulting from this are Ensembl transcripts, i will use biomaRt to transcribe these and annotate these to readable gene names.</p>
 <div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(biomaRt)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(counts)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>ensembl_ids <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">..*$"</span>, <span class="st">""</span>, <span class="fu">rownames</span>(df))</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>ensembl <span class="ot">&lt;-</span> <span class="fu">useMart</span>(<span class="st">"ensembl"</span>, <span class="at">dataset =</span> <span class="st">"hsapiens_gene_ensembl"</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>gene_info <span class="ot">&lt;-</span> <span class="fu">getBM</span>(</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">attributes =</span> <span class="fu">c</span>(<span class="st">"ensembl_gene_id"</span>, <span class="st">"hgnc_symbol"</span>, <span class="st">"external_gene_name"</span>),</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">filters =</span> <span class="st">"ensembl_gene_id"</span>,</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> ensembl_ids,</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">mart =</span> ensembl</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>duplicates <span class="ot">&lt;-</span> gene_info[<span class="fu">duplicated</span>(gene_info<span class="sc">$</span>ensembl_gene_id) <span class="sc">|</span> </span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">duplicated</span>(gene_info<span class="sc">$</span>ensembl_gene_id, <span class="at">fromLast =</span> <span class="cn">TRUE</span>), ]</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Sort to see them together</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>duplicates <span class="ot">&lt;-</span> duplicates[<span class="fu">order</span>(duplicates<span class="sc">$</span>ensembl_gene_id), ]</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(duplicates, <span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="caption-top table table-sm table-striped small">
@@ -227,565 +363,82 @@ incomplete final line found by readTableHeader on
 </div>
 <p>We see here that there are 2 duplicates happening, i will just use the unique version of the hgnc_symbol</p>
 <div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'dplyr'</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>gene_info_unique <span class="ot">&lt;-</span> gene_info <span class="sc">%&gt;%</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(ensembl_gene_id) <span class="sc">%&gt;%</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">hgnc_symbol =</span> <span class="fu">paste</span>(<span class="fu">unique</span>(hgnc_symbol[<span class="sc">!</span><span class="fu">is.na</span>(hgnc_symbol) <span class="sc">&amp;</span> hgnc_symbol <span class="sc">!=</span> <span class="st">""</span>]), </span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">collapse =</span> <span class="st">"/"</span>),</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">external_gene_name =</span> <span class="fu">na.omit</span>(external_gene_name)[<span class="dv">1</span>]</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>merge_counts_with_symbols <span class="ot">&lt;-</span> <span class="cf">function</span>(counts, gene_info_unique) {</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>  ensembl_ids <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">..*$"</span>, <span class="st">""</span>, <span class="fu">rownames</span>(counts))</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>  counts_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">ensembl_gene_id =</span> ensembl_ids,</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>    counts,</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">row.names =</span> <span class="cn">NULL</span></span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>  merged_df <span class="ot">&lt;-</span> <span class="fu">merge</span>(</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>    counts_df,</span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>    gene_info_unique[, <span class="fu">c</span>(<span class="st">"ensembl_gene_id"</span>, <span class="st">"hgnc_symbol"</span>)],</span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"ensembl_gene_id"</span>,</span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">all.x =</span> <span class="cn">TRUE</span></span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a>  merged_df<span class="sc">$</span>hgnc_symbol[<span class="fu">is.na</span>(merged_df<span class="sc">$</span>hgnc_symbol)] <span class="ot">&lt;-</span> </span>
+<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a>    merged_df<span class="sc">$</span>ensembl_gene_id[<span class="fu">is.na</span>(merged_df<span class="sc">$</span>hgnc_symbol)]</span>
+<span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-32"><a href="#cb29-32" aria-hidden="true" tabindex="-1"></a>  merged_df<span class="sc">$</span>hgnc_symbol[merged_df<span class="sc">$</span>hgnc_symbol <span class="sc">==</span> <span class="st">""</span>] <span class="ot">&lt;-</span> </span>
+<span id="cb29-33"><a href="#cb29-33" aria-hidden="true" tabindex="-1"></a>    merged_df<span class="sc">$</span>ensembl_gene_id[merged_df<span class="sc">$</span>hgnc_symbol <span class="sc">==</span> <span class="st">""</span>]</span>
+<span id="cb29-34"><a href="#cb29-34" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-35"><a href="#cb29-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>(merged_df) <span class="ot">&lt;-</span> <span class="fu">make.unique</span>(merged_df<span class="sc">$</span>hgnc_symbol, <span class="at">sep =</span> <span class="st">"_"</span>)</span>
+<span id="cb29-36"><a href="#cb29-36" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-37"><a href="#cb29-37" aria-hidden="true" tabindex="-1"></a>  final_counts <span class="ot">&lt;-</span> merged_df[, <span class="sc">!</span><span class="fu">names</span>(merged_df) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"ensembl_gene_id"</span>, <span class="st">"hgnc_symbol"</span>)]</span>
+<span id="cb29-38"><a href="#cb29-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-39"><a href="#cb29-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(final_counts)</span>
+<span id="cb29-40"><a href="#cb29-40" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:biomaRt':
-
-    select</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:stats':
-
-    filter, lag</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    intersect, setdiff, setequal, union</code></pre>
-</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>counts <span class="ot">&lt;-</span> <span class="fu">merge_counts_with_symbols</span>(df, gene_info_unique)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Now the gene symbols are set as the row names, i will turn this functionality in an R script so that it can be used in the snakemake pipeline.</p>
 </section>
 <section id="deseq2" class="level2">
 <h2 class="anchored" data-anchor-id="deseq2">DESEQ2</h2>
+<section id="hg38" class="level3">
+<h3 class="anchored" data-anchor-id="hg38">HG38</h3>
 <p>So now that we have the counts data ready, merged and annotated, we can start working on the actual analysis. Both me and Jasper will work on the experiments respectively, which means that I will be working on GSE23. The analyses will be done using deseq2, as we both have done before. Our plan for this is to create different functionalities that can be used in the snakemake pipeline, so that when we eventually get our data, we will be able to generate results rather fast in 1 go.</p>
 <div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: S4Vectors</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: stats4</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: BiocGenerics</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: generics</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'generics'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:dplyr':
-
-    explain</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    as.difftime, as.factor, as.ordered, intersect, is.element, setdiff,
-    setequal, union</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'BiocGenerics'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:dplyr':
-
-    combine</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:stats':
-
-    IQR, mad, sd, var, xtabs</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    Filter, Find, Map, Position, Reduce, anyDuplicated, aperm, append,
-    as.data.frame, basename, cbind, colnames, dirname, do.call,
-    duplicated, eval, evalq, get, grep, grepl, is.unsorted, lapply,
-    mapply, match, mget, order, paste, pmax, pmax.int, pmin, pmin.int,
-    rank, rbind, rownames, sapply, saveRDS, table, tapply, unique,
-    unsplit, which.max, which.min</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'S4Vectors'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:dplyr':
-
-    first, rename</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:utils':
-
-    findMatches</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    I, expand.grid, unname</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: IRanges</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'IRanges'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:dplyr':
-
-    collapse, desc, slice</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:glue':
-
-    trim</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: GenomicRanges</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: GenomeInfoDb</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: SummarizedExperiment</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: MatrixGenerics</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: matrixStats</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'matrixStats'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:dplyr':
-
-    count</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'MatrixGenerics'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:matrixStats':
-
-    colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,
-    colCounts, colCummaxs, colCummins, colCumprods, colCumsums,
-    colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,
-    colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,
-    colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,
-    colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,
-    colWeightedMeans, colWeightedMedians, colWeightedSds,
-    colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,
-    rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,
-    rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,
-    rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,
-    rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,
-    rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,
-    rowWeightedMads, rowWeightedMeans, rowWeightedMedians,
-    rowWeightedSds, rowWeightedVars</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: Biobase</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Welcome to Bioconductor
-
-    Vignettes contain introductory material; view with
-    'browseVignettes()'. To cite Bioconductor, see
-    'citation("Biobase")', and for packages 'citation("pkgname")'.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'Biobase'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:MatrixGenerics':
-
-    rowMedians</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:matrixStats':
-
-    anyMissing, rowMedians</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DESeq2)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EnhancedVolcano)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pheatmap)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 0%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 2%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: right;">SRR25486680ReadsPerGene</th>
-<th style="text-align: right;">SRR25486681ReadsPerGene</th>
-<th style="text-align: right;">SRR25486682ReadsPerGene</th>
-<th style="text-align: right;">SRR25486683ReadsPerGene</th>
-<th style="text-align: right;">SRR25486684ReadsPerGene</th>
-<th style="text-align: right;">SRR25486685ReadsPerGene</th>
-<th style="text-align: right;">SRR25486686ReadsPerGene</th>
-<th style="text-align: right;">SRR25486687ReadsPerGene</th>
-<th style="text-align: right;">SRR25486688ReadsPerGene</th>
-<th style="text-align: right;">SRR25486689ReadsPerGene</th>
-<th style="text-align: right;">SRR25486690ReadsPerGene</th>
-<th style="text-align: right;">SRR25486691ReadsPerGene</th>
-<th style="text-align: right;">SRR25486692ReadsPerGene</th>
-<th style="text-align: right;">SRR25486693ReadsPerGene</th>
-<th style="text-align: right;">SRR25486694ReadsPerGene</th>
-<th style="text-align: right;">SRR25486695ReadsPerGene</th>
-<th style="text-align: right;">SRR25486696ReadsPerGene</th>
-<th style="text-align: right;">SRR25486697ReadsPerGene</th>
-<th style="text-align: right;">SRR25486698ReadsPerGene</th>
-<th style="text-align: right;">SRR25486699ReadsPerGene</th>
-<th style="text-align: right;">SRR25486700ReadsPerGene</th>
-<th style="text-align: right;">SRR25486701ReadsPerGene</th>
-<th style="text-align: right;">SRR25486702ReadsPerGene</th>
-<th style="text-align: right;">SRR25486703ReadsPerGene</th>
-<th style="text-align: right;">SRR25486704ReadsPerGene</th>
-<th style="text-align: right;">SRR25486705ReadsPerGene</th>
-<th style="text-align: right;">SRR25486706ReadsPerGene</th>
-<th style="text-align: right;">SRR25486707ReadsPerGene</th>
-<th style="text-align: right;">SRR25486708ReadsPerGene</th>
-<th style="text-align: right;">SRR25486709ReadsPerGene</th>
-<th style="text-align: right;">SRR25486710ReadsPerGene</th>
-<th style="text-align: right;">SRR25486711ReadsPerGene</th>
-<th style="text-align: right;">SRR25486712ReadsPerGene</th>
-<th style="text-align: right;">SRR25486713ReadsPerGene</th>
-<th style="text-align: right;">SRR25486714ReadsPerGene</th>
-<th style="text-align: right;">SRR25486715ReadsPerGene</th>
-<th style="text-align: right;">SRR25486716ReadsPerGene</th>
-<th style="text-align: right;">SRR25486717ReadsPerGene</th>
-<th style="text-align: right;">SRR25486718ReadsPerGene</th>
-<th style="text-align: right;">SRR25486719ReadsPerGene</th>
-<th style="text-align: right;">SRR25486720ReadsPerGene</th>
-<th style="text-align: right;">SRR25486721ReadsPerGene</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">TSPAN6</td>
-<td style="text-align: right;">2032</td>
-<td style="text-align: right;">1612</td>
-<td style="text-align: right;">1883</td>
-<td style="text-align: right;">2343</td>
-<td style="text-align: right;">1427</td>
-<td style="text-align: right;">1836</td>
-<td style="text-align: right;">1629</td>
-<td style="text-align: right;">2702</td>
-<td style="text-align: right;">2739</td>
-<td style="text-align: right;">2293</td>
-<td style="text-align: right;">2389</td>
-<td style="text-align: right;">2393</td>
-<td style="text-align: right;">1971</td>
-<td style="text-align: right;">1803</td>
-<td style="text-align: right;">1690</td>
-<td style="text-align: right;">1534</td>
-<td style="text-align: right;">2045</td>
-<td style="text-align: right;">1907</td>
-<td style="text-align: right;">700</td>
-<td style="text-align: right;">659</td>
-<td style="text-align: right;">659</td>
-<td style="text-align: right;">666</td>
-<td style="text-align: right;">609</td>
-<td style="text-align: right;">688</td>
-<td style="text-align: right;">3776</td>
-<td style="text-align: right;">3478</td>
-<td style="text-align: right;">3344</td>
-<td style="text-align: right;">2034</td>
-<td style="text-align: right;">2425</td>
-<td style="text-align: right;">2130</td>
-<td style="text-align: right;">728</td>
-<td style="text-align: right;">660</td>
-<td style="text-align: right;">628</td>
-<td style="text-align: right;">758</td>
-<td style="text-align: right;">714</td>
-<td style="text-align: right;">609</td>
-<td style="text-align: right;">1656</td>
-<td style="text-align: right;">1678</td>
-<td style="text-align: right;">1396</td>
-<td style="text-align: right;">1775</td>
-<td style="text-align: right;">2339</td>
-<td style="text-align: right;">2042</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">TNMD</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">37</td>
-<td style="text-align: right;">41</td>
-<td style="text-align: right;">16</td>
-<td style="text-align: right;">516</td>
-<td style="text-align: right;">254</td>
-<td style="text-align: right;">42</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">7</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">DPM1</td>
-<td style="text-align: right;">657</td>
-<td style="text-align: right;">590</td>
-<td style="text-align: right;">684</td>
-<td style="text-align: right;">822</td>
-<td style="text-align: right;">887</td>
-<td style="text-align: right;">927</td>
-<td style="text-align: right;">368</td>
-<td style="text-align: right;">556</td>
-<td style="text-align: right;">778</td>
-<td style="text-align: right;">544</td>
-<td style="text-align: right;">616</td>
-<td style="text-align: right;">640</td>
-<td style="text-align: right;">594</td>
-<td style="text-align: right;">382</td>
-<td style="text-align: right;">373</td>
-<td style="text-align: right;">436</td>
-<td style="text-align: right;">451</td>
-<td style="text-align: right;">515</td>
-<td style="text-align: right;">821</td>
-<td style="text-align: right;">885</td>
-<td style="text-align: right;">802</td>
-<td style="text-align: right;">802</td>
-<td style="text-align: right;">1014</td>
-<td style="text-align: right;">985</td>
-<td style="text-align: right;">671</td>
-<td style="text-align: right;">667</td>
-<td style="text-align: right;">672</td>
-<td style="text-align: right;">862</td>
-<td style="text-align: right;">905</td>
-<td style="text-align: right;">929</td>
-<td style="text-align: right;">631</td>
-<td style="text-align: right;">594</td>
-<td style="text-align: right;">823</td>
-<td style="text-align: right;">753</td>
-<td style="text-align: right;">900</td>
-<td style="text-align: right;">1046</td>
-<td style="text-align: right;">724</td>
-<td style="text-align: right;">622</td>
-<td style="text-align: right;">665</td>
-<td style="text-align: right;">630</td>
-<td style="text-align: right;">825</td>
-<td style="text-align: right;">830</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">SCYL3</td>
-<td style="text-align: right;">282</td>
-<td style="text-align: right;">202</td>
-<td style="text-align: right;">245</td>
-<td style="text-align: right;">260</td>
-<td style="text-align: right;">190</td>
-<td style="text-align: right;">210</td>
-<td style="text-align: right;">77</td>
-<td style="text-align: right;">127</td>
-<td style="text-align: right;">138</td>
-<td style="text-align: right;">63</td>
-<td style="text-align: right;">76</td>
-<td style="text-align: right;">92</td>
-<td style="text-align: right;">202</td>
-<td style="text-align: right;">177</td>
-<td style="text-align: right;">249</td>
-<td style="text-align: right;">213</td>
-<td style="text-align: right;">192</td>
-<td style="text-align: right;">195</td>
-<td style="text-align: right;">181</td>
-<td style="text-align: right;">140</td>
-<td style="text-align: right;">156</td>
-<td style="text-align: right;">123</td>
-<td style="text-align: right;">102</td>
-<td style="text-align: right;">187</td>
-<td style="text-align: right;">223</td>
-<td style="text-align: right;">280</td>
-<td style="text-align: right;">232</td>
-<td style="text-align: right;">278</td>
-<td style="text-align: right;">245</td>
-<td style="text-align: right;">248</td>
-<td style="text-align: right;">333</td>
-<td style="text-align: right;">349</td>
-<td style="text-align: right;">273</td>
-<td style="text-align: right;">275</td>
-<td style="text-align: right;">263</td>
-<td style="text-align: right;">254</td>
-<td style="text-align: right;">312</td>
-<td style="text-align: right;">312</td>
-<td style="text-align: right;">300</td>
-<td style="text-align: right;">220</td>
-<td style="text-align: right;">237</td>
-<td style="text-align: right;">228</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">FIRRM</td>
-<td style="text-align: right;">168</td>
-<td style="text-align: right;">259</td>
-<td style="text-align: right;">393</td>
-<td style="text-align: right;">642</td>
-<td style="text-align: right;">847</td>
-<td style="text-align: right;">662</td>
-<td style="text-align: right;">174</td>
-<td style="text-align: right;">290</td>
-<td style="text-align: right;">308</td>
-<td style="text-align: right;">333</td>
-<td style="text-align: right;">402</td>
-<td style="text-align: right;">330</td>
-<td style="text-align: right;">182</td>
-<td style="text-align: right;">200</td>
-<td style="text-align: right;">317</td>
-<td style="text-align: right;">222</td>
-<td style="text-align: right;">390</td>
-<td style="text-align: right;">552</td>
-<td style="text-align: right;">654</td>
-<td style="text-align: right;">663</td>
-<td style="text-align: right;">618</td>
-<td style="text-align: right;">701</td>
-<td style="text-align: right;">733</td>
-<td style="text-align: right;">826</td>
-<td style="text-align: right;">157</td>
-<td style="text-align: right;">78</td>
-<td style="text-align: right;">174</td>
-<td style="text-align: right;">361</td>
-<td style="text-align: right;">393</td>
-<td style="text-align: right;">406</td>
-<td style="text-align: right;">642</td>
-<td style="text-align: right;">512</td>
-<td style="text-align: right;">674</td>
-<td style="text-align: right;">1025</td>
-<td style="text-align: right;">916</td>
-<td style="text-align: right;">1039</td>
-<td style="text-align: right;">131</td>
-<td style="text-align: right;">92</td>
-<td style="text-align: right;">70</td>
-<td style="text-align: right;">364</td>
-<td style="text-align: right;">405</td>
-<td style="text-align: right;">402</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">FGR</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">14</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">1</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>data_hg38 <span class="ot">&lt;-</span> <span class="fu">read.csv2</span>(<span class="fu">paste0</span>(config<span class="sc">$</span>counts_dir, <span class="st">"/hg38_counts.csv"</span>), <span class="at">sep =</span> <span class="st">","</span>, <span class="at">row.names =</span> <span class="dv">1</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>col_data <span class="ot">&lt;-</span> <span class="fu">read.csv2</span>(config<span class="sc">$</span>col_data, <span class="at">sep =</span> <span class="st">";"</span>)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(col_data) <span class="ot">&lt;-</span> col_data[,<span class="dv">1</span>]</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>col_data<span class="sc">$</span>treatment <span class="ot">&lt;-</span> <span class="fu">factor</span>(col_data<span class="sc">$</span>treatment, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"DMSO"</span>, <span class="st">"250 nM crizotinib"</span>))</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                            
+1 function (..., list = character(), package = NULL, lib.loc = NULL,        
+2     verbose = getOption("verbose"), envir = .GlobalEnv, overwrite = TRUE) 
+3 {                                                                         
+4     fileExt &lt;- function(x) {                                              
+5         db &lt;- grepl("\\\\.[^.]+\\\\.(gz|bz2|xz)$", x)                     
+6         ans &lt;- sub(".*\\\\.", "", x)                                      </code></pre>
 </div>
 </div>
 <p>This is the count data for the GSE23 experiment, mapped to the hg38 human genome. There is also another file being loaded in; The column data file.</p>
 <div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(col_data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="caption-top table table-sm table-striped small">
@@ -847,12 +500,21 @@ Attaching package: 'Biobase'</code></pre>
 </div>
 <p>This contains information about the different samples. To select certain samples or groups of samples i will generate masks for all possible assay and treatment combination. First i will make sure that the order of the columns of the count data is the same as the Run column in the col_data</p>
 <div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>data_hg38 <span class="ot">&lt;-</span> data_hg38[, <span class="fu">rownames</span>(col_data)]</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">all</span>(<span class="fu">rownames</span>(col_data) <span class="sc">==</span> <span class="fu">colnames</span>(data_hg38))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] TRUE</code></pre>
 </div>
 </div>
 <p>This means that all of the rownames of the coldata is alligned with the colname of the counts data. Which means I can now generate masks for the different groups, i will also rename the SRR reads so that they’re named after the assay type and treatment</p>
 <div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>col_data <span class="ot">&lt;-</span> col_data <span class="sc">%&gt;%</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(Assay.Type, treatment) <span class="sc">%&gt;%</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">r_num =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">condition =</span> <span class="fu">paste0</span>(Assay.Type, <span class="st">"_"</span>, treatment, <span class="st">"_r"</span>, r_num))</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(col_data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="caption-top table table-sm table-striped small">
@@ -922,6 +584,13 @@ Attaching package: 'Biobase'</code></pre>
 </div>
 <p>This will make it more readable what every point is, including which one of the tripples it is.</p>
 <div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(col_data)) {</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  idx <span class="ot">&lt;-</span> <span class="fu">grep</span>(col_data<span class="sc">$</span>Run[i], <span class="fu">names</span>(data_hg38))</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(data_hg38)[idx] <span class="ot">&lt;-</span> col_data<span class="sc">$</span>condition[i]</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data_hg38)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="caption-top table table-sm table-striped small">
@@ -1294,116 +963,80 @@ Attaching package: 'Biobase'</code></pre>
 </div>
 </div>
 <p>Now the names of the SRR files align with more readable names, we can now seperate them into groups</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>HCC78_crizo <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"HCC78_250 nM crizotinib"</span>, <span class="fu">names</span>(data_hg38))</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>HCC78_DMSO <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"HCC78_DMSO"</span>, <span class="fu">names</span>(data_hg38))</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>CUTO38_crizo <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO38_250 nM crizotinib"</span>, <span class="fu">names</span>(data_hg38))</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>CUTO38_DMSO <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO38_DMSO"</span>, <span class="fu">names</span>(data_hg38))</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>CUTO37_crizo <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO37_250 nM crizotinib"</span>, <span class="fu">names</span>(data_hg38))</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>CUTO37_DMSO <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO37_DMSO"</span>, <span class="fu">names</span>(data_hg38))</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>CUTO33_crizo <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO33_250 nM crizotinib"</span>, <span class="fu">names</span>(data_hg38))</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>CUTO33_DMSO <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO33_DMSO"</span>, <span class="fu">names</span>(data_hg38))</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>CUTO28_crizo <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO28_250 nM crizotinib"</span>, <span class="fu">names</span>(data_hg38))</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>CUTO28_DMSO <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO28_DMSO"</span>, <span class="fu">names</span>(data_hg38))</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>CUTO27_crizo <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO27_250 nM crizotinib"</span>, <span class="fu">names</span>(data_hg38))</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>CUTO27_DMSO <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO27_DMSO"</span>, <span class="fu">names</span>(data_hg38))</span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>CUTO23_crizo <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO23_250 nM crizotinib"</span>, <span class="fu">names</span>(data_hg38))</span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>CUTO23_DMSO <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO23_DMSO"</span>, <span class="fu">names</span>(data_hg38))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 <p>Now we can start with DESEQ, finally.</p>
 <div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in DESeqDataSet(se, design = design, ignoreRank): some variables in
-design formula are characters, converting to factors</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>dds <span class="ot">&lt;-</span> <span class="fu">DESeqDataSetFromMatrix</span>(<span class="at">countData =</span> data_hg38,</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>                              <span class="at">colData =</span> col_data,</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>                              <span class="at">design =</span> <span class="sc">~</span> Assay.Type <span class="sc">+</span> treatment)</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>dds <span class="ot">&lt;-</span> dds[<span class="fu">rowSums</span>(<span class="fu">counts</span>(dds)) <span class="sc">&gt;</span> <span class="dv">10</span>, ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>  Note: levels of factors in the design contain characters other than
-  letters, numbers, '_' and '.'. It is recommended (but not required) to use
-  only letters, numbers, and delimiters '_' or '.', as these are safe characters
-  for column names in R. [This is a message, not a warning or an error]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>estimating size factors</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>  Note: levels of factors in the design contain characters other than
-  letters, numbers, '_' and '.'. It is recommended (but not required) to use
-  only letters, numbers, and delimiters '_' or '.', as these are safe characters
-  for column names in R. [This is a message, not a warning or an error]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>estimating dispersions</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>gene-wise dispersion estimates</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>mean-dispersion relationship</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>-- note: fitType='parametric', but the dispersion trend was not well captured by the
-   function: y = a/x + b, and a local regression fit was automatically substituted.
-   specify fitType='local' or 'mean' to avoid this message next time.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>  Note: levels of factors in the design contain characters other than
-  letters, numbers, '_' and '.'. It is recommended (but not required) to use
-  only letters, numbers, and delimiters '_' or '.', as these are safe characters
-  for column names in R. [This is a message, not a warning or an error]</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>final dispersion estimates</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>fitting model and testing</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>36 rows did not converge in beta, labelled in mcols(object)$betaConv. Use larger maxit argument with nbinomWaldTest</code></pre>
-</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>dds <span class="ot">&lt;-</span> <span class="fu">DESeq</span>(dds, <span class="at">parallel =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>With this we can do a Differential Expression Analysis</p>
-<section id="differential-expression-analysis" class="level3">
-<h3 class="anchored" data-anchor-id="differential-expression-analysis">Differential Expression Analysis</h3>
+<section id="differential-expression-analysis" class="level4">
+<h4 class="anchored" data-anchor-id="differential-expression-analysis">Differential Expression Analysis</h4>
 <div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast=</span><span class="fu">c</span>(<span class="st">"treatment"</span>, <span class="st">"250 nM crizotinib"</span>, <span class="st">"DMSO"</span>))</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>log2 fold change (MLE): treatment 250 nM crizotinib vs DMSO 
-Wald test p-value: treatment 250.nM.crizotinib vs DMSO 
-DataFrame with 86369 rows and 6 columns
-                 baseMean log2FoldChange     lfcSE       stat      pvalue
-                &lt;numeric&gt;      &lt;numeric&gt; &lt;numeric&gt;  &lt;numeric&gt;   &lt;numeric&gt;
-TSPAN6          1695.8415      0.0171044 0.0665818   0.256893 7.97261e-01
-TNMD              26.6081      1.1863478 1.0763697   1.102175 2.70386e-01
-DPM1             692.3769     -0.2761502 0.0531167  -5.198938 2.00431e-07
-SCYL3            205.4780      0.2014794 0.0622861   3.234739 1.21754e-03
-FIRRM            434.6356     -1.0117381 0.1341219  -7.543420 4.57805e-14
-...                   ...            ...       ...        ...         ...
-ENSG00000310589 0.3045308      0.2374414  2.945779  0.0806040    0.935757
-ENSG00000310590 0.0000000             NA        NA         NA          NA
-ENSG00000310591 0.8821230     -0.7383822  0.949942 -0.7772920    0.436987
-ENSG00000310592 0.0915997     -0.0148159  2.953024 -0.0050172    0.995997
-ENSG00000310593 0.3205796      0.1663381  1.472575  0.1129573    0.910064
-                       padj
-                  &lt;numeric&gt;
-TSPAN6          8.81669e-01
-TNMD            4.22602e-01
-DPM1            1.47749e-06
-SCYL3           4.29899e-03
-FIRRM           1.13227e-12
-...                     ...
-ENSG00000310589          NA
-ENSG00000310590          NA
-ENSG00000310591    0.597132
-ENSG00000310592          NA
-ENSG00000310593          NA</code></pre>
+<pre><code>
+out of 35207 with nonzero total read count
+adjusted p-value &lt; 0.1
+LFC &gt; 0 (up)       : 7355, 21%
+LFC &lt; 0 (down)     : 4840, 14%
+outliers [1]       : 4, 0.011%
+low counts [2]     : 8191, 23%
+(mean count &lt; 1)
+[1] see 'cooksCutoff' argument of ?results
+[2] see 'independentFiltering' argument of ?results</code></pre>
 </div>
 </div>
-<p>This is the result of comparing the treatments (either no treatment or 250 nM of crizotinib). I need to shrink the log fold change, this is usefull for the visualisations.</p>
+<p>This is the result of comparing the treatments (either no treatment or 250 nM of crizotinib). As we see there is in general an upregulation of about 7355 genes, and a downregulation of 4840 genes. Very few outliers, and a couple of low counts. This says nothing about the cell lines, the analyses for these will done downstream. I need to shrink the log fold change, this is usefull for the visualisations.</p>
 <div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">resultsNames</span>(dds))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Intercept"                           "Assay.Type_CUTO27_vs_CUTO23"        
 [3] "Assay.Type_CUTO28_vs_CUTO23"         "Assay.Type_CUTO33_vs_CUTO23"        
 [5] "Assay.Type_CUTO37_vs_CUTO23"         "Assay.Type_CUTO38_vs_CUTO23"        
 [7] "Assay.Type_HCC78_vs_CUTO23"          "treatment_250.nM.crizotinib_vs_DMSO"</code></pre>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>using 'apeglm' for LFC shrinkage. If used in published research, please cite:
-    Zhu, A., Ibrahim, J.G., Love, M.I. (2018) Heavy-tailed prior distributions for
-    sequence count data: removing the noise and preserving large differences.
-    Bioinformatics. https://doi.org/10.1093/bioinformatics/bty895</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>resLFC <span class="ot">&lt;-</span> <span class="fu">lfcShrink</span>(dds, <span class="at">coef =</span> <span class="fu">tail</span>(<span class="fu">resultsNames</span>(dds), <span class="at">n=</span><span class="dv">1</span>), <span class="at">type =</span> <span class="st">"apeglm"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>using ntop=500 top features by variance</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds, <span class="at">blind =</span> F)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>pcaData <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd, <span class="at">intgroup=</span> <span class="fu">c</span>(<span class="st">"Assay.Type"</span>, <span class="st">"treatment"</span>), <span class="at">returnData=</span>T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>I want to generate a PCA plot to look at the different samples, and see if they align or if there are any outliers. I will do this using the given PCA data from deseq2 and generating a PCA plot from this using ggplot.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 <p>Before I do that, i will take a peak at the given PCA data:</p>
 <div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pcaData)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="caption-top table table-sm table-striped small">
@@ -1438,8 +1071,8 @@ ENSG00000310593          NA</code></pre>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">HCC78_250 nM crizotinib_r1</td>
-<td style="text-align: right;">7.633584e+20</td>
-<td style="text-align: right;">2.077023e+21</td>
+<td style="text-align: right;">7.431121e+19</td>
+<td style="text-align: right;">4.420250e+19</td>
 <td style="text-align: left;">HCC78:250 nM crizotinib</td>
 <td style="text-align: left;">HCC78_250 nM crizotinib_r1</td>
 <td style="text-align: left;">SRR25486680ReadsPerGene</td>
@@ -1451,8 +1084,8 @@ ENSG00000310593          NA</code></pre>
 </tr>
 <tr class="even">
 <td style="text-align: left;">HCC78_250 nM crizotinib_r2</td>
-<td style="text-align: right;">3.853864e+20</td>
-<td style="text-align: right;">2.429308e+21</td>
+<td style="text-align: right;">4.998400e+19</td>
+<td style="text-align: right;">3.457167e+19</td>
 <td style="text-align: left;">HCC78:250 nM crizotinib</td>
 <td style="text-align: left;">HCC78_250 nM crizotinib_r2</td>
 <td style="text-align: left;">SRR25486681ReadsPerGene</td>
@@ -1464,8 +1097,8 @@ ENSG00000310593          NA</code></pre>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">HCC78_250 nM crizotinib_r3</td>
-<td style="text-align: right;">5.231452e+20</td>
-<td style="text-align: right;">2.225661e+21</td>
+<td style="text-align: right;">5.674702e+19</td>
+<td style="text-align: right;">3.781985e+19</td>
 <td style="text-align: left;">HCC78:250 nM crizotinib</td>
 <td style="text-align: left;">HCC78_250 nM crizotinib_r3</td>
 <td style="text-align: left;">SRR25486682ReadsPerGene</td>
@@ -1477,8 +1110,8 @@ ENSG00000310593          NA</code></pre>
 </tr>
 <tr class="even">
 <td style="text-align: left;">HCC78_DMSO_r1</td>
-<td style="text-align: right;">1.302141e+21</td>
-<td style="text-align: right;">2.843726e+21</td>
+<td style="text-align: right;">1.052481e+20</td>
+<td style="text-align: right;">5.652970e+19</td>
 <td style="text-align: left;">HCC78:DMSO</td>
 <td style="text-align: left;">HCC78_DMSO_r1</td>
 <td style="text-align: left;">SRR25486683ReadsPerGene</td>
@@ -1490,8 +1123,8 @@ ENSG00000310593          NA</code></pre>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">HCC78_DMSO_r2</td>
-<td style="text-align: right;">1.446269e+21</td>
-<td style="text-align: right;">2.989905e+21</td>
+<td style="text-align: right;">8.799794e+19</td>
+<td style="text-align: right;">5.808388e+19</td>
 <td style="text-align: left;">HCC78:DMSO</td>
 <td style="text-align: left;">HCC78_DMSO_r2</td>
 <td style="text-align: left;">SRR25486684ReadsPerGene</td>
@@ -1503,8 +1136,8 @@ ENSG00000310593          NA</code></pre>
 </tr>
 <tr class="even">
 <td style="text-align: left;">HCC78_DMSO_r3</td>
-<td style="text-align: right;">1.659602e+21</td>
-<td style="text-align: right;">3.044645e+21</td>
+<td style="text-align: right;">7.570999e+19</td>
+<td style="text-align: right;">5.253785e+19</td>
 <td style="text-align: left;">HCC78:DMSO</td>
 <td style="text-align: left;">HCC78_DMSO_r3</td>
 <td style="text-align: left;">SRR25486685ReadsPerGene</td>
@@ -1521,6 +1154,12 @@ ENSG00000310593          NA</code></pre>
 </div>
 <p>Here we see a couple of different interesting things: - The 2 PCA values used for plotting - It also stores the treatment, assay-types and triplo-number.</p>
 <div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>percentVar <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> <span class="fu">attr</span>(pcaData, <span class="st">"percentVar"</span>))</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pcaData, <span class="fu">aes</span>(PC1, PC2, <span class="at">color =</span> Assay.Type, <span class="at">shape =</span> treatment)) <span class="sc">+</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="fu">paste0</span>(<span class="st">"PC1: "</span>, percentVar[<span class="dv">1</span>], <span class="st">"% variance"</span>)) <span class="sc">+</span></span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="fu">paste0</span>(<span class="st">"PC2: "</span>, percentVar[<span class="dv">2</span>], <span class="st">"% variance"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1529,7 +1168,140 @@ ENSG00000310593          NA</code></pre>
 </div>
 </div>
 </div>
-<p>Interesting is that some of the cell types like CUTO23 and 33 don’t seem to respond to the treatments, as they are all clustered very tightly around 1 area. We see a clearer seperation with CUTO 38 and CUTO 27.</p>
+<p>Interesting insights:</p>
+<ul>
+<li>Some cell lines are plotted further away from the rest:
+<ul>
+<li>CUTO33 and CUTO 38. Where we also see that both treated and DMSO are comparable to eachother. Espcially CUTO 38, where we see near perfect clustering, even with treatment and DMSO.</li>
+</ul></li>
+<li>The other cell lines can be found clustered together. In some cases like CUTO23 and 28 there is a small, but notable, differences between treated and non treated cell lines.</li>
+</ul>
+<p>I’m interested to see in further data quality assessments how these different samples show up again.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>ntd <span class="ot">&lt;-</span> <span class="fu">normTransform</span>(dds)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>select <span class="ot">&lt;-</span> <span class="fu">order</span>(<span class="fu">rowMeans</span>(<span class="fu">counts</span>(dds,<span class="at">normalized=</span><span class="cn">TRUE</span>)),</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">decreasing=</span><span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>]</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">colData</span>(dds)[,<span class="fu">c</span>(<span class="st">"Assay.Type"</span>, <span class="st">"treatment"</span>)])</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(<span class="fu">assay</span>(ntd)[select,], <span class="at">cluster_rows=</span><span class="cn">FALSE</span>, <span class="at">show_rownames=</span><span class="cn">FALSE</span>,</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">cluster_cols=</span><span class="cn">FALSE</span>, <span class="at">annotation_col=</span>df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="logging_ramon_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>deseq.volcano <span class="ot">&lt;-</span> <span class="cf">function</span>(res, datasetName, v1, v2) {</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">EnhancedVolcano</span>(res, <span class="at">x =</span> <span class="st">'log2FoldChange'</span>, <span class="at">y =</span> <span class="st">'padj'</span>,</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">lab=</span><span class="fu">rownames</span>(res),</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">title =</span> <span class="fu">paste</span>(datasetName, v1, <span class="st">"vs"</span>, v2),</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>                         <span class="at">subtitle =</span> <span class="fu">bquote</span>(<span class="fu">italic</span>(<span class="st">'FDR &lt;= 0.05 and absolute FC &gt;= 2'</span>)),</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>                         <span class="co"># Change text and icon sizes</span></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>                         <span class="at">labSize =</span> <span class="dv">3</span>, <span class="at">pointSize =</span> <span class="fl">1.5</span>, <span class="at">axisLabSize=</span><span class="dv">10</span>, <span class="at">titleLabSize=</span><span class="dv">12</span>,</span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>                         <span class="at">subtitleLabSize=</span><span class="dv">8</span>, <span class="at">captionLabSize=</span><span class="dv">10</span>,</span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>                         <span class="co"># Disable legend</span></span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>                         <span class="at">legendPosition =</span> <span class="st">"none"</span>,</span>
+<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a>                         <span class="co"># Set cutoffs</span></span>
+<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a>                         <span class="at">pCutoff =</span> <span class="fl">0.05</span>, <span class="at">FCcutoff =</span> <span class="dv">2</span>))</span>
+<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">deseq.volcano</span>(resLFC, <span class="st">"Treatment vs DMSO"</span>, <span class="at">v1 =</span> <span class="st">"DMSO"</span>, <span class="at">v2 =</span> <span class="st">"250 nm crizotinib"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="logging_ramon_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This plot displays a couple of significant genes with a p cut off of 0.05, and an absolute log change of atleast 3. Any genes that fit this requirement are labeled, and will also be used. I’m going to look these genes up, and see if there are any worth noting. I will later send a gene list to the GSEGO to see what different pathways or features in the body are up or down regulated.</p>
+<p><strong>Intesting genes</strong></p>
+<ul>
+<li>SERPINB3: Ocogenic factor in sqaumous cell carcinomas. Found in liver cancers primarily, where it is highly expressed. Part of the family “serine-protease inhibitor family” (Cagnin et al., 2024; SERPINB3 Serpin Family B Member 3 [Homo Sapiens (Human)] - Gene - NCBI, n.d.)</li>
+<li>STC1: A glycoprotein hormone, that has been found and could possible be a biomarker in bladder cancers, where it is upregulated. (Sun et al., 2021)</li>
+<li>MS4A15: Predicted to be part of th ecell surface receptor signaling pathway. Research shows a significant decrease in tumor tissues in lung adenocarcinoma. An increase of expression is positively correlated with some immune cell types. (Qiu et al., 2025)</li>
+</ul>
+</section>
+<section id="gsea" class="level4">
+<h4 class="anchored" data-anchor-id="gsea">GSEA</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(clusterProfiler)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(enrichplot)</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"org.Hs.eg.db"</span>, <span class="at">character.only =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>hg_38_gene_list <span class="ot">&lt;-</span> res<span class="sc">$</span>log2FoldChange</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(hg_38_gene_list) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(res)</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>hg_38_gene_list <span class="ot">&lt;-</span> hg_38_gene_list[<span class="sc">!</span><span class="fu">is.na</span>(hg_38_gene_list)]</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>hg_38_gene_list <span class="ot">&lt;-</span> <span class="fu">sort</span>(hg_38_gene_list, <span class="at">decreasing =</span> T)</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(hg_38_gene_list)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  MS4A15     ALPG    BNIP5   CYP2A7     CHIA     AQP4 
+3.798297 3.338543 3.181466 3.176805 3.131317 2.973000 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>entrezid_h38 <span class="ot">&lt;-</span> <span class="fu">bitr</span>(<span class="fu">names</span>(hg_38_gene_list),</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">fromType =</span> <span class="st">"SYMBOL"</span>,</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">toType =</span> <span class="st">"ENTREZID"</span>,</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">OrgDb =</span> org.Hs.eg.db)</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>gene_list_h38 <span class="ot">&lt;-</span> hg_38_gene_list[entrezid_h38<span class="sc">$</span>SYMBOL]</span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(hg_38_gene_list) <span class="ot">&lt;-</span> entrezid_h38<span class="sc">$</span>ENTREZID</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>hg_38_gene_list <span class="ot">&lt;-</span> hg_38_gene_list[<span class="sc">!</span><span class="fu">is.na</span>(<span class="fu">names</span>(hg_38_gene_list))]</span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>hg_38_gene_list <span class="ot">&lt;-</span> hg_38_gene_list[<span class="sc">!</span><span class="fu">duplicated</span>(<span class="fu">names</span>(hg_38_gene_list))]</span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>hg_38_gene_list <span class="ot">&lt;-</span> <span class="fu">sort</span>(hg_38_gene_list, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>gse_hg38 <span class="ot">&lt;-</span> <span class="fu">gseGO</span>(</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">geneList =</span> hg_38_gene_list,</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">OrgDb =</span> org.Hs.eg.db,</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">keyType =</span> <span class="st">"ENTREZID"</span>,</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ont =</span> <span class="st">"BP"</span>,</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">pvalueCutoff =</span> <span class="fl">0.05</span>,</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dotplot</span>(gse_hg38, <span class="at">showCategory=</span><span class="dv">10</span>, <span class="at">split=</span><span class="st">".sign"</span>) <span class="sc">+</span> <span class="fu">facet_grid</span>(.<span class="sc">~</span>.sign)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="logging_ramon_files/figure-html/dotplot_38-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Here we see different processes in the cells, and how they are activated or suppressed.</p>
+<p>We see that most of the displayed suppressed processes are related to DNA and RNA processes. Ribosomal localization, rRNA 3’-end processing and tRNA processing.</p>
+<p>We also see some other processes activated. These appear to be more immune-system related processes. like antimicrobial humoral responses, killing of cells, disruption of anatomical structures in other organisms.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ridgeplot</span>(gse_hg38) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Enrichment distribution"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="logging_ramon_files/figure-html/ridgeplot_38-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gseaplot</span>(gse_hg38, <span class="at">by =</span> <span class="st">"all"</span>, <span class="at">title =</span> gse_hg38<span class="sc">$</span>Description[<span class="dv">1</span>], <span class="at">geneSetID =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="logging_ramon_files/figure-html/gseaplot_38-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
 </section>
 </section>
 </section>

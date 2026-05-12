@@ -50,3 +50,4 @@ rsconnect/
 
 config.ini
 .snakemake
+.positai
