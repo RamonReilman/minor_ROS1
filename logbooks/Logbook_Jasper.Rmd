@@ -166,6 +166,13 @@ coldata
 ```
 
 ```{r}
+coldata$treatment <- factor(
+  coldata$treatment,
+  levels = c("none", "500nM entrectinib")
+)
+```
+
+```{r}
 count_data_hg19 <- read.csv("/students/2025-2026/ros1_transcriptomics/GSE214715/counts/hg19_counts.csv", row.names = 1)
 head(count_data_hg19)
 ```
@@ -209,6 +216,7 @@ dds_hg38_CD74_ROS1 <- DESeqDataSetFromMatrix(countData = count_data_hg38[,desseq
 dds_hg38_CD74_ROS1 <- DESeq(dds_hg38_CD74_ROS1)
 res_hg38_CD74_ROS1 <- results(dds_hg38_CD74_ROS1)
 ```
+
 ```{r}
 dds_hg38_TPM3 <- DESeqDataSetFromMatrix(countData = count_data_hg38[,desseq_for_TPM3_ROS1], 
                               colData = coldata[desseq_for_TPM3_ROS1,], 
@@ -218,7 +226,6 @@ res_hg38_TPM3 <- results(dds_hg38_TPM3)
 ```
 
 ## Plots 
-
 
 ### hg 19
 
@@ -611,4 +618,433 @@ gseaplot2(gsea_4, geneSetID = 1)
 
 ```{r}
 ridgeplot(gsea_4)
+```
+
+
+# Better ros1-CD74
+
+
+In this segment we focus on the CD74 ROS1 mutation becuse we are working wite it 
+```{r}
+dds_hg38_CD74_ROS1 <- DESeqDataSetFromMatrix(countData = count_data_hg38[,desseq_for_CD74_ROS1], 
+                              colData = coldata[desseq_for_CD74_ROS1,], 
+                              design = ~ treatment)
+dds_hg38_CD74_ROS1$treatment <- relevel(
+  dds_hg38_CD74_ROS1$treatment,
+  ref = "none"
+)
+dds_hg38_CD74_ROS1 <- DESeq(dds_hg38_CD74_ROS1)
+res_hg38_CD74_ROS1 <- results(dds_hg38_CD74_ROS1)
+```
+
+## Volcano 
+And the volcano plot wil show the gens of the chosen primers and the singnicabt gensne
+
+```{r}
+library(EnhancedVolcano)
+```
+
+```{r}
+top_genes <- rownames(res_hg38_CD74_ROS1)[
+  order(res_hg38_CD74_ROS1$padj)
+][1:5]
+genes_to_label <- c("GAPDH",
+           "ROS1",
+           "ARID1A",
+           "PIK3CA",
+           "RPTOR",
+           "TSC1",
+           "MAP3K1",
+           "MAP3K7",
+           "JAK2")
+select_genes <- unique(c(genes_to_label))
+```
+
+```{r}
+sum_sig <- sum(res_hg38_CD74_ROS1$padj < 0.05 & 
+               abs(res_hg38_CD74_ROS1$log2FoldChange) > 1, 
+               na.rm = TRUE)
+```
+
+
+```{r}
+EnhancedVolcano(
+  res_hg38_CD74_ROS1,
+  lab = rownames(res_hg38_CD74_ROS1),
+  x = 'log2FoldChange',
+  y = 'padj',
+
+  selectLab = genes_to_label,
+
+  pCutoff = 0.05,
+  FCcutoff = 1,
+
+  drawConnectors = TRUE,
+  widthConnectors = 0.5,
+
+  boxedLabels = TRUE, 
+  max.overlaps = Inf,
+
+  pointSize = 2,
+  labSize = 4,
+  
+  title = "Volcano plot CD74-ROS1",
+  subtitle = paste0("Aantal significante genen: ", sum_sig)
+)
+
+```
+Differential expression analysis identified 4967 significantly altered genes. Key genes involved in ROS1 downstream signaling pathways, including PIK3CA, MAP3K1, MAP3K7, and JAK2, showed significant changes, indicating strong perturbation of oncogenic signaling pathways
+## Enrichement
+
+```{r}
+res_for_nice <- res_hg38_CD74_ROS1
+
+
+res_for_nice <- res_for_nice[!is.na(res_for_nice$log2FoldChange), ]
+
+
+gene_list_4 <- res_for_nice$log2FoldChange
+names(gene_list_4) <- rownames(res_for_nice)
+
+gene_list_4 <- sort(gene_list_4, decreasing = TRUE)
+
+gene_df_4 <- bitr(names(gene_list_4),
+                fromType = "SYMBOL",
+                toType = "ENTREZID",
+                OrgDb = org.Hs.eg.db)
+
+
+gene_list_4 <- gene_list_4[gene_df_4$SYMBOL]
+names(gene_list_4) <- gene_df_4$ENTREZID
+
+gene_list_4 <- gene_list_4[!duplicated(names(gene_list_4))]
+```
+
+
+```{r}
+dotplot(gsea_4, showCategory=5, split=".sign") + facet_grid(.~.sign)
+```
+
+```{r}
+ridgeplot(gsea_4, showCategory=10)
+```
+Gene set enrichment analysis revealed enrichment of pathways related to extracellular matrix organization, angiogenesis, and immune response. These pathways are consistent with processes involved in tumor progression and microenvironment remodeling. Several immune-related pathways, such as humoral immune response and defense response to bacterium, showed negative enrichment, suggesting suppression following entrectinib treatment.These findings are consistent with the role of ROS1 as a receptor tyrosine kinase activating downstream signaling pathways such as PI3K-Akt and MAPK, which regulate cell proliferation, survival, and interactions with the tumor microenvironment
+
+## Pathways 
+```{r}
+library(org.Hs.eg.db)
+library(AnnotationDbi)
+
+
+res_df <- as.data.frame(res_hg38_CD74_ROS1) 
+res_df$symbol <- rownames(res_df)
+res_df$entrez <- mapIds(
+  org.Hs.eg.db,
+  keys = res_df$symbol,
+  column = "ENTREZID",
+  keytype = "SYMBOL",
+  multiVals = "first"
+)
+
+gene_list <- res_df$log2FoldChange
+names(gene_list) <- res_df$entrez
+gene_list <- gene_list[!is.na(names(gene_list))]
+
+genes_of_interest <- c("GAPDH",
+           "ROS1",
+           "ARID1A",
+           "PIK3CA",
+           "RPTOR",
+           "TSC1",
+           "MAP3K1",
+           "MAP3K7",
+           "JAK2")
+
+entrez_ids <- mapIds(
+  org.Hs.eg.db,
+  keys = genes_of_interest,
+  column = "ENTREZID",
+  keytype = "SYMBOL",
+  multiVals = "first"
+)
+
+gene_list_highlight <- gene_list
+gene_list_highlight[!names(gene_list) %in% entrez_ids] <- NA
+```
+
+
+
+```{r}
+library(pathview)
+setwd("../img/pathway")
+
+pathview(
+  gene.data = gene_list,
+  pathway.id = "hsa04630",
+  species = "hsa",
+  out.suffix = "JAK_STAT_all",
+  
+  limit = list(gene = 1),   
+  low = list(gene = "blue"),
+  mid = list(gene = "white"),
+  high = list(gene = "red")
+)
+pathview(
+  gene.data = gene_list_highlight,
+  pathway.id = "hsa04630",
+  species = "hsa",
+  out.suffix = "JAK_STAT_color",
+  
+  limit = list(gene = 1),   
+  low = list(gene = "blue"),
+  mid = list(gene = "white"),
+  high = list(gene = "red")
+)
+```
+![Kech_pathway of jackstat all genes](../img/pathway/hsa04630.JAK_STAT_all.png)
+![Kech_pathway of jackstat selected genes](../img/pathway/hsa04630.JAK_STAT_color.png)
+
+
+
+```{r}
+setwd("../img/pathway")
+pathview(
+  gene.data = gene_list,
+  pathway.id = "hsa04010",
+  species = "hsa",
+  out.suffix = "MAPK_all",
+  
+  limit = list(gene = 1),   
+  low = list(gene = "blue"),
+  mid = list(gene = "white"),
+  high = list(gene = "red")
+)
+pathview(
+  gene.data = gene_list_highlight,
+   pathway.id = "hsa04010",
+  species = "hsa",
+  out.suffix = "MAPK_color",
+  limit = list(gene = 1),   
+  low = list(gene = "blue"),
+  mid = list(gene = "white"),
+  high = list(gene = "red")
+)
+```
+![Kech_pathway of mapk all genes](../img/pathway/hsa04010.MAPK_all.png)
+![Kech_pathway of mapk selected genes](../img/pathway/hsa04010.MAPK_color.png)
+
+```{r}
+setwd("../img/pathway")
+pathview(
+  gene.data = gene_list,
+  pathway.id = "hsa04151",
+  species = "hsa",
+  out.suffix = "PI3K_AKT_all",
+  
+  limit = list(gene = 1),   
+  low = list(gene = "blue"),
+  mid = list(gene = "white"),
+  high = list(gene = "red")
+)
+pathview(
+  gene.data = gene_list_highlight,
+  pathway.id = "hsa04151",
+  species = "hsa",
+  out.suffix = "PI3K_AKT_color",
+
+  limit = list(gene = 1),   
+  low = list(gene = "blue"),
+  mid = list(gene = "white"),
+  high = list(gene = "red")
+)
+```
+
+![Kech_pathway of PI3K_AKT all genes](../img/pathway/hsa04151.PI3K_AKT_all.png)
+![Kech_pathway of PI3K_AKT selected genes](../img/pathway/hsa04151.PI3K_AKT_color.png)
+Pathway visualization using KEGG maps confirmed widespread alterations in key signaling pathways downstream of ROS1, including MAPK, PI3K-Akt, and JAK-STAT signaling. These pathways showed extensive downregulation of multiple components, supporting the inhibitory effect of entrectinib on oncogenic signaling networks 
+
+```{r}
+library(png)
+library(grid)
+library(ggplot2)
+library(patchwork)
+```
+
+```{r}
+img_jak  <- rasterGrob(readPNG("../img/pathway/hsa04630.JAK_STAT_color.png"))
+img_mapk <- rasterGrob(readPNG("../img/pathway/hsa04010.MAPK_color.png"))
+img_pi3k <- rasterGrob(readPNG("../img/pathway/hsa04151.PI3K_AKT_color.png"))
+```
+
+```{r}
+p1 <- ggplot() + annotation_custom(img_jak) + theme_void() +
+  ggtitle("JAK-STAT")
+
+p2 <- ggplot() + annotation_custom(img_mapk) + theme_void() +
+  ggtitle("MAPK")
+
+p3 <- ggplot() + annotation_custom(img_pi3k) + theme_void() +
+  ggtitle("PI3K-AKT")
+```
+
+```{r}
+setwd("../img/pathway")
+final_plot <- (p1 | p2 | p3) +
+  plot_annotation(
+    title = "Pathway analysis – CD74-ROS1 + entrectinib"
+  )
+
+final_plot
+```
+
+```{r}
+setwd("../img/pathway")
+ggsave(
+  "combined_pathways.png",
+  final_plot,
+  width = 16,
+  height = 6,
+  dpi = 300
+)
+```
+
+## kech pathways
+
+```{r}
+library(clusterProfiler)
+
+
+gene_list <- sort(gene_list, decreasing = TRUE)
+
+gsea_kegg <- gseKEGG(
+  geneList = gene_list,
+  organism = "hsa",
+  pvalueCutoff = 1   
+)
+```
+```{r}
+gsea_df <- as.data.frame(gsea_kegg)
+
+# top 10 pathways
+head(gsea_df[, c("Description", "NES", "p.adjust")], 10)
+```
+
+
+```{r}
+gene_sets <- strsplit(gsea_df$core_enrichment, "/")
+all_genes <- unlist(gene_sets)
+
+gene_counts <- table(all_genes)
+
+# genen die vaker voorkomen
+multi_genes <- gene_counts[gene_counts > 10]
+
+multi_genes
+```
+
+```{r}
+library(org.Hs.eg.db)
+
+hub_symbols <- mapIds(
+  org.Hs.eg.db,
+  keys = names(multi_genes),
+  column = "SYMBOL",
+  keytype = "ENTREZID",
+  multiVals = "first"
+)
+
+hub_symbols
+```
+
+```{r}
+hub_df <- data.frame(
+  ENTREZ = names(multi_genes),
+  SYMBOL = hub_symbols,
+  Count = as.numeric(multi_genes)
+)
+
+hub_df[order(-hub_df$Count), ][1:10, ]
+```
+KEGG pathway analysis revealed enrichment of pathways related to signal transduction and immune signaling, including the PI3K-Akt, MAPK, and cytokine signaling pathways. These pathways are known downstream targets of ROS1 signaling
+Several genes were identified as central hub genes, appearing in multiple enriched pathways. Notably, PIK3CD, PIK3R1, and PIK3R2 (PI3K signaling), MAPK10 (MAPK pathway), and NFKB1 and IKBKB (NF-κB signaling) were among the most frequent. This indicates that these genes play a central role in the signaling network affected by ROS1 activity.
+The negative enrichment scores (NES) observed for several signaling pathways suggest that entrectinib treatment suppresses key oncogenic signaling cascades downstream of ROS1.
+
+## Venn diagram
+```{r}
+colnames(count_data_hg19[,desseq_for_CD74_ROS1])
+colnames(count_data_hg38[,desseq_for_CD74_ROS1])
+```
+```{r}
+res_hg19_CD74 <- results(
+  dds_hg19_CD74,
+  contrast = c("treatment", "500nM entrectinib", "none")
+)
+
+res_hg38_CD74_ROS1 <- results(
+  dds_hg38_CD74_ROS1,
+  contrast = c("treatment", "500nM entrectinib", "none")
+)
+```
+
+```{r}
+# UP regulated
+up_hg19 <- rownames(res_hg19_CD74[
+  which(res_hg19_CD74$padj < 0.05 & res_hg19_CD74$log2FoldChange > 1),
+])
+
+up_hg38 <- rownames(res_hg38_CD74_ROS1[
+  which(res_hg38_CD74_ROS1$padj < 0.05 & res_hg38_CD74_ROS1$log2FoldChange > 1),
+])
+
+# DOWN regulated
+down_hg19 <- rownames(res_hg19_CD74[
+  which(res_hg19_CD74$padj < 0.05 & res_hg19_CD74$log2FoldChange < -1),
+])
+
+down_hg38 <- rownames(res_hg38_CD74_ROS1[
+  which(res_hg38_CD74_ROS1$padj < 0.05 & res_hg38_CD74_ROS1$log2FoldChange < -1),
+])
+```
+
+```{r}
+up_hg19   <- sub("\\..*", "", up_hg19)
+up_hg38   <- sub("\\..*", "", up_hg38)
+down_hg19 <- sub("\\..*", "", down_hg19)
+down_hg38 <- sub("\\..*", "", down_hg38)
+```
+
+```{r}
+library(ggVennDiagram)
+
+venn_up <- list(
+  hg19 = up_hg19,
+  hg38 = up_hg38
+)
+
+ggVennDiagram(venn_up) + ggtitle("Upregulated genes")
+```
+
+```{r}
+venn_down <- list(
+  hg19 = down_hg19,
+  hg38 = down_hg38
+)
+
+ggVennDiagram(venn_down) + ggtitle("Downregulated genes")
+```
+
+```{r}
+# UP
+overlap_up <- intersect(up_hg19, up_hg38)
+
+# DOWN
+overlap_down <- intersect(down_hg19, down_hg38)
+
+cat("UP hg19:", length(up_hg19), "\n")
+cat("UP hg38:", length(up_hg38), "\n")
+cat("UP overlap:", length(overlap_up), "\n\n")
+
+cat("DOWN hg19:", length(down_hg19), "\n")
+cat("DOWN hg38:", length(down_hg38), "\n")
+cat("DOWN overlap:", length(overlap_down), "\n")
 ```
