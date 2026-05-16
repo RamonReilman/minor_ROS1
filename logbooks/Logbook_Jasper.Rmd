@@ -910,6 +910,17 @@ ggsave(
 
 ## kech pathways
 
+To identify biological processes and pathways enriched in the dataset, a Gene Set Enrichment Analysis (GSEA) was performed using the clusterProfiler package in R.
+
+First, the gene list was ranked based on the expression values/log2 fold changes
+
+Next, the gseKEGG() function was used to identify enriched KEGG pathways for human genes (organism = "hsa")
+
+The results were then converted into a dataframe to simplify further analysis
+
+Finally, the top pathways were examined by displaying the pathway description, normalized enrichment score (NES), and adjusted p-value:
+
+The NES indicates whether a pathway is positively or negatively enriched in the dataset, while the adjusted p-value was used to assess the statistical significance of the enrichment results.
 ```{r}
 library(clusterProfiler)
 
@@ -930,6 +941,20 @@ head(gsea_df[, c("Description", "NES", "p.adjust")], 10)
 ```
 
 
+The Gene Set Enrichment Analysis identified several significantly enriched KEGG pathways. The most positively enriched pathways were Ribosome (NES = 2.30, adjusted p-value = 6.99 × 10^-7) and Olfactory transduction (NES = 2.30, adjusted p-value = 1.33 × 10^-4). Positive NES values indicate that genes within these pathways were predominantly enriched at the top of the ranked gene list.
+
+Several immune-related pathways showed negative enrichment scores, including Cytokine-cytokine receptor interaction (NES = -2.03), IL-17 signaling pathway (NES = -1.93), Th17 cell differentiation (NES = -1.84), and TNF signaling pathway (NES = -1.71). Negative NES values indicate that genes associated with these pathways were enriched at the lower end of the ranked gene list.
+
+In addition, broader signaling and disease-related pathways such as PI3K-Akt signaling pathway and Pathways in cancer were also significantly enriched. The adjusted p-values indicate that multiple pathways remained statistically significant after correction for multiple testing
+
+
+To determine which genes were repeatedly present across multiple enriched KEGG pathways, the core_enrichment genes from the GSEA results were extracted and analyzed.
+
+First, the genes within each pathway were separated into individual gene identifiers using strsplit(). All genes were then combined into a single list
+Next, the frequency of each gene across all enriched pathways was calculated:
+Finally, genes appearing in more than 10 pathways were selected
+This analysis was used to identify genes that may play central roles across multiple biological pathways and could therefore represent important regulatory or functionally relevant genes within the dataset.
+
 ```{r}
 gene_sets <- strsplit(gsea_df$core_enrichment, "/")
 all_genes <- unlist(gene_sets)
@@ -942,6 +967,9 @@ multi_genes <- gene_counts[gene_counts > 10]
 multi_genes
 ```
 
+Because the GSEA output contained Entrez Gene IDs, these identifiers were converted into gene symbols using the org.Hs.eg.db annotation database:
+
+Several genes frequently appeared across enriched pathways, including inflammatory and signaling-related genes such as IL6, STAT3, NFKB1, PIK3R1, MAPK3, CXCL8, TNF-related signaling genes, and members of the WNT and FGF signaling pathways. These genes may represent central regulatory components involved in the biological response observed in the dataset.
 ```{r}
 library(org.Hs.eg.db)
 
@@ -955,7 +983,8 @@ hub_symbols <- mapIds(
 
 hub_symbols
 ```
-
+To further investigate the potential importance of the identified hub genes, a dataframe was created containing the Entrez IDs, corresponding gene symbols, and the number of enriched pathways in which each gene appeared.
+  
 ```{r}
 hub_df <- data.frame(
   ENTREZ = names(multi_genes),
@@ -1013,6 +1042,7 @@ down_hg19 <- sub("\\..*", "", down_hg19)
 down_hg38 <- sub("\\..*", "", down_hg38)
 ```
 
+Venn diagrams were generated using the ggVennDiagram package to visualize the overlap between significantly regulated genes identified in the hg19 and hg38 analyses
 ```{r}
 library(ggVennDiagram)
 
@@ -1048,3 +1078,9 @@ cat("DOWN hg19:", length(down_hg19), "\n")
 cat("DOWN hg38:", length(down_hg38), "\n")
 cat("DOWN overlap:", length(overlap_down), "\n")
 ```
+
+The overlap analysis showed substantial agreement between the hg19 and hg38 alignments, with 1,598 overlapping upregulated genes and 2,170 overlapping downregulated genes identified in both datasets.
+
+However, several hundred genes were uniquely detected in either the hg19 or hg38 analysis. This indicates that the choice of reference genome can influence differential expression results, likely due to differences in genome annotation, transcript definitions, and read alignment between the two genome versions.
+
+Despite these differences, the majority of significantly regulated genes were shared between both analyses, suggesting that the main biological trends remain comparable across genome builds.

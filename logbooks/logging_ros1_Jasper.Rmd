@@ -1,0 +1,399 @@
+---
+title: "logging_ros1_Jasper"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  cache = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Set up
+This is the logbook of the real resaurch of the real data. 
+
+For the data exploration, you can look in Ramons Logbook.
+
+I wil begin an small annalzyse so first i need to read the counts in so can use them.
+```{r}
+count_data <- read.csv("/students/2025-2026/ros1_transcriptomics/output_new/counts.csv")
+head(count_data)
+```
+
+```{r}
+colnames(count_data)
+```
+I looked is the names are what i expected but it was not. read.csv does an check beacause names can not start with numbers in R so they put an x before it. So i need to use these for the coldata is wil make. 
+
+```{r}
+coldata <- read.csv("/students/2025-2026/ros1_transcriptomics/output_new/coldata.csv",sep = ";")
+head(coldata)
+```
+```{r}
+row.names(coldata)
+```
+
+The row names are wrong those need chancing first en need to remove Undetermined_S0_L001ReadsPerGene
+
+
+```{r}
+rownames(coldata) <- coldata$source
+rownames(count_data) <- count_data$X
+count_data <- count_data[, -1]
+count_data <- count_data[, 
+    colnames(count_data) != "Undetermined_S0_L001ReadsPerGene"
+]
+```
+
+```{r}
+colnames(count_data)
+```
+```{r}
+rownames(coldata)
+```
+Now all is good but need to chance the order in coldata
+```{r}
+coldata <- coldata[colnames(count_data), , drop = FALSE]
+all(rownames(coldata) == colnames(count_data))
+```
+
+
+I will make refenties so all wil go well 
+
+```{r}
+coldata$condition <- factor(
+  coldata$condition,
+  levels = c("DMSO", "Lorlatinib", "Repotrectinib", "Zidesamtinib")
+)
+```
+# All data 
+Now i wil start an desseq analsys for all so i can make an pca of all the data to look if it is well 
+
+
+```{r}
+library("DESeq2")
+
+dds <- DESeqDataSetFromMatrix(
+    countData = count_data,
+    colData = coldata,
+    design = ~ condition
+)
+
+dds <- DESeq(dds)
+```
+
+```{r}
+vsd <- vst(dds, blind = TRUE)
+```
+
+
+```{r}
+pcaData <- plotPCA(vsd, intgroup = "condition", returnData = TRUE)
+
+percentVar <- round(100 * attr(pcaData, "percentVar"))
+
+library(ggplot2)
+
+ggplot(pcaData, aes(PC1, PC2, color = condition)) +
+    geom_point(size = 4) +
+    xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+    ylab(paste0("PC2: ", percentVar[2], "% variance")) +
+    ggtitle("PCA of RNA-seq samples")+
+    theme_bw()
+```
+
+The destribution of all data point look good only the Repotrectinib as an big diffrence and need more research  
+
+i will make an new pca with names toe look wich file it is 
+
+```{r}
+library(ggrepel)
+
+ggplot(pcaData, aes(PC1, PC2, color = condition, label = name)) +
+    geom_point(size = 4) +
+    geom_text_repel() +
+    xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+    ylab(paste0("PC2: ", percentVar[2], "% variance")) +
+    ggtitle("PCA of RNA-seq samples") +
+    theme_bw()
+```
+I will make a heatmap so the differences between the samples can be shown.
+```{r}
+sampleDists <- dist(t(assay(vsd)))
+sampleDistMatrix <- as.matrix(sampleDists)
+
+library(pheatmap)
+
+pheatmap(sampleDistMatrix)
+```
+
+The heatmap shows that samples from the same treatment group cluster relatively close together, indicating similar gene expression patterns within each condition. Although some variation between replicates is visible, no extreme outliers are observed. Overall, the clustering pattern suggests that the samples have acceptable similarity for downstream differential expression analysis.
+
+I will lookin de reads maby it can give an explanation.
+
+```{r}
+colSums(count_data)
+```
+
+The total read counts per sample show some variation between samples. One sample has a noticeably lower read count compared to the others, which may explain its slightly different position in the PCA plot and heatmap. However, the difference is not extreme, and the sample still clusters with its corresponding treatment group. Overall, the sequencing depth appears sufficient for downstream differential expression analysis.
+
+# DMSO VS Lorlatinib
+
+```{r}
+res_Lorlatinib <- results(
+    dds,
+    contrast = c("condition", "Lorlatinib", "DMSO")
+)
+```
+
+
+```{r}
+summary(res_Lorlatinib)
+```
+The differential expression analysis between Lorlatinib and DMSO identified only a small number of significantly differentially expressed genes, with 6 upregulated and 6 downregulated genes at an adjusted p-value threshold of 0.1. No statistical outliers were detected. A large proportion of genes showed low read counts and were filtered during the analysis, which is expected due to the targeted sequencing approach used in this dataset. Overall, the results indicate relatively limited transcriptional differences between the two conditions.
+
+
+```{r}
+library(EnhancedVolcano)
+EnhancedVolcano(
+    res_Lorlatinib,
+    
+    lab = rownames(res_Lorlatinib),
+    
+    x = 'log2FoldChange',
+    y = 'padj',
+    
+    title = 'Lorlatinib vs DMSO',
+    
+    pCutoff = 0.05,
+    FCcutoff = 1,
+    
+    pointSize = 2.0,
+    labSize = 3.0
+)
+```
+
+Only a limited number of genes were found to be significantly differentially expressed between the Lorlatinib and DMSO conditions. A large proportion of genes showed low counts, which is expected due to the targeted sequencing approach used in this experiment. Overall, the results suggest relatively modest transcriptional differences between the two conditions within the targeted gene panel.
+
+```{r}
+library(clusterProfiler)
+library(org.Hs.eg.db)
+library(enrichplot)
+```
+iw will slect the secnificant genses for an pathways analyszys
+```{r}
+sig_genes_Lorlatinib <- rownames(subset(res_Lorlatinib, padj < 0.1))
+```
+
+First the Go pathways 
+```{r}
+ego_Lorlatinib <- enrichGO(
+    gene          = sig_genes_Lorlatinib,
+    OrgDb         = org.Hs.eg.db,
+    keyType       = "SYMBOL",
+    ont           = "BP",
+    pAdjustMethod = "BH",
+    pvalueCutoff  = 0.05,
+    qvalueCutoff  = 0.2
+)
+head(ego_Lorlatinib)
+```
+```{r}
+dotplot(ego_Lorlatinib)+ggtitle("GO enrichment analysis: Lorlatinib vs DMSO")
+```
+
+Gene Ontology enrichment analysis identified “response to steroid hormone” as a significantly enriched biological process, suggesting that genes involved in hormone-responsive pathways may be affected by the treatment.
+
+Now for kech patways 
+
+```{r}
+gene_entrez_Lorlatinib <- bitr(
+    sig_genes_Lorlatinib,
+    fromType = "SYMBOL",
+    toType = "ENTREZID",
+    OrgDb = org.Hs.eg.db
+)
+
+ekegg_Lorlatinib <- enrichKEGG(
+    gene = gene_entrez_Lorlatinib$ENTREZID,
+    organism = "hsa"
+)
+```
+
+```{r}
+dotplot(ekegg_Lorlatinib)+ggtitle("KEGG pathway enrichment: Lorlatinib vs DMSO")
+```
+
+KEGG pathway enrichment analysis revealed several significantly enriched pathways, including the MAPK signaling pathway, IL-17 signaling pathway, endocrine resistance, and AGE-RAGE signaling pathway in diabetic complications. These pathways are associated with cell signaling, inflammation, and cancer-related processes, indicating that the treatment may influence multiple regulatory and stress-response mechanisms.
+
+
+# DMSO VS Repotrectinib
+
+```{r}
+res_Repotrectinib <- results(
+    dds,
+    contrast = c("condition", "Repotrectinib", "DMSO")
+)
+```
+
+```{r}
+summary(res_Repotrectinib)
+```
+
+The differential expression analysis between Repotrectinib and DMSO identified more significantly differentially expressed genes compared to the Lorlatinib comparison, with 26 upregulated and 39 downregulated genes at an adjusted p-value threshold of 0.1. No statistical outliers were detected. A large proportion of genes showed low read counts and were filtered during the analysis, which is consistent with the targeted sequencing approach used in this dataset. Overall, the results suggest that Repotrectinib induces a stronger transcriptional response compared to Lorlatinib under these experimental conditions.
+
+```{r}
+EnhancedVolcano(
+    res_Repotrectinib,
+    
+    lab = rownames(res_Repotrectinib),
+    
+    x = 'log2FoldChange',
+    y = 'padj',
+    
+    title = 'Repotrectinib vs DMSO',
+    
+    pCutoff = 0.05,
+    FCcutoff = 1,
+    
+    pointSize = 2.0,
+    labSize = 3.0
+)
+```
+
+The volcano plot of Repotrectinib versus DMSO shows a larger number of significantly differentially expressed genes compared to the Lorlatinib comparison. Several genes display both significant adjusted p-values and notable log2 fold changes, indicating a stronger transcriptional response to Repotrectinib treatment. Most genes remain centered around a log2 fold change of zero, suggesting that the majority of genes are not strongly affected. Overall, the results indicate that Repotrectinib induces more pronounced gene expression changes under these experimental conditions.
+
+```{r}
+sig_genes_Repotrectinib <- rownames(subset(res_Repotrectinib, padj < 0.1))
+```
+
+First the Go pathways 
+```{r}
+ego_Repotrectinib <- enrichGO(
+    gene          = sig_genes_Repotrectinib,
+    OrgDb         = org.Hs.eg.db,
+    keyType       = "SYMBOL",
+    ont           = "BP",
+    pAdjustMethod = "BH",
+    pvalueCutoff  = 0.05,
+    qvalueCutoff  = 0.2
+)
+head(ego_Repotrectinib)
+```
+
+```{r}
+dotplot(ego_Repotrectinib)+  ggtitle("GO enrichment analysis: Repotrectinib vs DMSO")
+```
+
+The Gene Ontology enrichment analysis identified several significantly enriched biological processes related to apoptosis, angiogenesis, vasculature development, and miRNA regulation. The strongest enrichment was observed for the intrinsic apoptotic signaling pathway, suggesting that the treatment may influence programmed cell death mechanisms. In addition, pathways involved in angiogenesis and vascular development indicate potential effects on cellular growth and signaling processes. Multiple miRNA-related processes were also enriched, suggesting possible regulation at the post-transcriptional level.
+
+```{r}
+gene_entrez_Repotrectinib <- bitr(
+    sig_genes_Repotrectinib,
+    fromType = "SYMBOL",
+    toType = "ENTREZID",
+    OrgDb = org.Hs.eg.db
+)
+
+ekegg_Repotrectinib <- enrichKEGG(
+    gene = gene_entrez_Repotrectinib$ENTREZID,
+    organism = "hsa"
+)
+```
+
+```{r}
+dotplot(ekegg_Repotrectinib)+ggtitle("KEGG pathway enrichment: Repotrectinib vs DMSO")
+```
+
+The KEGG pathway enrichment analysis identified several significantly enriched cancer-related signaling pathways, including the PI3K-Akt signaling pathway and MicroRNAs in cancer. Additional enriched pathways, such as Proteoglycans in cancer and Colorectal cancer, are associated with tumor progression, cell survival, and cellular signaling. These results suggest that the treatment may influence pathways involved in cancer development and regulatory signaling mechanisms.
+
+# DMSO VS Zidesamtinib
+
+```{r}
+res_Zidesamtinib <- results(
+    dds,
+    contrast = c("condition", "Zidesamtinib", "DMSO")
+)
+```
+
+```{r}
+summary(res_Zidesamtinib)
+```
+
+The differential expression analysis identified a limited number of significantly differentially expressed genes, with 12 upregulated and 13 downregulated genes at an adjusted p-value threshold of 0.1. No statistical outliers were detected in the dataset. A large proportion of genes showed low read counts and were filtered during the analysis, which is expected due to the targeted sequencing approach used in this study. Overall, the results indicate moderate transcriptional differences between the compared conditions.
+
+
+```{r}
+EnhancedVolcano(
+    res_Zidesamtinib,
+    
+    lab = rownames(res_Zidesamtinib),
+    
+    x = 'log2FoldChange',
+    y = 'padj',
+    
+    title = 'Zidesamtinib vs DMSO',
+    
+    pCutoff = 0.05,
+    FCcutoff = 1,
+    
+    pointSize = 2.0,
+    labSize = 3.0
+)
+```
+
+The volcano plot of Zidesamtinib versus DMSO shows a relatively small number of significantly differentially expressed genes. Most genes are centered around a log2 fold change of zero, indicating limited overall transcriptional changes between the two conditions. A few genes show stronger statistical significance and fold changes, with MTND6 being one of the most prominent differentially expressed genes. Overall, the results suggest that Zidesamtinib induces moderate transcriptional effects under these experimental conditions.
+
+```{r}
+sig_genes_Zidesamtinib <- rownames(subset(res_Zidesamtinib, padj < 0.1))
+```
+
+First the Go pathways 
+```{r}
+ego_Zidesamtinib <- enrichGO(
+    gene          = sig_genes_Zidesamtinib,
+    OrgDb         = org.Hs.eg.db,
+    keyType       = "SYMBOL",
+    ont           = "BP",
+    pAdjustMethod = "BH",
+    pvalueCutoff  = 0.05,
+    qvalueCutoff  = 0.2
+)
+head(ego_Zidesamtinib)
+```
+```{r}
+dotplot(ego_Zidesamtinib)+  ggtitle("GO enrichment analysis: Zidesamtinib vs DMSO")
+```
+
+The Gene Ontology enrichment analysis for Zidesamtinib versus DMSO identified several significantly enriched biological processes related to cellular energy metabolism and p53-mediated signaling. Enriched pathways included oxidative phosphorylation, aerobic respiration, ATP metabolic processes, and proton transmembrane transport, suggesting that the treatment may influence mitochondrial activity and energy production. In addition, enrichment of p53 class mediator signaling pathways indicates potential involvement of stress-response and regulatory mechanisms associated with cell cycle control and apoptosis.
+
+```{r}
+gene_entrez_Zidesamtinib <- bitr(
+    sig_genes_Zidesamtinib,
+    fromType = "SYMBOL",
+    toType = "ENTREZID",
+    OrgDb = org.Hs.eg.db
+)
+
+ekegg_Zidesamtinib <- enrichKEGG(
+    gene = gene_entrez_Zidesamtinib$ENTREZID,
+    organism = "hsa"
+)
+```
+
+```{r}
+dotplot(ekegg_Zidesamtinib)+ggtitle("KEGG pathway enrichment: Zidesamtinib vs DMSO")
+```
+
+The KEGG pathway enrichment analysis for Zidesamtinib versus DMSO identified several significantly enriched pathways associated with ribosomal activity, oxidative phosphorylation, and reactive oxygen species. Pathways related to mitochondrial and neurodegenerative disease processes, including Parkinson disease and Huntington disease, were also enriched, which is commonly linked to alterations in cellular energy metabolism and mitochondrial function. In addition, enrichment of pathways related to thermogenesis and chemical carcinogenesis suggests broader effects on metabolic and stress-response mechanisms. Overall, these results indicate that Zidesamtinib may strongly influence mitochondrial activity and cellular metabolic regulation.
+
+# First conclusion 
+
+Initial analysis of the CD74-ROS1 cancer model showed that all three ROS1 inhibitors induced detectable transcriptional changes compared to the DMSO control. PCA and sample distance heatmap analyses demonstrated overall consistent clustering between replicates, indicating acceptable sample quality for downstream analysis.
+
+Among the treatments, Repotrectinib produced the strongest transcriptional response, with the highest number of differentially expressed genes and enrichment of multiple cancer-related signaling pathways, including MAPK and PI3K-Akt signaling. Lorlatinib showed a more limited transcriptional effect, with only a small number of significantly differentially expressed genes detected. Zidesamtinib demonstrated enrichment of pathways associated with mitochondrial activity, oxidative phosphorylation, and cellular metabolism, suggesting a possible effect on energy regulation and stress-response mechanisms.
+
+Overall, the results suggest that the different ROS1 inhibitors induce distinct transcriptional responses in the CD74-ROS1 model, with Repotrectinib showing the most pronounced global gene expression changes under the tested conditions.
