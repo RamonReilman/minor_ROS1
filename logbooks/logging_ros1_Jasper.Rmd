@@ -397,3 +397,332 @@ Initial analysis of the CD74-ROS1 cancer model showed that all three ROS1 inhibi
 Among the treatments, Repotrectinib produced the strongest transcriptional response, with the highest number of differentially expressed genes and enrichment of multiple cancer-related signaling pathways, including MAPK and PI3K-Akt signaling. Lorlatinib showed a more limited transcriptional effect, with only a small number of significantly differentially expressed genes detected. Zidesamtinib demonstrated enrichment of pathways associated with mitochondrial activity, oxidative phosphorylation, and cellular metabolism, suggesting a possible effect on energy regulation and stress-response mechanisms.
 
 Overall, the results suggest that the different ROS1 inhibitors induce distinct transcriptional responses in the CD74-ROS1 model, with Repotrectinib showing the most pronounced global gene expression changes under the tested conditions.
+
+
+# Mistake in de plots
+
+My teacher commented about the 86369 varibels in the volcono plot, mean while the nonzero counts where  22562 after some tessting i know what is is. 
+
+```{r}
+sum(rowSums(counts(dds)) == 0)
+
+anwser <- 22562 + 63807
+
+anwser
+```
+
+So the difference is 63807 are all zero. So i will remove the zero and make the results again 
+
+```{r}
+Keep<- rowSums(count_data)>0
+countdata_filter <- count_data[Keep,]
+```
+
+
+```{r}
+dds_2 <- DESeqDataSetFromMatrix(
+    countData = countdata_filter,
+    colData = coldata,
+    design = ~ condition
+)
+
+dds_2 <- DESeq(dds_2)
+```
+
+
+```{r}
+vsd_2 <- vst(dds_2, blind = TRUE)
+```
+
+```{r}
+pcaData_2 <- plotPCA(vsd_2, intgroup = "condition", returnData = TRUE)
+
+percentVar_2 <- round(100 * attr(pcaData_2, "percentVar"))
+
+ggplot(pcaData_2, aes(PC1, PC2, color = condition, label = name)) +
+    geom_point(size = 4) +
+    geom_text_repel() +
+    xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+    ylab(paste0("PC2: ", percentVar[2], "% variance")) +
+    ggtitle("PCA of RNA-seq samples") +
+    theme_bw()
+```
+I see no chance in the pca 
+
+```{r}
+sampleDists_2 <- dist(t(assay(vsd_2)))
+sampleDistMatrix_2 <- as.matrix(sampleDists_2)
+pheatmap(sampleDistMatrix_2)
+```
+
+# Lorlatinib
+
+```{r}
+res_Lorlatinib_2 <- results(
+    dds_2,
+    contrast = c("condition", "Lorlatinib", "DMSO")
+)
+```
+
+```{r}
+summary(res_Lorlatinib_2)
+```
+
+```{r}
+EnhancedVolcano(
+    res_Lorlatinib_2,
+    
+    lab = rownames(res_Lorlatinib_2),
+    
+    x = 'log2FoldChange',
+    y = 'padj',
+    
+    title = 'Lorlatinib vs DMSO',
+    
+    pCutoff = 0.05,
+    FCcutoff = 1,
+    
+    pointSize = 2.0,
+    labSize = 3.0
+)
+```
+
+```{r}
+sig_genes_Lorlatinib_2 <- rownames(subset(res_Lorlatinib_2, padj < 0.1))
+
+
+
+ego_Lorlatinib_2 <- enrichGO(
+    gene          = sig_genes_Lorlatinib_2,
+    OrgDb         = org.Hs.eg.db,
+    keyType       = "SYMBOL",
+    ont           = "BP",
+    pAdjustMethod = "BH",
+    pvalueCutoff  = 0.05,
+    qvalueCutoff  = 0.2
+)
+head(ego_Lorlatinib_2)
+dotplot(ego_Lorlatinib_2)+ggtitle("First GO enrichment analysis: Lorlatinib vs DMSO")
+dotplot(ego_Lorlatinib_2)+ggtitle("Second GO enrichment analysis: Lorlatinib vs DMSO")
+```
+
+```{r}
+gene_entrez_Lorlatinib_2 <- bitr(
+    sig_genes_Lorlatinib_2,
+    fromType = "SYMBOL",
+    toType = "ENTREZID",
+    OrgDb = org.Hs.eg.db
+)
+
+ekegg_Lorlatinib_2 <- enrichKEGG(
+    gene = gene_entrez_Lorlatinib_2$ENTREZID,
+    organism = "hsa"
+)
+dotplot(ekegg_Lorlatinib)+ggtitle("First KEGG pathway enrichment: Lorlatinib vs DMSO")
+dotplot(ekegg_Lorlatinib_2)+ggtitle("Second KEGG pathway enrichment: Lorlatinib vs DMSO")
+```
+
+The first KEGG pathway enrichment analysis, performed before filtering zero-count features, identified several enriched pathways including AGE-RAGE signaling, MAPK signaling, IL-17 signaling, endocrine resistance, and estrogen signaling. However, the dataset at this stage still contained a large number of features without expression across any samples, which may have introduced background noise and reduced statistical specificity.
+
+After removing features with zero total read counts and rerunning the differential expression and KEGG enrichment analyses, the second enrichment analysis showed a more refined and biologically focused pathway profile. While several pathways remained consistent between both analyses, such as MAPK signaling, IL-17 signaling, endocrine resistance, and colorectal cancer pathways, the filtered analysis additionally highlighted focal adhesion and small cell lung cancer pathways. At the same time, some less directly relevant pathways from the first analysis, such as oxytocin signaling and osteoclast differentiation, were no longer among the top enriched pathways.
+
+Importantly, the persistence of MAPK signaling across both analyses suggests that this pathway represents a robust biological signal associated with Lorlatinib treatment rather than an artifact caused by low-quality or non-expressed features. Furthermore, the emergence of focal adhesion and lung cancer-related pathways after filtering indicates that removing zero-count variables improved the specificity of the enrichment analysis and reduced background noise. Overall, the filtered analysis appears biologically more coherent and likely provides a more reliable representation of the transcriptional effects induced by Lorlatinib treatment.
+
+# Repotrectinib
+
+```{r}
+res_Repotrectinib_2 <- results(
+    dds_2,
+    contrast = c("condition", "Repotrectinib", "DMSO")
+)
+```
+
+```{r}
+summary(res_Repotrectinib_2)
+```
+
+```{r}
+EnhancedVolcano(
+    res_Repotrectinib_2,
+    
+    lab = rownames(res_Repotrectinib_2),
+    
+    x = 'log2FoldChange',
+    y = 'padj',
+    
+    title = 'Repotrectinib vs DMSO',
+    
+    pCutoff = 0.05,
+    FCcutoff = 1,
+    
+    pointSize = 2.0,
+    labSize = 3.0
+)
+```
+
+```{r}
+sig_genes_Repotrectinib_2 <- rownames(subset(res_Repotrectinib_2, padj < 0.1))
+
+
+ego_Repotrectinib_2 <- enrichGO(
+    gene          = sig_genes_Repotrectinib_2,
+    OrgDb         = org.Hs.eg.db,
+    keyType       = "SYMBOL",
+    ont           = "BP",
+    pAdjustMethod = "BH",
+    pvalueCutoff  = 0.05,
+    qvalueCutoff  = 0.2
+)
+head(ego_Repotrectinib_2)
+dotplot(ego_Repotrectinib)+ggtitle("Firts GO enrichment analysis: Repotrectinib vs DMSO")
+dotplot(ego_Repotrectinib_2)+ggtitle("Second GO enrichment analysis: Repotrectinib vs DMSO")
+```
+
+The first GO enrichment analysis of the Repotrectinib versus DMSO comparison revealed strong enrichment for biological processes related to intrinsic apoptotic signaling, angiogenesis, vasculature development, and multiple miRNA-associated pathways. These results suggested that Repotrectinib treatment may influence cell survival mechanisms, vascular regulation, and post-transcriptional gene regulation. However, this initial analysis was performed before removing features with zero total read counts, meaning that the dataset still contained a substantial amount of non-expressed variables that could contribute background noise.
+
+After filtering out zero-count features and repeating the differential expression and GO enrichment analyses, the second GO enrichment profile became more focused and biologically coherent. Several pathways remained highly consistent between both analyses, particularly regulation of angiogenesis, regulation of vasculature development, miRNA transcription, and miRNA metabolic processes. The persistence of these pathways across both analyses indicates that they likely represent robust biological signals associated with Repotrectinib treatment rather than artifacts caused by low-expression features.
+
+In contrast to the first analysis, the filtered dataset additionally revealed enrichment for response to steroid hormone and mesenchyme development pathways, while intrinsic apoptotic signaling was no longer among the top enriched categories. This shift suggests that filtering reduced background variation and improved pathway specificity, allowing more subtle developmental and signaling-related biological processes to emerge. Overall, the second analysis appears more refined and biologically interpretable, while still confirming the central involvement of angiogenesis- and miRNA-related regulatory mechanisms in the response to Repotrectinib treatment.
+
+
+
+```{r}
+gene_entrez_Repotrectinib_2 <- bitr(
+    sig_genes_Repotrectinib_2,
+    fromType = "SYMBOL",
+    toType = "ENTREZID",
+    OrgDb = org.Hs.eg.db
+)
+
+ekegg_Repotrectinib_2 <- enrichKEGG(
+    gene = gene_entrez_Repotrectinib_2$ENTREZID,
+    organism = "hsa"
+)
+dotplot(ekegg_Repotrectinib)+ggtitle("First KEGG pathway enrichment: Repotrectinib vs DMSO")
+dotplot(ekegg_Repotrectinib_2)+ggtitle("Second KEGG pathway enrichment: Repotrectinib vs DMSO")
+```
+
+The first KEGG pathway enrichment analysis of the Repotrectinib versus DMSO comparison identified several cancer- and signaling-related pathways, including MicroRNAs in cancer, the PI3K-Akt signaling pathway, Proteoglycans in cancer, colorectal cancer, and bladder cancer. These pathways suggested that Repotrectinib treatment may influence oncogenic signaling, tumor-associated regulatory mechanisms, and microRNA-mediated cellular processes. However, this initial analysis was performed prior to removing features with zero total read counts, meaning that a substantial number of non-expressed variables were still present in the dataset and could contribute background noise.
+
+After filtering out zero-count features and repeating the differential expression and KEGG enrichment analyses, the second enrichment analysis demonstrated a more refined and biologically focused pathway profile. Several pathways remained highly consistent between both analyses, particularly MicroRNAs in cancer, PI3K-Akt signaling, Proteoglycans in cancer, and bladder cancer pathways. The persistence of these pathways after filtering indicates that they likely represent robust biological effects associated with Repotrectinib treatment rather than statistical artifacts caused by low-expression features.
+
+In contrast to the first analysis, the filtered dataset additionally revealed enrichment for Hippo signaling and chemical carcinogenesis–reactive oxygen species pathways, while the colorectal cancer pathway was no longer among the top enriched pathways. This shift suggests that removing zero-count variables improved pathway specificity and reduced background variation, allowing additional signaling pathways associated with cellular stress responses and growth regulation to emerge more clearly. Overall, the second analysis appears biologically more coherent and likely provides a more reliable representation of the transcriptomic effects induced by Repotrectinib treatment.
+
+# Zidesamtinib
+
+```{r}
+res_Zidesamtinib_2 <- results(
+    dds_2,
+    contrast = c("condition", "Zidesamtinib", "DMSO")
+)
+```
+
+```{r}
+summary(res_Zidesamtinib_2)
+```
+
+```{r}
+EnhancedVolcano(
+    res_Zidesamtinib_2,
+    
+    lab = rownames(res_Zidesamtinib_2),
+    
+    x = 'log2FoldChange',
+    y = 'padj',
+    
+    title = 'Zidesamtinib vs DMSO',
+    
+    pCutoff = 0.05,
+    FCcutoff = 1,
+    
+    pointSize = 2.0,
+    labSize = 3.0
+)
+```
+
+
+```{r}
+sig_genes_Zidesamtinib_2 <- rownames(subset(res_Zidesamtinib_2, padj < 0.1))
+
+
+ego_Zidesamtinib_2 <- enrichGO(
+    gene          = sig_genes_Zidesamtinib_2,
+    OrgDb         = org.Hs.eg.db,
+    keyType       = "SYMBOL",
+    ont           = "BP",
+    pAdjustMethod = "BH",
+    pvalueCutoff  = 0.05,
+    qvalueCutoff  = 0.2
+)
+head(ego_Zidesamtinib_2)
+dotplot(ego_Zidesamtinib)+ggtitle("Firts GO enrichment analysis: Zidesamtinib vs DMSO")
+dotplot(ego_Zidesamtinib_2)+ggtitle("Second GO enrichment analysis: Zidesamtinib vs DMSO")
+```
+
+The first GO enrichment analysis of the Zidesamtinib versus DMSO comparison revealed enrichment for pathways associated with cytoplasmic translation, oxidative phosphorylation, ATP metabolic processes, aerobic respiration, and multiple p53-mediated signaling pathways. These findings suggested that Zidesamtinib treatment may influence mitochondrial activity, cellular energy metabolism, and stress-response signaling mechanisms. However, this initial analysis was performed before removing features with zero total read counts, meaning that a substantial number of non-expressed variables were still included in the dataset and could contribute background noise and reduce pathway specificity.
+
+After filtering out zero-count features and repeating the differential expression and GO enrichment analyses, the second enrichment analysis demonstrated a more focused and metabolically coherent biological profile. While several pathways remained consistent between both analyses, including cytoplasmic translation, ATP metabolic processes, aerobic respiration, and p53-associated signaling, the filtered analysis showed a much stronger enrichment of nucleotide and ribonucleotide metabolic pathways. Newly prominent pathways included purine ribonucleotide metabolic process, ribonucleoside triphosphate metabolic process, and nucleoside triphosphate metabolism. At the same time, pathways related to oxidative phosphorylation and proton transmembrane transport became less dominant among the top enriched categories.
+
+The persistence of ATP metabolism, aerobic respiration, and p53-mediated signaling across both analyses suggests that these represent robust biological responses to Zidesamtinib treatment rather than artifacts caused by low-expression features. Furthermore, the emergence of multiple nucleotide metabolism pathways after filtering indicates that removing zero-count variables improved pathway specificity and revealed additional transcriptomic changes associated with cellular energy balance and biosynthetic activity. Overall, the filtered analysis appears biologically more refined and likely provides a more accurate representation of the molecular effects induced by Zidesamtinib treatment.
+
+
+```{r}
+gene_entrez_Zidesamtinib_2 <- bitr(
+    sig_genes_Zidesamtinib_2,
+    fromType = "SYMBOL",
+    toType = "ENTREZID",
+    OrgDb = org.Hs.eg.db
+)
+
+ekegg_Zidesamtinib_2 <- enrichKEGG(
+    gene = gene_entrez_Zidesamtinib_2$ENTREZID,
+    organism = "hsa"
+)
+dotplot(ekegg_Zidesamtinib)+ggtitle("First KEGG pathway enrichment: Zidesamtinib vs DMSO")
+dotplot(ekegg_Zidesamtinib_2)+ggtitle("Second KEGG pathway enrichment: Zidesamtinib vs DMSO")
+```
+
+The first KEGG pathway enrichment analysis of the Zidesamtinib versus DMSO comparison identified several pathways associated with ribosomal activity, oxidative phosphorylation, reactive oxygen species, and neurodegenerative disease-related metabolic processes. Prominent enriched pathways included Ribosome, Oxidative phosphorylation, Thermogenesis, Parkinson disease, Huntington disease, and Chemical carcinogenesis – reactive oxygen species. These findings suggested that Zidesamtinib treatment may strongly influence protein synthesis, mitochondrial function, and cellular stress-response mechanisms. However, this initial analysis was performed prior to removing features with zero total read counts, meaning that a substantial amount of non-expressed variables remained in the dataset and could contribute background noise and reduce pathway specificity.
+
+After filtering out zero-count features and repeating the differential expression and KEGG enrichment analyses, the second pathway enrichment analysis demonstrated a more focused and biologically coherent profile. Several pathways remained highly consistent between both analyses, particularly Ribosome, Chemical carcinogenesis – reactive oxygen species, Oxidative phosphorylation, Thermogenesis, and Parkinson disease pathways. The persistence of these pathways after filtering indicates that they likely represent robust biological effects associated with Zidesamtinib treatment rather than statistical artifacts caused by low-expression features.
+
+In contrast to the first analysis, the filtered dataset additionally revealed enrichment for Focal adhesion and Proteoglycans in cancer pathways, while pathways such as Huntington disease and Measles were no longer among the top enriched categories. Furthermore, the filtered analysis showed generally stronger statistical significance, reflected by lower adjusted p-values and larger gene counts for several pathways. This shift suggests that removing zero-count variables improved pathway specificity and reduced background variation, allowing biologically relevant signaling and cancer-associated pathways to emerge more clearly. Overall, the second analysis appears biologically more refined and likely provides a more reliable representation of the transcriptomic effects induced by Zidesamtinib treatment.
+
+# second conclusion 
+
+Overall, the transcriptomic analyses of Lorlatinib, Repotrectinib, and Zidesamtinib treatment compared to DMSO revealed that all three compounds induced biologically meaningful, although relatively subtle, gene expression changes. Initially, the datasets contained a large number of zero-count features, which likely introduced background noise, reduced statistical power, and affected pathway specificity. After filtering out non-expressed variables and repeating the differential expression and enrichment analyses, the resulting GO and KEGG pathway profiles became more focused, biologically coherent, and statistically robust across all treatments.
+
+Despite differences between the individual drugs, several common biological themes emerged. All three inhibitors showed enrichment for pathways associated with cancer biology, signal transduction, stress responses, and cellular metabolism. In particular, signaling-related pathways such as MAPK signaling, PI3K-Akt signaling, p53-mediated signaling, focal adhesion, and pathways related to reactive oxygen species were repeatedly identified. Additionally, multiple analyses highlighted alterations in metabolic and mitochondrial processes, including oxidative phosphorylation, ATP metabolism, aerobic respiration, and ribonucleotide metabolism, suggesting that these treatments affect both signaling networks and cellular energy homeostasis.
+
+The analyses also demonstrated that filtering low-information features substantially improved pathway specificity. After filtering, less biologically relevant pathways disappeared, while more coherent cancer-, signaling-, and metabolism-associated pathways became more prominent. Furthermore, several pathways remained highly consistent before and after filtering, indicating that these represent robust biological responses rather than artifacts caused by low-expression genes.
+
+Although the number of strongly differentially expressed genes remained relatively limited, the enrichment analyses consistently identified biologically plausible pathways associated with oncogenic signaling, proliferation, stress adaptation, and tumor-related cellular processes. Together, these findings suggest that Lorlatinib, Repotrectinib, and Zidesamtinib each induce distinct but overlapping transcriptomic effects, primarily influencing signaling pathways, metabolic regulation, and cancer-associated biological mechanisms.
+
+
+```{r}
+rownames(
+  subset(
+    res_Lorlatinib_2,
+    padj < 0.05 & abs(log2FoldChange) > 1
+  )
+)
+```
+
+```{r}
+rownames(
+  subset(
+    res_Repotrectinib_2,
+    padj < 0.05 & abs(log2FoldChange) > 1
+  )
+)
+```
+
+```{r}
+rownames(
+  subset(
+    res_Zidesamtinib_2,
+    padj < 0.05 & abs(log2FoldChange) > 1
+  )
+)
+```
+
