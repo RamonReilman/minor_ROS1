@@ -95,6 +95,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#deseq2" id="toc-deseq2" class="nav-link" data-scroll-target="#deseq2">DESEQ2</a>
   <ul class="collapse">
   <li><a href="#hg38" id="toc-hg38" class="nav-link" data-scroll-target="#hg38">HG38</a></li>
+  <li><a href="#hg19" id="toc-hg19" class="nav-link" data-scroll-target="#hg19">HG19</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -1071,8 +1072,8 @@ low counts [2]     : 8191, 23%
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">HCC78_250 nM crizotinib_r1</td>
-<td style="text-align: right;">7.431121e+19</td>
-<td style="text-align: right;">4.420250e+19</td>
+<td style="text-align: right;">-1.314750e+21</td>
+<td style="text-align: right;">-1.967848e+20</td>
 <td style="text-align: left;">HCC78:250 nM crizotinib</td>
 <td style="text-align: left;">HCC78_250 nM crizotinib_r1</td>
 <td style="text-align: left;">SRR25486680ReadsPerGene</td>
@@ -1084,8 +1085,8 @@ low counts [2]     : 8191, 23%
 </tr>
 <tr class="even">
 <td style="text-align: left;">HCC78_250 nM crizotinib_r2</td>
-<td style="text-align: right;">4.998400e+19</td>
-<td style="text-align: right;">3.457167e+19</td>
+<td style="text-align: right;">-9.268665e+20</td>
+<td style="text-align: right;">-1.032004e+20</td>
 <td style="text-align: left;">HCC78:250 nM crizotinib</td>
 <td style="text-align: left;">HCC78_250 nM crizotinib_r2</td>
 <td style="text-align: left;">SRR25486681ReadsPerGene</td>
@@ -1097,8 +1098,8 @@ low counts [2]     : 8191, 23%
 </tr>
 <tr class="odd">
 <td style="text-align: left;">HCC78_250 nM crizotinib_r3</td>
-<td style="text-align: right;">5.674702e+19</td>
-<td style="text-align: right;">3.781985e+19</td>
+<td style="text-align: right;">-9.130208e+20</td>
+<td style="text-align: right;">-1.036684e+20</td>
 <td style="text-align: left;">HCC78:250 nM crizotinib</td>
 <td style="text-align: left;">HCC78_250 nM crizotinib_r3</td>
 <td style="text-align: left;">SRR25486682ReadsPerGene</td>
@@ -1110,8 +1111,8 @@ low counts [2]     : 8191, 23%
 </tr>
 <tr class="even">
 <td style="text-align: left;">HCC78_DMSO_r1</td>
-<td style="text-align: right;">1.052481e+20</td>
-<td style="text-align: right;">5.652970e+19</td>
+<td style="text-align: right;">-6.736035e+20</td>
+<td style="text-align: right;">-5.023391e+19</td>
 <td style="text-align: left;">HCC78:DMSO</td>
 <td style="text-align: left;">HCC78_DMSO_r1</td>
 <td style="text-align: left;">SRR25486683ReadsPerGene</td>
@@ -1123,8 +1124,8 @@ low counts [2]     : 8191, 23%
 </tr>
 <tr class="odd">
 <td style="text-align: left;">HCC78_DMSO_r2</td>
-<td style="text-align: right;">8.799794e+19</td>
-<td style="text-align: right;">5.808388e+19</td>
+<td style="text-align: right;">-7.510494e+20</td>
+<td style="text-align: right;">-3.153008e+19</td>
 <td style="text-align: left;">HCC78:DMSO</td>
 <td style="text-align: left;">HCC78_DMSO_r2</td>
 <td style="text-align: left;">SRR25486684ReadsPerGene</td>
@@ -1136,8 +1137,8 @@ low counts [2]     : 8191, 23%
 </tr>
 <tr class="even">
 <td style="text-align: left;">HCC78_DMSO_r3</td>
-<td style="text-align: right;">7.570999e+19</td>
-<td style="text-align: right;">5.253785e+19</td>
+<td style="text-align: right;">-5.640753e+20</td>
+<td style="text-align: right;">-1.106703e+19</td>
 <td style="text-align: left;">HCC78:DMSO</td>
 <td style="text-align: left;">HCC78_DMSO_r3</td>
 <td style="text-align: left;">SRR25486685ReadsPerGene</td>
@@ -1170,11 +1171,15 @@ low counts [2]     : 8191, 23%
 </div>
 <p>Interesting insights:</p>
 <ul>
-<li>Some cell lines are plotted further away from the rest:
+<li><p>Most of the cell lines cluster close to each other within their own groups, with 2 exceptions. This being CUTO23 and CUTO27. - CUTO23 shows a straight line over PC1, with barely any notable variance in PC2. Notable is that there seems to be a weird symmetry happening. We see 2 untreated and 2 treated samples separated on the extreme ends of PC1, with 1 untreated and 1 treated sample close to each other near the middle of PC1.</p>
 <ul>
-<li>CUTO33 and CUTO 38. Where we also see that both treated and DMSO are comparable to eachother. Espcially CUTO 38, where we see near perfect clustering, even with treatment and DMSO.</li>
+<li>CUTO27 displays that most of the samples withing the group appear to be clustered well. 2 of the 3 samples that are treated are far away from this cluster, and are within the cluster of CUTO37, HCC78, and CUTO33.</li>
 </ul></li>
-<li>The other cell lines can be found clustered together. In some cases like CUTO23 and 28 there is a small, but notable, differences between treated and non treated cell lines.</li>
+<li><p>This larger cluster of multiple groups is showing, this clusters shows that most samples within clustered, regardless of being treated with crizotinib or not.</p></li>
+<li><p>1 Sample group is clustered further from the others, CUTO38 with no clear differences between treated or untreated.</p></li>
+<li><p>CUTO28 is the only sample group that shows a clear separation between being treated and untreated. Both groups appear to almost be perfectly clustered, and most of the variance can be found on PCA2.</p></li>
+<li><p>Most of the PC1 variation appears to be caused by CUTO23 and CUTO27. As all the other sample groups show very little variation on this component.</p></li>
+<li><p>Cell line identity appears to dominate in the variance, CUTO28 appears to be the clearest and most defined responder to crizotinib, both CUTO23 and CUTO27’s variation on the second PC could have been potentially caused by technical problems.</p></li>
 </ul>
 <p>I’m interested to see in further data quality assessments how these different samples show up again.</p>
 <div class="cell">
@@ -1204,7 +1209,7 @@ low counts [2]     : 8191, 23%
 <span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>                         <span class="co"># Disable legend</span></span>
 <span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>                         <span class="at">legendPosition =</span> <span class="st">"none"</span>,</span>
 <span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a>                         <span class="co"># Set cutoffs</span></span>
-<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a>                         <span class="at">pCutoff =</span> <span class="fl">0.05</span>, <span class="at">FCcutoff =</span> <span class="dv">2</span>))</span>
+<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a>                         <span class="at">pCutoff =</span> <span class="fl">0.05</span>, <span class="at">FCcutoff =</span> <span class="dv">3</span>))</span>
 <span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
@@ -1302,6 +1307,932 @@ low counts [2]     : 8191, 23%
 </div>
 </div>
 </section>
+</section>
+<section id="hg19" class="level3">
+<h3 class="anchored" data-anchor-id="hg19">HG19</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>data_hg19 <span class="ot">&lt;-</span> <span class="fu">read.csv2</span>(<span class="fu">paste0</span>(config<span class="sc">$</span>counts_dir, <span class="st">"/hg19_counts.csv"</span>), <span class="at">sep =</span> <span class="st">","</span>, <span class="at">row.names =</span> <span class="dv">1</span>)</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>col_data <span class="ot">&lt;-</span> <span class="fu">read.csv2</span>(config<span class="sc">$</span>col_data, <span class="at">sep =</span> <span class="st">";"</span>)</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(col_data) <span class="ot">&lt;-</span> col_data[,<span class="dv">1</span>]</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>col_data<span class="sc">$</span>treatment <span class="ot">&lt;-</span> <span class="fu">factor</span>(col_data<span class="sc">$</span>treatment, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"DMSO"</span>, <span class="st">"250 nM crizotinib"</span>))</span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data_hg19)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 0%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">SRR25486680ReadsPerGene</th>
+<th style="text-align: right;">SRR25486681ReadsPerGene</th>
+<th style="text-align: right;">SRR25486682ReadsPerGene</th>
+<th style="text-align: right;">SRR25486683ReadsPerGene</th>
+<th style="text-align: right;">SRR25486684ReadsPerGene</th>
+<th style="text-align: right;">SRR25486685ReadsPerGene</th>
+<th style="text-align: right;">SRR25486686ReadsPerGene</th>
+<th style="text-align: right;">SRR25486687ReadsPerGene</th>
+<th style="text-align: right;">SRR25486688ReadsPerGene</th>
+<th style="text-align: right;">SRR25486689ReadsPerGene</th>
+<th style="text-align: right;">SRR25486690ReadsPerGene</th>
+<th style="text-align: right;">SRR25486691ReadsPerGene</th>
+<th style="text-align: right;">SRR25486692ReadsPerGene</th>
+<th style="text-align: right;">SRR25486693ReadsPerGene</th>
+<th style="text-align: right;">SRR25486694ReadsPerGene</th>
+<th style="text-align: right;">SRR25486695ReadsPerGene</th>
+<th style="text-align: right;">SRR25486696ReadsPerGene</th>
+<th style="text-align: right;">SRR25486697ReadsPerGene</th>
+<th style="text-align: right;">SRR25486698ReadsPerGene</th>
+<th style="text-align: right;">SRR25486699ReadsPerGene</th>
+<th style="text-align: right;">SRR25486700ReadsPerGene</th>
+<th style="text-align: right;">SRR25486701ReadsPerGene</th>
+<th style="text-align: right;">SRR25486702ReadsPerGene</th>
+<th style="text-align: right;">SRR25486703ReadsPerGene</th>
+<th style="text-align: right;">SRR25486704ReadsPerGene</th>
+<th style="text-align: right;">SRR25486705ReadsPerGene</th>
+<th style="text-align: right;">SRR25486706ReadsPerGene</th>
+<th style="text-align: right;">SRR25486707ReadsPerGene</th>
+<th style="text-align: right;">SRR25486708ReadsPerGene</th>
+<th style="text-align: right;">SRR25486709ReadsPerGene</th>
+<th style="text-align: right;">SRR25486710ReadsPerGene</th>
+<th style="text-align: right;">SRR25486711ReadsPerGene</th>
+<th style="text-align: right;">SRR25486712ReadsPerGene</th>
+<th style="text-align: right;">SRR25486713ReadsPerGene</th>
+<th style="text-align: right;">SRR25486714ReadsPerGene</th>
+<th style="text-align: right;">SRR25486715ReadsPerGene</th>
+<th style="text-align: right;">SRR25486716ReadsPerGene</th>
+<th style="text-align: right;">SRR25486717ReadsPerGene</th>
+<th style="text-align: right;">SRR25486718ReadsPerGene</th>
+<th style="text-align: right;">SRR25486719ReadsPerGene</th>
+<th style="text-align: right;">SRR25486720ReadsPerGene</th>
+<th style="text-align: right;">SRR25486721ReadsPerGene</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">TSPAN6</td>
+<td style="text-align: right;">1988</td>
+<td style="text-align: right;">1574</td>
+<td style="text-align: right;">1844</td>
+<td style="text-align: right;">2306</td>
+<td style="text-align: right;">1386</td>
+<td style="text-align: right;">1808</td>
+<td style="text-align: right;">1591</td>
+<td style="text-align: right;">2628</td>
+<td style="text-align: right;">2662</td>
+<td style="text-align: right;">2255</td>
+<td style="text-align: right;">2353</td>
+<td style="text-align: right;">2343</td>
+<td style="text-align: right;">1929</td>
+<td style="text-align: right;">1750</td>
+<td style="text-align: right;">1654</td>
+<td style="text-align: right;">1488</td>
+<td style="text-align: right;">2001</td>
+<td style="text-align: right;">1871</td>
+<td style="text-align: right;">695</td>
+<td style="text-align: right;">644</td>
+<td style="text-align: right;">645</td>
+<td style="text-align: right;">646</td>
+<td style="text-align: right;">591</td>
+<td style="text-align: right;">679</td>
+<td style="text-align: right;">3702</td>
+<td style="text-align: right;">3397</td>
+<td style="text-align: right;">3274</td>
+<td style="text-align: right;">2004</td>
+<td style="text-align: right;">2398</td>
+<td style="text-align: right;">2107</td>
+<td style="text-align: right;">715</td>
+<td style="text-align: right;">651</td>
+<td style="text-align: right;">622</td>
+<td style="text-align: right;">743</td>
+<td style="text-align: right;">701</td>
+<td style="text-align: right;">602</td>
+<td style="text-align: right;">1635</td>
+<td style="text-align: right;">1654</td>
+<td style="text-align: right;">1369</td>
+<td style="text-align: right;">1748</td>
+<td style="text-align: right;">2324</td>
+<td style="text-align: right;">2019</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TNMD</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">516</td>
+<td style="text-align: right;">254</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DPM1</td>
+<td style="text-align: right;">1034</td>
+<td style="text-align: right;">904</td>
+<td style="text-align: right;">1103</td>
+<td style="text-align: right;">1374</td>
+<td style="text-align: right;">1475</td>
+<td style="text-align: right;">1394</td>
+<td style="text-align: right;">598</td>
+<td style="text-align: right;">981</td>
+<td style="text-align: right;">1273</td>
+<td style="text-align: right;">917</td>
+<td style="text-align: right;">1035</td>
+<td style="text-align: right;">1071</td>
+<td style="text-align: right;">915</td>
+<td style="text-align: right;">573</td>
+<td style="text-align: right;">593</td>
+<td style="text-align: right;">735</td>
+<td style="text-align: right;">689</td>
+<td style="text-align: right;">818</td>
+<td style="text-align: right;">1341</td>
+<td style="text-align: right;">1437</td>
+<td style="text-align: right;">1280</td>
+<td style="text-align: right;">1374</td>
+<td style="text-align: right;">1673</td>
+<td style="text-align: right;">1605</td>
+<td style="text-align: right;">1056</td>
+<td style="text-align: right;">1106</td>
+<td style="text-align: right;">1052</td>
+<td style="text-align: right;">1472</td>
+<td style="text-align: right;">1526</td>
+<td style="text-align: right;">1508</td>
+<td style="text-align: right;">990</td>
+<td style="text-align: right;">963</td>
+<td style="text-align: right;">1298</td>
+<td style="text-align: right;">1232</td>
+<td style="text-align: right;">1406</td>
+<td style="text-align: right;">1586</td>
+<td style="text-align: right;">1220</td>
+<td style="text-align: right;">1041</td>
+<td style="text-align: right;">1004</td>
+<td style="text-align: right;">1041</td>
+<td style="text-align: right;">1324</td>
+<td style="text-align: right;">1271</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SCYL3</td>
+<td style="text-align: right;">435</td>
+<td style="text-align: right;">291</td>
+<td style="text-align: right;">374</td>
+<td style="text-align: right;">395</td>
+<td style="text-align: right;">322</td>
+<td style="text-align: right;">322</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">96</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">137</td>
+<td style="text-align: right;">287</td>
+<td style="text-align: right;">254</td>
+<td style="text-align: right;">344</td>
+<td style="text-align: right;">299</td>
+<td style="text-align: right;">287</td>
+<td style="text-align: right;">272</td>
+<td style="text-align: right;">260</td>
+<td style="text-align: right;">208</td>
+<td style="text-align: right;">231</td>
+<td style="text-align: right;">195</td>
+<td style="text-align: right;">185</td>
+<td style="text-align: right;">281</td>
+<td style="text-align: right;">307</td>
+<td style="text-align: right;">460</td>
+<td style="text-align: right;">326</td>
+<td style="text-align: right;">420</td>
+<td style="text-align: right;">347</td>
+<td style="text-align: right;">375</td>
+<td style="text-align: right;">530</td>
+<td style="text-align: right;">551</td>
+<td style="text-align: right;">427</td>
+<td style="text-align: right;">383</td>
+<td style="text-align: right;">404</td>
+<td style="text-align: right;">350</td>
+<td style="text-align: right;">480</td>
+<td style="text-align: right;">478</td>
+<td style="text-align: right;">441</td>
+<td style="text-align: right;">316</td>
+<td style="text-align: right;">351</td>
+<td style="text-align: right;">341</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FIRRM</td>
+<td style="text-align: right;">166</td>
+<td style="text-align: right;">259</td>
+<td style="text-align: right;">392</td>
+<td style="text-align: right;">642</td>
+<td style="text-align: right;">846</td>
+<td style="text-align: right;">659</td>
+<td style="text-align: right;">173</td>
+<td style="text-align: right;">287</td>
+<td style="text-align: right;">308</td>
+<td style="text-align: right;">331</td>
+<td style="text-align: right;">401</td>
+<td style="text-align: right;">330</td>
+<td style="text-align: right;">177</td>
+<td style="text-align: right;">194</td>
+<td style="text-align: right;">314</td>
+<td style="text-align: right;">221</td>
+<td style="text-align: right;">387</td>
+<td style="text-align: right;">549</td>
+<td style="text-align: right;">650</td>
+<td style="text-align: right;">663</td>
+<td style="text-align: right;">618</td>
+<td style="text-align: right;">698</td>
+<td style="text-align: right;">731</td>
+<td style="text-align: right;">821</td>
+<td style="text-align: right;">154</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">173</td>
+<td style="text-align: right;">357</td>
+<td style="text-align: right;">391</td>
+<td style="text-align: right;">406</td>
+<td style="text-align: right;">634</td>
+<td style="text-align: right;">502</td>
+<td style="text-align: right;">669</td>
+<td style="text-align: right;">1019</td>
+<td style="text-align: right;">910</td>
+<td style="text-align: right;">1034</td>
+<td style="text-align: right;">131</td>
+<td style="text-align: right;">91</td>
+<td style="text-align: right;">67</td>
+<td style="text-align: right;">362</td>
+<td style="text-align: right;">399</td>
+<td style="text-align: right;">398</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FGR</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>This is the count data for the GSE23 experiment, mapped to the hg19 human genome</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>data_hg19 <span class="ot">&lt;-</span> data_hg19[, <span class="fu">rownames</span>(col_data)]</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="fu">all</span>(<span class="fu">rownames</span>(col_data) <span class="sc">==</span> <span class="fu">colnames</span>(data_hg19))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>This means that all of the rownames of the coldata is alligned with the colname of the counts data. Which means I can now generate masks for the different groups, i will also rename the SRR reads so that they’re named after the assay type and treatment</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>col_data <span class="ot">&lt;-</span> col_data <span class="sc">%&gt;%</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(Assay.Type, treatment) <span class="sc">%&gt;%</span></span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">r_num =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">condition =</span> <span class="fu">paste0</span>(Assay.Type, <span class="st">"_"</span>, treatment, <span class="st">"_r"</span>, r_num))</span>
+<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(col_data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 12%">
+<col style="width: 20%">
+<col style="width: 6%">
+<col style="width: 31%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Run</th>
+<th style="text-align: left;">Assay.Type</th>
+<th style="text-align: left;">treatment</th>
+<th style="text-align: right;">r_num</th>
+<th style="text-align: left;">condition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">SRR25486680ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">250 nM crizotinib</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">HCC78_250 nM crizotinib_r1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SRR25486681ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">250 nM crizotinib</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">HCC78_250 nM crizotinib_r2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SRR25486682ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">250 nM crizotinib</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">HCC78_250 nM crizotinib_r3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SRR25486683ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">DMSO</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">HCC78_DMSO_r1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SRR25486684ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">DMSO</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">HCC78_DMSO_r2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SRR25486685ReadsPerGene</td>
+<td style="text-align: left;">HCC78</td>
+<td style="text-align: left;">DMSO</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">HCC78_DMSO_r3</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>This will make it more readable what every point is, including which one of the tripples it is.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(col_data)) {</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>  idx <span class="ot">&lt;-</span> <span class="fu">grep</span>(col_data<span class="sc">$</span>Run[i], <span class="fu">names</span>(data_hg19))</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(data_hg19)[idx] <span class="ot">&lt;-</span> col_data<span class="sc">$</span>condition[i]</span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data_hg19)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 0%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">HCC78_250 nM crizotinib_r1</th>
+<th style="text-align: right;">HCC78_250 nM crizotinib_r2</th>
+<th style="text-align: right;">HCC78_250 nM crizotinib_r3</th>
+<th style="text-align: right;">HCC78_DMSO_r1</th>
+<th style="text-align: right;">HCC78_DMSO_r2</th>
+<th style="text-align: right;">HCC78_DMSO_r3</th>
+<th style="text-align: right;">CUTO38_250 nM crizotinib_r1</th>
+<th style="text-align: right;">CUTO38_250 nM crizotinib_r2</th>
+<th style="text-align: right;">CUTO38_250 nM crizotinib_r3</th>
+<th style="text-align: right;">CUTO38_DMSO_r1</th>
+<th style="text-align: right;">CUTO38_DMSO_r2</th>
+<th style="text-align: right;">CUTO38_DMSO_r3</th>
+<th style="text-align: right;">CUTO37_250 nM crizotinib_r1</th>
+<th style="text-align: right;">CUTO37_250 nM crizotinib_r2</th>
+<th style="text-align: right;">CUTO37_250 nM crizotinib_r3</th>
+<th style="text-align: right;">CUTO37_DMSO_r1</th>
+<th style="text-align: right;">CUTO37_DMSO_r2</th>
+<th style="text-align: right;">CUTO37_DMSO_r3</th>
+<th style="text-align: right;">CUTO33_250 nM crizotinib_r1</th>
+<th style="text-align: right;">CUTO33_250 nM crizotinib_r2</th>
+<th style="text-align: right;">CUTO33_250 nM crizotinib_r3</th>
+<th style="text-align: right;">CUTO33_DMSO_r1</th>
+<th style="text-align: right;">CUTO33_DMSO_r2</th>
+<th style="text-align: right;">CUTO33_DMSO_r3</th>
+<th style="text-align: right;">CUTO28_250 nM crizotinib_r1</th>
+<th style="text-align: right;">CUTO28_250 nM crizotinib_r2</th>
+<th style="text-align: right;">CUTO28_250 nM crizotinib_r3</th>
+<th style="text-align: right;">CUTO28_DMSO_r1</th>
+<th style="text-align: right;">CUTO28_DMSO_r2</th>
+<th style="text-align: right;">CUTO28_DMSO_r3</th>
+<th style="text-align: right;">CUTO27_250 nM crizotinib_r1</th>
+<th style="text-align: right;">CUTO27_250 nM crizotinib_r2</th>
+<th style="text-align: right;">CUTO27_250 nM crizotinib_r3</th>
+<th style="text-align: right;">CUTO27_DMSO_r1</th>
+<th style="text-align: right;">CUTO27_DMSO_r2</th>
+<th style="text-align: right;">CUTO27_DMSO_r3</th>
+<th style="text-align: right;">CUTO23_250 nM crizotinib_r1</th>
+<th style="text-align: right;">CUTO23_250 nM crizotinib_r2</th>
+<th style="text-align: right;">CUTO23_250 nM crizotinib_r3</th>
+<th style="text-align: right;">CUTO23_DMSO_r1</th>
+<th style="text-align: right;">CUTO23_DMSO_r2</th>
+<th style="text-align: right;">CUTO23_DMSO_r3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">TSPAN6</td>
+<td style="text-align: right;">1988</td>
+<td style="text-align: right;">1574</td>
+<td style="text-align: right;">1844</td>
+<td style="text-align: right;">2306</td>
+<td style="text-align: right;">1386</td>
+<td style="text-align: right;">1808</td>
+<td style="text-align: right;">1591</td>
+<td style="text-align: right;">2628</td>
+<td style="text-align: right;">2662</td>
+<td style="text-align: right;">2255</td>
+<td style="text-align: right;">2353</td>
+<td style="text-align: right;">2343</td>
+<td style="text-align: right;">1929</td>
+<td style="text-align: right;">1750</td>
+<td style="text-align: right;">1654</td>
+<td style="text-align: right;">1488</td>
+<td style="text-align: right;">2001</td>
+<td style="text-align: right;">1871</td>
+<td style="text-align: right;">695</td>
+<td style="text-align: right;">644</td>
+<td style="text-align: right;">645</td>
+<td style="text-align: right;">646</td>
+<td style="text-align: right;">591</td>
+<td style="text-align: right;">679</td>
+<td style="text-align: right;">3702</td>
+<td style="text-align: right;">3397</td>
+<td style="text-align: right;">3274</td>
+<td style="text-align: right;">2004</td>
+<td style="text-align: right;">2398</td>
+<td style="text-align: right;">2107</td>
+<td style="text-align: right;">715</td>
+<td style="text-align: right;">651</td>
+<td style="text-align: right;">622</td>
+<td style="text-align: right;">743</td>
+<td style="text-align: right;">701</td>
+<td style="text-align: right;">602</td>
+<td style="text-align: right;">1635</td>
+<td style="text-align: right;">1654</td>
+<td style="text-align: right;">1369</td>
+<td style="text-align: right;">1748</td>
+<td style="text-align: right;">2324</td>
+<td style="text-align: right;">2019</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TNMD</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">516</td>
+<td style="text-align: right;">254</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DPM1</td>
+<td style="text-align: right;">1034</td>
+<td style="text-align: right;">904</td>
+<td style="text-align: right;">1103</td>
+<td style="text-align: right;">1374</td>
+<td style="text-align: right;">1475</td>
+<td style="text-align: right;">1394</td>
+<td style="text-align: right;">598</td>
+<td style="text-align: right;">981</td>
+<td style="text-align: right;">1273</td>
+<td style="text-align: right;">917</td>
+<td style="text-align: right;">1035</td>
+<td style="text-align: right;">1071</td>
+<td style="text-align: right;">915</td>
+<td style="text-align: right;">573</td>
+<td style="text-align: right;">593</td>
+<td style="text-align: right;">735</td>
+<td style="text-align: right;">689</td>
+<td style="text-align: right;">818</td>
+<td style="text-align: right;">1341</td>
+<td style="text-align: right;">1437</td>
+<td style="text-align: right;">1280</td>
+<td style="text-align: right;">1374</td>
+<td style="text-align: right;">1673</td>
+<td style="text-align: right;">1605</td>
+<td style="text-align: right;">1056</td>
+<td style="text-align: right;">1106</td>
+<td style="text-align: right;">1052</td>
+<td style="text-align: right;">1472</td>
+<td style="text-align: right;">1526</td>
+<td style="text-align: right;">1508</td>
+<td style="text-align: right;">990</td>
+<td style="text-align: right;">963</td>
+<td style="text-align: right;">1298</td>
+<td style="text-align: right;">1232</td>
+<td style="text-align: right;">1406</td>
+<td style="text-align: right;">1586</td>
+<td style="text-align: right;">1220</td>
+<td style="text-align: right;">1041</td>
+<td style="text-align: right;">1004</td>
+<td style="text-align: right;">1041</td>
+<td style="text-align: right;">1324</td>
+<td style="text-align: right;">1271</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SCYL3</td>
+<td style="text-align: right;">435</td>
+<td style="text-align: right;">291</td>
+<td style="text-align: right;">374</td>
+<td style="text-align: right;">395</td>
+<td style="text-align: right;">322</td>
+<td style="text-align: right;">322</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">96</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">137</td>
+<td style="text-align: right;">287</td>
+<td style="text-align: right;">254</td>
+<td style="text-align: right;">344</td>
+<td style="text-align: right;">299</td>
+<td style="text-align: right;">287</td>
+<td style="text-align: right;">272</td>
+<td style="text-align: right;">260</td>
+<td style="text-align: right;">208</td>
+<td style="text-align: right;">231</td>
+<td style="text-align: right;">195</td>
+<td style="text-align: right;">185</td>
+<td style="text-align: right;">281</td>
+<td style="text-align: right;">307</td>
+<td style="text-align: right;">460</td>
+<td style="text-align: right;">326</td>
+<td style="text-align: right;">420</td>
+<td style="text-align: right;">347</td>
+<td style="text-align: right;">375</td>
+<td style="text-align: right;">530</td>
+<td style="text-align: right;">551</td>
+<td style="text-align: right;">427</td>
+<td style="text-align: right;">383</td>
+<td style="text-align: right;">404</td>
+<td style="text-align: right;">350</td>
+<td style="text-align: right;">480</td>
+<td style="text-align: right;">478</td>
+<td style="text-align: right;">441</td>
+<td style="text-align: right;">316</td>
+<td style="text-align: right;">351</td>
+<td style="text-align: right;">341</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FIRRM</td>
+<td style="text-align: right;">166</td>
+<td style="text-align: right;">259</td>
+<td style="text-align: right;">392</td>
+<td style="text-align: right;">642</td>
+<td style="text-align: right;">846</td>
+<td style="text-align: right;">659</td>
+<td style="text-align: right;">173</td>
+<td style="text-align: right;">287</td>
+<td style="text-align: right;">308</td>
+<td style="text-align: right;">331</td>
+<td style="text-align: right;">401</td>
+<td style="text-align: right;">330</td>
+<td style="text-align: right;">177</td>
+<td style="text-align: right;">194</td>
+<td style="text-align: right;">314</td>
+<td style="text-align: right;">221</td>
+<td style="text-align: right;">387</td>
+<td style="text-align: right;">549</td>
+<td style="text-align: right;">650</td>
+<td style="text-align: right;">663</td>
+<td style="text-align: right;">618</td>
+<td style="text-align: right;">698</td>
+<td style="text-align: right;">731</td>
+<td style="text-align: right;">821</td>
+<td style="text-align: right;">154</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">173</td>
+<td style="text-align: right;">357</td>
+<td style="text-align: right;">391</td>
+<td style="text-align: right;">406</td>
+<td style="text-align: right;">634</td>
+<td style="text-align: right;">502</td>
+<td style="text-align: right;">669</td>
+<td style="text-align: right;">1019</td>
+<td style="text-align: right;">910</td>
+<td style="text-align: right;">1034</td>
+<td style="text-align: right;">131</td>
+<td style="text-align: right;">91</td>
+<td style="text-align: right;">67</td>
+<td style="text-align: right;">362</td>
+<td style="text-align: right;">399</td>
+<td style="text-align: right;">398</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FGR</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Now the names of the SRR files align with more readable names, we can now seperate them into groups</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>HCC78_crizo <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"HCC78_250 nM crizotinib"</span>, <span class="fu">names</span>(data_hg19))</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>HCC78_DMSO <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"HCC78_DMSO"</span>, <span class="fu">names</span>(data_hg19))</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>CUTO38_crizo <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO38_250 nM crizotinib"</span>, <span class="fu">names</span>(data_hg19))</span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>CUTO38_DMSO <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO38_DMSO"</span>, <span class="fu">names</span>(data_hg19))</span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>CUTO37_crizo <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO37_250 nM crizotinib"</span>, <span class="fu">names</span>(data_hg19))</span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a>CUTO37_DMSO <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO37_DMSO"</span>, <span class="fu">names</span>(data_hg19))</span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a>CUTO33_crizo <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO33_250 nM crizotinib"</span>, <span class="fu">names</span>(data_hg19))</span>
+<span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a>CUTO33_DMSO <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO33_DMSO"</span>, <span class="fu">names</span>(data_hg19))</span>
+<span id="cb69-12"><a href="#cb69-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-13"><a href="#cb69-13" aria-hidden="true" tabindex="-1"></a>CUTO28_crizo <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO28_250 nM crizotinib"</span>, <span class="fu">names</span>(data_hg19))</span>
+<span id="cb69-14"><a href="#cb69-14" aria-hidden="true" tabindex="-1"></a>CUTO28_DMSO <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO28_DMSO"</span>, <span class="fu">names</span>(data_hg19))</span>
+<span id="cb69-15"><a href="#cb69-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-16"><a href="#cb69-16" aria-hidden="true" tabindex="-1"></a>CUTO27_crizo <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO27_250 nM crizotinib"</span>, <span class="fu">names</span>(data_hg19))</span>
+<span id="cb69-17"><a href="#cb69-17" aria-hidden="true" tabindex="-1"></a>CUTO27_DMSO <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO27_DMSO"</span>, <span class="fu">names</span>(data_hg19))</span>
+<span id="cb69-18"><a href="#cb69-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-19"><a href="#cb69-19" aria-hidden="true" tabindex="-1"></a>CUTO23_crizo <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO23_250 nM crizotinib"</span>, <span class="fu">names</span>(data_hg19))</span>
+<span id="cb69-20"><a href="#cb69-20" aria-hidden="true" tabindex="-1"></a>CUTO23_DMSO <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"CUTO23_DMSO"</span>, <span class="fu">names</span>(data_hg19))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Now we can start with DESEQ, finally.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>dds_hg19 <span class="ot">&lt;-</span> <span class="fu">DESeqDataSetFromMatrix</span>(<span class="at">countData =</span> data_hg19,</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>                              <span class="at">colData =</span> col_data,</span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>                              <span class="at">design =</span> <span class="sc">~</span> Assay.Type <span class="sc">+</span> treatment)</span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>dds_hg19 <span class="ot">&lt;-</span> dds_hg19[<span class="fu">rowSums</span>(<span class="fu">counts</span>(dds_hg19)) <span class="sc">&gt;</span> <span class="dv">10</span>, ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>dds_hg19 <span class="ot">&lt;-</span> <span class="fu">DESeq</span>(dds_hg19, <span class="at">parallel =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>res_hg19 <span class="ot">&lt;-</span> <span class="fu">results</span>(dds_hg19, <span class="at">contrast=</span><span class="fu">c</span>(<span class="st">"treatment"</span>, <span class="st">"250 nM crizotinib"</span>, <span class="st">"DMSO"</span>))</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res_hg19)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+out of 29516 with nonzero total read count
+adjusted p-value &lt; 0.1
+LFC &gt; 0 (up)       : 7181, 24%
+LFC &lt; 0 (down)     : 4765, 16%
+outliers [1]       : 6, 0.02%
+low counts [2]     : 5723, 19%
+(mean count &lt; 1)
+[1] see 'cooksCutoff' argument of ?results
+[2] see 'independentFiltering' argument of ?results</code></pre>
+</div>
+</div>
+<p>We see here that there are 7181 genes upregulated, and 4756 downregulated when the fasta files are mapped to the hg19 genome.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>vsd_hg19 <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds_hg19, <span class="at">blind =</span> F)</span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>pcaData_hg19 <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd_hg19, <span class="at">intgroup=</span> <span class="fu">c</span>(<span class="st">"Assay.Type"</span>, <span class="st">"treatment"</span>), <span class="at">returnData=</span>T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>percentVar_hg19 <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> <span class="fu">attr</span>(pcaData_hg19, <span class="st">"percentVar"</span>))</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pcaData_hg19, <span class="fu">aes</span>(PC1, PC2, <span class="at">color =</span> Assay.Type, <span class="at">shape =</span> treatment)) <span class="sc">+</span></span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="fu">paste0</span>(<span class="st">"PC1: "</span>, percentVar_hg19[<span class="dv">1</span>], <span class="st">"% variance"</span>)) <span class="sc">+</span></span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="fu">paste0</span>(<span class="st">"PC2: "</span>, percentVar_hg19[<span class="dv">2</span>], <span class="st">"% variance"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="logging_ramon_files/figure-html/unnamed-chunk-54-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>resLFC_hg19 <span class="ot">&lt;-</span> <span class="fu">lfcShrink</span>(dds_hg19, <span class="at">coef =</span> <span class="fu">tail</span>(<span class="fu">resultsNames</span>(dds_hg19), <span class="at">n=</span><span class="dv">1</span>), <span class="at">type =</span> <span class="st">"apeglm"</span>)</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a><span class="fu">deseq.volcano</span>(resLFC_hg19, <span class="st">"Treatment vs DMSO"</span>, <span class="at">v1 =</span> <span class="st">"DMSO"</span>, <span class="at">v2 =</span> <span class="st">"250 nm crizotinib"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="logging_ramon_files/figure-html/unnamed-chunk-55-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 </section>
 </section>

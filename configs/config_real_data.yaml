@@ -1,0 +1,7 @@
+src_dir: "/students/2025-2026/minor_ros1"
+
+counts_dir: "/students/2025-2026/ros1_transcriptomics/GSE239844/counts"
+col_data: "/students/2025-2026/ros1_transcriptomics/GSE239844/col_data/newrun.csv"
+
+genomes:
+- "hg38"

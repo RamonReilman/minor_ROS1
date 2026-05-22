@@ -411,7 +411,7 @@ CUTO23_DMSO <- grep("CUTO23_DMSO", names(data_hg38))
 
 Now we can start with DESEQ, finally.
 
-```{r deseq-analysis}
+```{r deseq-analysis-38}
 dds <- DESeqDataSetFromMatrix(countData = data_hg38,
                               colData = col_data,
                               design = ~ Assay.Type + treatment)
@@ -477,9 +477,18 @@ ggplot(pcaData, aes(PC1, PC2, color = Assay.Type, shape = treatment)) +
 
 Interesting insights:
 
-- Some cell lines are plotted further away from the rest:
-  - CUTO33 and CUTO 38. Where we also see that both treated and DMSO are comparable to eachother. Espcially CUTO 38, where we see near perfect clustering, even with treatment and DMSO.
-- The other cell lines can be found clustered together. In some cases like CUTO23 and 28 there is a small, but notable, differences between treated and non treated cell lines.
+- Most of the cell lines cluster close to each other within their own groups, with 2 exceptions. This being CUTO23 and CUTO27.   - CUTO23 shows a straight line over PC1, with barely any notable variance in PC2. Notable is that there seems to be a weird symmetry happening. We see 2 untreated and 2 treated samples separated on the extreme ends of PC1, with 1 untreated and 1 treated sample close to each other near the middle of PC1. 
+  - CUTO27 displays that most of the samples withing the group appear to be clustered well. 2 of the 3 samples that are treated are far away from this cluster, and are within the cluster of CUTO37, HCC78, and CUTO33.
+  
+- This larger cluster of multiple groups is showing, this clusters shows that most samples within clustered, regardless of being treated with crizotinib or not.
+
+- 1 Sample group is clustered further from the others, CUTO38 with no clear differences between treated or untreated. 
+
+- CUTO28 is the only sample group that shows a clear separation between being treated and untreated. Both groups appear to almost be perfectly clustered, and most of the variance can be found on PCA2.
+
+- Most of the PC1 variation appears to be caused by CUTO23 and CUTO27. As all the other sample groups show very little variation on this component.
+
+- Cell line identity appears to dominate in the variance, CUTO28 appears to be the clearest and most defined responder to crizotinib, both CUTO23 and CUTO27's variation on the second PC could have been potentially caused by technical problems.
 
 I'm interested to see in further data quality assessments how these different samples show up again.
 
@@ -506,7 +515,7 @@ deseq.volcano <- function(res, datasetName, v1, v2) {
                          # Disable legend
                          legendPosition = "none",
                          # Set cutoffs
-                         pCutoff = 0.05, FCcutoff = 2))
+                         pCutoff = 0.05, FCcutoff = 3))
 }
 
 ```
@@ -593,4 +602,120 @@ ridgeplot(gse_hg38) + labs(x = "Enrichment distribution")
 #| fig-height: 8
 #| fig-width: 8
 gseaplot(gse_hg38, by = "all", title = gse_hg38$Description[1], geneSetID = 1)
+```
+
+
+### HG19
+
+```{r}
+
+data_hg19 <- read.csv2(paste0(config$counts_dir, "/hg19_counts.csv"), sep = ",", row.names = 1)
+
+col_data <- read.csv2(config$col_data, sep = ";")
+rownames(col_data) <- col_data[,1]
+col_data$treatment <- factor(col_data$treatment, levels = c("DMSO", "250 nM crizotinib"))
+head(data_hg19)
+```
+
+This is the count data for the GSE23 experiment, mapped to the hg19 human genome
+
+```{r}
+data_hg19 <- data_hg19[, rownames(col_data)]
+all(rownames(col_data) == colnames(data_hg19))
+```
+
+This means that all of the rownames of the coldata is alligned with the colname of the counts data. Which means I can now generate masks for the different groups, i will also rename the SRR reads so that they're named after the assay type and treatment
+
+```{r}
+col_data <- col_data %>%
+  dplyr::group_by(Assay.Type, treatment) %>%
+  dplyr::mutate(r_num = row_number()) %>%
+  dplyr::ungroup() %>%
+  mutate(condition = paste0(Assay.Type, "_", treatment, "_r", r_num))
+
+head(col_data)
+
+```
+
+This will make it more readable what every point is, including which one of the tripples it is.
+
+```{r}
+for (i in 1:nrow(col_data)) {
+  idx <- grep(col_data$Run[i], names(data_hg19))
+  names(data_hg19)[idx] <- col_data$condition[i]
+}
+```
+
+
+```{r}
+head(data_hg19)
+
+```
+
+Now the names of the SRR files align with more readable names, we can now seperate them into groups
+
+```{r}
+HCC78_crizo <- grep("HCC78_250 nM crizotinib", names(data_hg19))
+HCC78_DMSO <- grep("HCC78_DMSO", names(data_hg19))
+
+CUTO38_crizo <- grep("CUTO38_250 nM crizotinib", names(data_hg19))
+CUTO38_DMSO <- grep("CUTO38_DMSO", names(data_hg19))
+
+CUTO37_crizo <- grep("CUTO37_250 nM crizotinib", names(data_hg19))
+CUTO37_DMSO <- grep("CUTO37_DMSO", names(data_hg19))
+
+CUTO33_crizo <- grep("CUTO33_250 nM crizotinib", names(data_hg19))
+CUTO33_DMSO <- grep("CUTO33_DMSO", names(data_hg19))
+
+CUTO28_crizo <- grep("CUTO28_250 nM crizotinib", names(data_hg19))
+CUTO28_DMSO <- grep("CUTO28_DMSO", names(data_hg19))
+
+CUTO27_crizo <- grep("CUTO27_250 nM crizotinib", names(data_hg19))
+CUTO27_DMSO <- grep("CUTO27_DMSO", names(data_hg19))
+
+CUTO23_crizo <- grep("CUTO23_250 nM crizotinib", names(data_hg19))
+CUTO23_DMSO <- grep("CUTO23_DMSO", names(data_hg19))
+```
+
+Now we can start with DESEQ, finally.
+
+```{r deseq-analysis-19}
+dds_hg19 <- DESeqDataSetFromMatrix(countData = data_hg19,
+                              colData = col_data,
+                              design = ~ Assay.Type + treatment)
+dds_hg19 <- dds_hg19[rowSums(counts(dds_hg19)) > 10, ]
+```
+
+```{r}
+
+dds_hg19 <- DESeq(dds_hg19, parallel = T)
+```
+
+```{r}
+res_hg19 <- results(dds_hg19, contrast=c("treatment", "250 nM crizotinib", "DMSO"))
+
+summary(res_hg19)
+```
+
+We see here that there are 7181 genes upregulated, and 4756 downregulated when the fasta files are mapped to the hg19 genome. 
+
+```{r}
+vsd_hg19 <- vst(dds_hg19, blind = F)
+pcaData_hg19 <- plotPCA(vsd_hg19, intgroup= c("Assay.Type", "treatment"), returnData=T)
+
+```
+
+```{r}
+percentVar_hg19 <- round(100 * attr(pcaData_hg19, "percentVar"))
+
+ggplot(pcaData_hg19, aes(PC1, PC2, color = Assay.Type, shape = treatment)) +
+  geom_point(size = 3) +
+  xlab(paste0("PC1: ", percentVar_hg19[1], "% variance")) +
+  ylab(paste0("PC2: ", percentVar_hg19[2], "% variance"))
+
+```
+
+```{r}
+resLFC_hg19 <- lfcShrink(dds_hg19, coef = tail(resultsNames(dds_hg19), n=1), type = "apeglm")
+deseq.volcano(resLFC_hg19, "Treatment vs DMSO", v1 = "DMSO", v2 = "250 nm crizotinib")
 ```

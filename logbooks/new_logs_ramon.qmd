@@ -1,0 +1,49 @@
+---
+title: "new_logs_ramon"
+format: html
+---
+
+## Intro
+
+This logbook will contain parts of the transcriptomics (and possible genomics) for the ROS1 minor generated sequencing data.
+
+We we're given the data on 13-05-2026, and will first start by quality controll, to check for possible adapters, sizes, and amount of counts. This will be done using falco (https://github.com/smithlabcode/falco). 
+
+```{bash, eval=FALSE}
+ls /students/2025-2026/minor_ros1/fastq/*_S* | \
+parallel "falco {} -o /students/2025-2026/ros1_transcriptomics/output_new/falco/{/.}_fastqc_report"
+
+```
+
+### Mapping
+
+STAR snakemake etc
+
+### Counts 
+
+
+## Primers
+
+Jasper did the DESEQ2 analysis for this data, which resulted a short DEG list, that i can use to generate new primers.
+
+Repotrectinib
+TNFRSF12A
+CCND1
+AMOTL2
+F3
+AJUBA
+FHDC1
+AMIGO2
+EPHA2
+CCN1
+PPRC1
+ADAMTS1
+CDC42EP3
+ELF3
+NOLC1
+FOSL1
+C1orf116
+Zidesamtinib
+MT-ND6
+
+This is the list
