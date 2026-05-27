@@ -1028,7 +1028,7 @@ low counts [2]     : 8191, 23%
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>resLFC <span class="ot">&lt;-</span> <span class="fu">lfcShrink</span>(dds, <span class="at">coef =</span> <span class="fu">tail</span>(<span class="fu">resultsNames</span>(dds), <span class="at">n=</span><span class="dv">1</span>), <span class="at">type =</span> <span class="st">"apeglm"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds, <span class="at">blind =</span> F)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds)</span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>pcaData <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(vsd, <span class="at">intgroup=</span> <span class="fu">c</span>(<span class="st">"Assay.Type"</span>, <span class="st">"treatment"</span>), <span class="at">returnData=</span>T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>I want to generate a PCA plot to look at the different samples, and see if they align or if there are any outliers. I will do this using the given PCA data from deseq2 and generating a PCA plot from this using ggplot.</p>
@@ -1072,8 +1072,8 @@ low counts [2]     : 8191, 23%
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">HCC78_250 nM crizotinib_r1</td>
-<td style="text-align: right;">-1.314750e+21</td>
-<td style="text-align: right;">-1.967848e+20</td>
+<td style="text-align: right;">-2.903970e+22</td>
+<td style="text-align: right;">-4.514038e+22</td>
 <td style="text-align: left;">HCC78:250 nM crizotinib</td>
 <td style="text-align: left;">HCC78_250 nM crizotinib_r1</td>
 <td style="text-align: left;">SRR25486680ReadsPerGene</td>
@@ -1085,8 +1085,8 @@ low counts [2]     : 8191, 23%
 </tr>
 <tr class="even">
 <td style="text-align: left;">HCC78_250 nM crizotinib_r2</td>
-<td style="text-align: right;">-9.268665e+20</td>
-<td style="text-align: right;">-1.032004e+20</td>
+<td style="text-align: right;">-2.300423e+22</td>
+<td style="text-align: right;">-3.762761e+22</td>
 <td style="text-align: left;">HCC78:250 nM crizotinib</td>
 <td style="text-align: left;">HCC78_250 nM crizotinib_r2</td>
 <td style="text-align: left;">SRR25486681ReadsPerGene</td>
@@ -1098,8 +1098,8 @@ low counts [2]     : 8191, 23%
 </tr>
 <tr class="odd">
 <td style="text-align: left;">HCC78_250 nM crizotinib_r3</td>
-<td style="text-align: right;">-9.130208e+20</td>
-<td style="text-align: right;">-1.036684e+20</td>
+<td style="text-align: right;">-2.359719e+22</td>
+<td style="text-align: right;">-3.744667e+22</td>
 <td style="text-align: left;">HCC78:250 nM crizotinib</td>
 <td style="text-align: left;">HCC78_250 nM crizotinib_r3</td>
 <td style="text-align: left;">SRR25486682ReadsPerGene</td>
@@ -1111,8 +1111,8 @@ low counts [2]     : 8191, 23%
 </tr>
 <tr class="even">
 <td style="text-align: left;">HCC78_DMSO_r1</td>
-<td style="text-align: right;">-6.736035e+20</td>
-<td style="text-align: right;">-5.023391e+19</td>
+<td style="text-align: right;">-2.379596e+22</td>
+<td style="text-align: right;">-3.645613e+22</td>
 <td style="text-align: left;">HCC78:DMSO</td>
 <td style="text-align: left;">HCC78_DMSO_r1</td>
 <td style="text-align: left;">SRR25486683ReadsPerGene</td>
@@ -1124,8 +1124,8 @@ low counts [2]     : 8191, 23%
 </tr>
 <tr class="odd">
 <td style="text-align: left;">HCC78_DMSO_r2</td>
-<td style="text-align: right;">-7.510494e+20</td>
-<td style="text-align: right;">-3.153008e+19</td>
+<td style="text-align: right;">-2.151818e+22</td>
+<td style="text-align: right;">-3.265529e+22</td>
 <td style="text-align: left;">HCC78:DMSO</td>
 <td style="text-align: left;">HCC78_DMSO_r2</td>
 <td style="text-align: left;">SRR25486684ReadsPerGene</td>
@@ -1137,8 +1137,8 @@ low counts [2]     : 8191, 23%
 </tr>
 <tr class="even">
 <td style="text-align: left;">HCC78_DMSO_r3</td>
-<td style="text-align: right;">-5.640753e+20</td>
-<td style="text-align: right;">-1.106703e+19</td>
+<td style="text-align: right;">-2.361336e+22</td>
+<td style="text-align: right;">-3.782971e+22</td>
 <td style="text-align: left;">HCC78:DMSO</td>
 <td style="text-align: left;">HCC78_DMSO_r3</td>
 <td style="text-align: left;">SRR25486685ReadsPerGene</td>

@@ -445,7 +445,7 @@ resLFC <- lfcShrink(dds, coef = tail(resultsNames(dds), n=1), type = "apeglm")
 
 
 ```{r}
-vsd <- vst(dds, blind = F)
+vsd <- vst(dds)
 pcaData <- plotPCA(vsd, intgroup= c("Assay.Type", "treatment"), returnData=T)
 
 ```
